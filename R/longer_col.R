@@ -1,3 +1,7 @@
+library(data.table)
+library(magrittr)
+library(glue)
+
 longer_col = function(
 				.data,
 				column,

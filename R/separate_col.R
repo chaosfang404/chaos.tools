@@ -1,3 +1,6 @@
+library(data.table)
+library(magrittr)
+
 separate_col = function(
 					.data,
 					column,
