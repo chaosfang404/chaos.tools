@@ -1,5 +1,6 @@
-library(data.table)
-library(magrittr)
+required_packages <- c("data.table","magrittr")
+
+require(required_packages)
 
 separate_col = function(
 					.data,
