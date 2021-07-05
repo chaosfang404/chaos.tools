@@ -1,6 +1,6 @@
-required_packages <- c("data.table","magrittr","glue")
-
-library(required_packages)
+require(data.table)
+require(magrittr)
+require(glue)
 
 longer_col = function(
 				.data,
