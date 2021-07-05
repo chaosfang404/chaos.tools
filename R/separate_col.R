@@ -1,4 +1,4 @@
-require(dat.table)
+require(data.table)
 require(magrittr)
 
 separate_col = function(
