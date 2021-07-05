@@ -9,13 +9,14 @@ str_comb <- function(
 				c8 = NA,
 				sep = "_"
 ){	
-	all_2 <- NULL
+##========basic_combine================
+    all_2 <- NULL
 	for (i in c1) 
 	{
 		all_2 <- c(all_2,paste(i,c2,sep = sep))
 	}
 	all <- all_2
-
+##========3_item_combine================
 	if (unique(!is.na(c3)))
 	{
 		all_3 <- NULL
@@ -25,7 +26,7 @@ str_comb <- function(
 		}
 		all <- all_3
 	}
-
+##========4_item_combine================
 	if (unique(!is.na(c4)))
 	{
 		all_4 <- NULL
@@ -35,43 +36,43 @@ str_comb <- function(
 		}
 		all <- all_4
 	}
-
+##========5_item_combine================
 	if (unique(!is.na(c5)))
 	{
 		all_5 <- NULL
 		for(l in all_4)
 		{
-			all_5 <- c(all_5,paste(k,c5,sep = sep))
+			all_5 <- c(all_5,paste(l,c5,sep = sep))
 		}
 		all <- all_5
 	}
-
+##========6_item_combine================
 	if (unique(!is.na(c6)))
 	{
 		all_6 <- NULL
-		for(l in all_5)
+		for(m in all_5)
 		{
-			all_6 <- c(all_6,paste(k,c6,sep = sep))
+			all_6 <- c(all_6,paste(m,c6,sep = sep))
 		}
 		all <- all_6
 	}
-
+##========7_item_combine================
 	if (unique(!is.na(c7)))
 	{
 		all_7 <- NULL
-		for(l in all_6)
+		for(n in all_6)
 		{
-			all_7 <- c(all_7,paste(k,c7,sep = sep))
+			all_7 <- c(all_7,paste(n,c7,sep = sep))
 		}
 		all <- all_7
 	}
-
+##========8_item_combine================
 	if (unique(!is.na(c8)))
 	{
 		all_8 <- NULL
-		for(l in all_7)
+		for(o in all_7)
 		{
-			all_8 <- c(all_8,paste(k,c8,sep = sep))
+			all_8 <- c(all_8,paste(o,c8,sep = sep))
 		}
 		all <- all_8
 	}
