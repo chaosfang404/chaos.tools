@@ -1,0 +1,10 @@
+Package: chaos.tools
+Type: Package
+Title: utilities for chaos
+Version: 0.0.2
+Author: Chao Fang
+Maintainer: Chao Fang <fc-ibb105@outlook.com>
+Description: utilities created by chaos
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
