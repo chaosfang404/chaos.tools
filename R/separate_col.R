@@ -1,6 +1,6 @@
 required_packages <- c("data.table","magrittr")
 
-require(required_packages)
+library(required_packages)
 
 separate_col = function(
 					.data,
