@@ -8,7 +8,8 @@
 
 wcpa = function(.data)
 {
-	dt <- data.table(.data)
+	dt <- as.data.table(.data)
+	
 	names(dt) <- c("sample","resolution","normalization","chr1","chr2","interaction")
 
 	dt[
