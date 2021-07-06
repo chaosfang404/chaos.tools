@@ -1,3 +1,11 @@
+##' @title WCPA(Whole Chromosomal Positioning analysis)
+##' @description calculation of WCPA with interaction data.
+##' interaction data could be extracted with straw from .hic files.
+##' The data should have the following 6 columns : 
+##' sample_name, resolution, normalization_method, chr1, chr2, interaction
+##' colnames is not essential.
+##' @author Chao Fang
+
 wcpa = function(.data)
 {
 	names(.data) <- c("sample","resolution","normalization","chr1","chr2","interaction")
