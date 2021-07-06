@@ -1,24 +1,22 @@
-#' @import data.table
-
 wcpa = function(.data)
 {
 	names(.data) <- c("sample","resolution","normalization","chr1","chr2","interaction")
 
 	.data[
 		,
-		list(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-		list(sample,resolution,normalization)	
+		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
+		.(sample,resolution,normalization)	
 	][
 		,
-	  	list(chr2,interaction,sample_total,chr1_total = sum(interaction)),
-	  	list(sample,resolution,normalization,chr1)
+	  	.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
+	  	.(sample,resolution,normalization,chr1)
 	][
 		,
-		list(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
-		list(sample,resolution,normalization,chr2)
+		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
+		.(sample,resolution,normalization,chr2)
 	][
 		,
-		list(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
+		.(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
 	][
 		order(sample,resolution,normalization,chr1,chr2)
 	][
