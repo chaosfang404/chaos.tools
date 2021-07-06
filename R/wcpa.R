@@ -1,6 +1,6 @@
 require(data.table)
 
-wcpa() = function(.data
+wcpa = function(.data
 ){
 	names(.data) <- c("sample","resolution","normalization","chr1","chr2","interaction")
 	.data[
