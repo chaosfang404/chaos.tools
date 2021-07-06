@@ -2,13 +2,9 @@
 
 wcpa = function(.data)
 {
-	require(data.table)
-	reauire(magrittr)
-
 	names(.data) <- c("sample","resolution","normalization","chr1","chr2","interaction")
 
-	.data %>%
-	.[
+	.data[
 		,
 		list(chr1,chr2,interaction,sample_total = sum(interaction)/2),
 		list(sample,resolution,normalization)	
