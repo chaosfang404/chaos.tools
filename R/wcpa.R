@@ -8,19 +8,19 @@ wcpa = function(.data)
 
 	dt[
 		,
-		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-		.(sample,resolution,normalization)	
+		list(chr1,chr2,interaction,sample_total = sum(interaction)/2),
+		list(sample,resolution,normalization)	
 	][
 		,
-	  	.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
-	  	.(sample,resolution,normalization,chr1)
+	  	list(chr2,interaction,sample_total,chr1_total = sum(interaction)),
+	  	list(sample,resolution,normalization,chr1)
 	][
 		,
-		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
-		.(sample,resolution,normalization,chr2)
+		list(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
+		list(sample,resolution,normalization,chr2)
 	][
 		,
-		.(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
+		list(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
 	][
 		order(sample,resolution,normalization,chr1,chr2)
 	][
