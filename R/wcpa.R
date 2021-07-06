@@ -1,12 +1,14 @@
+#' @import data.table
+
 wcpa = function(.data)
 {
 	require(data.table)
+	reauire(magrittr)
 
-	dt <- data.table(.data)
+	names(.data) <- c("sample","resolution","normalization","chr1","chr2","interaction")
 
-	names(dt) <- c("sample","resolution","normalization","chr1","chr2","interaction")
-
-	dt[
+	.data %>%
+	.[
 		,
 		list(chr1,chr2,interaction,sample_total = sum(interaction)/2),
 		list(sample,resolution,normalization)	
