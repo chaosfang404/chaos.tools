@@ -1,5 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 
+export(wcpa)
 import(data.table)
 import(magrittr)
 import(glue)
