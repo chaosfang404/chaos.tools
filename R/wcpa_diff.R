@@ -2,7 +2,7 @@ wcpa_diff = function(
 				.data,
 				name1,
 				name2,
-				res = "2.5Mb",
+				res = "2500000",
 				norm = "KR",
 				chr = c(1:22,"X","Y")
 ){

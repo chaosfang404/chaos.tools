@@ -1,7 +1,7 @@
 wcpa_matrix = function(
 				.data,
 				name,
-				res = "2.5Mb",
+				res = "2500000",
 				method = "KR",
 				chr = c(1:22,"X","Y")
 ){

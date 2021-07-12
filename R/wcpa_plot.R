@@ -1,7 +1,7 @@
 wcpa_plot = function(
 				.data,
 				name,
-				res = "2.5Mb",
+				res = "2500000",
 				norm = "KR",
 				chr = c(1:22,"X","Y")
 ){
