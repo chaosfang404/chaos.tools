@@ -7,8 +7,7 @@ wcpa_matrix = function(
 ){
 	chr_list <- as.character(chr)
 	
-	wcpa(.data) %>%
-	.[
+	wcpa(.data)[
 		  sample == name & 
 		  resolution == res &
 		  normalization == method &
@@ -22,7 +21,7 @@ wcpa_matrix = function(
 			WCPA
 		)
 	] %>%
-   	wider_dt(
+   	tidyfst::wider_dt(
 		 chr1,
 		 name = "chr2",
 		 value = "WCPA"
