@@ -7,7 +7,8 @@ wcpa_matrix = function(
 ){
 	chr_list <- as.character(chr)
 	
-	wcpa(.data)[
+	wcpa(.data) %>%
+	.[
 		  sample == name & 
 		  resolution == res &
 		  normalization == method &
