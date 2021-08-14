@@ -5,8 +5,7 @@ scratch = function()
 		tmp_path=file.path("/scratch",i,"chaos")
 		if (dir.exists(tmp_path))
 		{
-			work_dir <- tmp_path
-			print(work_dir)
+			return(tmp_path)
 		}
 	}
 }
