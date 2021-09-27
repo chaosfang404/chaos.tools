@@ -85,7 +85,7 @@ apa_plot <- function(
 				low = min_color, 
 				mid = "white",
 				high = max_color,
-				midpoint = mean(min,max)
+				midpoint = mean(c(min,max))
 			)
 			
 	}else
