@@ -2,11 +2,11 @@
 apa_plot <- function(
 				.data, 
 				corner_size = 6, 
-				min, 
+				min = NA, 
 				min_color = "#3c5488" , 
-				max, 
+				max = NA, 
 				max_color = "#e64b35",
-				smooth = False
+				smooth = FALSE
 ){
 	cs <- corner_size
 
@@ -35,13 +35,15 @@ apa_plot <- function(
 					mean %>% 
 					round(3)
 
-	if(!smooth)
+	if(is.na(min)){min <- dt %>% unlist %>% min}
+	if(is.na(max)){max <- dt %>% unlist %>% max}
+
+	if(smooth)
 	{
-		dt %>% 
-			mutate_dt(rn = factor(1:nrow(dt),levels = nrow(dt):1)) %>% 
-			longer_dt(rn) %>% 
-			ggplot(aes(name,rn, fill = value)) + 
-			geom_tile() + 
+		dt[,rn := factor(1:.N,levels = .N:1)] %>% 
+			melt("rn") %>% 
+			ggplot(aes(variable, rn, fill = value)) + 
+			geom_raster(interpolate = T) + 
 			annotate(
 				"rect",
 				xmin= c(0,0,l - cs, l - cs) + shift,
@@ -90,11 +92,10 @@ apa_plot <- function(
 			
 	}else
 	{
-		dt %>% 
-			mutate_dt(rn = factor(1:nrow(dt),levels = nrow(dt):1)) %>% 
+		dt[,rn := factor(1:.N,levels = .N:1)] %>% 
 			melt("rn") %>% 
-			ggplot(aes(name,rn, fill = value)) + 
-			geom_raster(interpolate = T) + 
+			ggplot(aes(variable,rn, fill = value)) + 
+			geom_tile() + 
 			annotate(
 				"rect",
 				xmin= c(0,0,l - cs, l - cs) + shift,
