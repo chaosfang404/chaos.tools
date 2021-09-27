@@ -91,7 +91,7 @@ apa_plot <- function(
 	}else
 	{
 		dt %>% 
-			mutate_dt(rn = factor(1:nrow(dt),levels = nrow(dt:1)) %>% 
+			mutate_dt(rn = factor(1:nrow(dt),levels = nrow(dt):1)) %>% 
 			melt("rn") %>% 
 			ggplot(aes(name,rn, fill = value)) + 
 			geom_raster(interpolate = T) + 
