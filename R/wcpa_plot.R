@@ -7,26 +7,30 @@ wcpa_plot = function(
 				axis_size = "10",
 				border_color = "#FFFFFF",
 				scales = "fixed",
-				legend_breaks=NA
+				legend_breaks = NA
 ){
-	dt <- .data %>%
-			wcpa() %>%
+	dt <- wcpa(.data) %>%
 			.[
-				resolution == res &
-				normalization == norm,
-				.(sample,chr1,chr2,WCPA)
+				resolution == res & normalization == norm,
+				.(sample, chr1, chr2, WCPA)
 			]
 
-	if(is.na(name)[1]){name <- dt$sample %>% unique}
+	if(length(name) ==1)
+	{
+		if(is.na(name))
+		{
+			name <- dt[,sample] %>% unique()
+		}
+	}
 
 	if(length(legend_breaks) ==1)
 	{
 		if(is.na(legend_breaks))
 		{
 			legend_breaks <- seq(
-								min(dt$WCPA),
-								max(dt$WCPA),
-								(max(dt$WCPA) - min(dt$WCPA))/4,
+								min(dt[,WCPA]),
+								max(dt[,WCPA]),
+								(max(dt[,WCPA]) - min(dt[,WCPA]))/4,
 							) %>%
 							round(2)
 		}
@@ -39,11 +43,9 @@ wcpa_plot = function(
 					chr2 = chr,
 					fill = NA
 				) %>%
-				mutate_dt(
-					sample = factor(sample, levels = name),
-					chr1 = factor(chr1, levels = chr),
-					chr2 = factor(chr2, levels = rev(chr))
-				) %>%
+				.[,sample := factor(sample, levels = name)] %>%
+				.[,chr1 := factor(chr1, levels = chr)] %>%
+				.[,chr2 := factor(chr2, levels = rev(chr))] %>%
 				ggplot(aes(chr1,chr2,fill = WCPA)) + 
 				geom_tile(
 					color = border_color,
@@ -53,7 +55,7 @@ wcpa_plot = function(
 					low = "#3c5488",
 					mid = "#FFFFFF",
 					high = "#e64b35",
-					midpoint = mean(c(min(dt$WCPA),max(dt$WCPA))),
+					midpoint = mean(c(min(dt[,WCPA]),max(dt[,WCPA]))),
 					breaks = legend_breaks
 				) + 
 				labs(
@@ -86,7 +88,6 @@ wcpa_plot = function(
 			scales = scales
 		)
 	}
-
 }
 
 
@@ -115,10 +116,8 @@ wcpa_compare_plot <- function(
 				chr2 = chr,
 				fill = NA
 			) %>%
-			mutate_dt(
-				chr1 = factor(chr1,levels = chr),
-				chr2 = factor(chr2,levels = rev(chr))
-			) %>%
+			.[,chr1 := factor(chr1,levels = chr)] %>%
+			.[,chr2 := factor(chr2,levels = rev(chr))] %>%
 			mutate_when(sample == control,sample = "control") %>%
 			mutate_when(sample == observe,sample = "observe") %>%
 			wider_dt(name = "sample",value = "WCPA") %>%
