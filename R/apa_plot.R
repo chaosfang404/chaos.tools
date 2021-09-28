@@ -3,17 +3,17 @@ apa_plot <- function(
 				.data, 
 				corner_size = 6, 
 				min = NA, 
-				min_color = "#3c5488" , 
+				min_color = "#3c5488", 
 				max = NA, 
 				max_color = "#e64b35",
 				smooth = FALSE,
-    			border_color = "black",
-    			number_size = 5,
-    			number_color = "black",
-    			digit = 3,
+				border_color = "black",
+				number_size = 5,
+				number_color = "black",
+				digit = 3,
 				legend_title = "value"
 ){
-    cs <- corner_size
+	cs <- corner_size
 
 	shift <- 0.53
 
@@ -41,8 +41,8 @@ apa_plot <- function(
 	if(is.na(max)){max <- max(all)}
 
 	p_base <- dt[,rn := factor(1:.N,levels = .N:1)] %>% 
-			melt("rn") %>%
-			ggplot(aes(variable, rn, fill = value))
+				melt("rn") %>%
+				ggplot(aes(variable, rn, fill = value))
 
 	if(smooth)
 	{
@@ -68,7 +68,7 @@ apa_plot <- function(
 		y = (cs/2) + shift, 
 		label = p2ll,
 		size = number_size,
-        color = number_color
+		color = number_color
 	) + 
 	annotate(
 		"text",
@@ -76,7 +76,7 @@ apa_plot <- function(
 		y = (cs/2) + shift, 
 		label = p2lr,
 		size = number_size,
-        color = number_color
+		color = number_color
 	) + 
 	annotate(
 		"text",
@@ -84,7 +84,7 @@ apa_plot <- function(
 		y = (l - cs/2) + shift, 
 		label = p2ul,
 		size = number_size,
-        color = number_color
+		color = number_color
 	) + 
 	annotate(
 		"text",
@@ -92,7 +92,7 @@ apa_plot <- function(
 		y = (l - cs/2) + shift, 
 		label = p2ur,
 		size = number_size,
-        color = number_color
+		color = number_color
 	) +
 	theme_void() + 
 	scale_fill_gradient2(
@@ -110,7 +110,9 @@ apa_compare_plot <- function(
 						dt1,
 						dt2, 
 						corner_size = 6, 
-						min_color = "#3c5488", 
+						min = NA,
+						min_color = "#3c5488",
+						max = NA, 
 						max_color = "#e64b35",
 						smooth = FALSE,
 						border_color = "black",
@@ -120,14 +122,14 @@ apa_compare_plot <- function(
 						legend_title = "value"
 ){
 
-	min_value <- min(dt1,dt2) %>% floor()
-	max_value <- max(dt1,dt2) %>% ceiling()
+	if(is.na(min)){min <- min(dt1,dt2) %>% floor()}
+	if(is.na(max)){max <- max(dt1,dt2) %>% ceiling()}
 
 	apa_plot(
 		data.table(dt1),
 		corner_size = corner_size,
-		min = min_value,
-		max = max_value,
+		min = min,
+		max = max,
 		min_color = min_color,
 		max_color = max_color,
 		smooth = smooth,
@@ -140,8 +142,8 @@ apa_compare_plot <- function(
 	apa_plot(
 		data.table(dt2),
 		corner_size = corner_size,
-		min = min_value,
-		max = max_value,
+		min = min,
+		max = max,
 		min_color = min_color,
 		max_color = max_color,
 		smooth = smooth,
