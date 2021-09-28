@@ -104,3 +104,52 @@ apa_plot <- function(
 	) +
 	labs(fill = legend_title)
 }
+
+
+apa_compare_plot <- function(
+						dt1,
+						dt2, 
+						corner_size = 6, 
+						min_color = "#3c5488", 
+						max_color = "#e64b35",
+						smooth = FALSE,
+						border_color = "black",
+						number_size = 5,
+						number_color = "black",
+						digit = 3,
+						legend_title = "value"
+){
+
+	min_value <- min(dt1,dt2) %>% floor()
+	max_value <- max(dt1,dt2) %>% ceiling()
+
+	apa_plot(
+		data.table(dt1),
+		corner_size = corner_size,
+		min = min_value,
+		max = max_value,
+		min_color = min_color,
+		max_color = max_color,
+		smooth = smooth,
+		border_color = border_color,
+		number_size = number_size,
+		number_color = number_color,
+		digit = digit,
+		legend_title = legend_title
+	) + 
+	apa_plot(
+		data.table(dt2),
+		corner_size = corner_size,
+		min = min_value,
+		max = max_value,
+		min_color = min_color,
+		max_color = max_color,
+		smooth = smooth,
+		border_color = border_color,
+		number_size = number_size,
+		number_color = number_color,
+		digit = digit,
+		legend_title = legend_title
+	) + 
+	plot_layout(guides = "collect")
+}
