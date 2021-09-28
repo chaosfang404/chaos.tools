@@ -6,33 +6,44 @@ wcpa_plot = function(
 				chr = c(1:22,"X","Y"),
 				axis_size = "10",
 				border_color = "#FFFFFF",
-				scales = "fixed"
+				scales = "fixed",
+				legend_breaks=NA
 ){
-	dt <- wcpa(.data)[
-				,chr1 := factor(chr1,levels = chr)
-			][
-				,chr2 := factor(chr2,levels = rev(chr))
-			][
+	dt <- .data %>%
+			wcpa() %>%
+			.[
 				resolution == res &
-				normalization == norm
+				normalization == norm,
+				.(sample,chr1,chr2,WCPA)
 			]
 
-	if(length(name) > 1)
+	if(is.na(name)[1]){name <- dt$sample %>% unique}
+
+	if(length(legend_breaks) ==1)
 	{
-		dt <- dt[
-				sample %in% name
-			][
-				,sample := factor(sample,levels = name)
-			]
-	} else if(length(name) == 1)
-	{
-		if(!is.na(name))
+		if(is.na(legend_breaks))
 		{
-			dt <- dt[sample == name]
+			legend_breaks <- seq(
+								min(dt$WCPA),
+								max(dt$WCPA),
+								(max(dt$WCPA) - min(dt$WCPA))/4,
+							) %>%
+							round(2)
 		}
 	}
 
-	p_base <- dt %>%
+	p_base <- dt[sample %in% name] %>%
+				complete_dt(
+					sample = name,
+					chr1 = chr,
+					chr2 = chr,
+					fill = NA
+				) %>%
+				mutate_dt(
+					sample = factor(sample, levels = name),
+					chr1 = factor(chr1, levels = chr),
+					chr2 = factor(chr2, levels = rev(chr))
+				) %>%
 				ggplot(aes(chr1,chr2,fill = WCPA)) + 
 				geom_tile(
 					color = border_color,
@@ -42,7 +53,8 @@ wcpa_plot = function(
 					low = "#3c5488",
 					mid = "#FFFFFF",
 					high = "#e64b35",
-					midpoint = mean(c(min(dt$WCPA),max(dt$WCPA)))
+					midpoint = mean(c(min(dt$WCPA),max(dt$WCPA))),
+					breaks = legend_breaks
 				) + 
 				labs(
 					x = element_blank(),
@@ -57,10 +69,11 @@ wcpa_plot = function(
 					axis.ticks.y = element_blank(),
 					axis.text.x = element_text(size = axis_size),
 					axis.text.y = element_text(size = axis_size),
-					legend.key.widt = unit(0.4,"cm")
+					legend.key.widt = unit(0.4,"cm"),
+					legend.title = element_blank()
 				)
 
-	if(length(unique(dt$sample)) == 1)
+	if(length(name) == 1)
 	{
 		p_base
 
@@ -94,13 +107,18 @@ wcpa_compare_plot <- function(
 ){
 	dt <- wcpa(.data)[
 				sample %in% c(observe,control),
-				.(
-					sample,
-					chr1 = factor(chr1,levels = chr),
-					chr2 = factor(chr2,levels = rev(chr)),
-					WCPA
-				)
-			] %>% 
+				.(sample, chr1, chr2, WCPA)
+			] %>%
+			complete_dt(
+				sample = c(observe,control),
+				chr1 = chr,
+				chr2 = chr,
+				fill = NA
+			) %>%
+			mutate_dt(
+				chr1 = factor(chr1,levels = chr),
+				chr2 = factor(chr2,levels = rev(chr))
+			) %>%
 			mutate_when(sample == control,sample = "control") %>%
 			mutate_when(sample == observe,sample = "observe") %>%
 			wider_dt(name = "sample",value = "WCPA") %>%
@@ -121,7 +139,7 @@ wcpa_compare_plot <- function(
 		mid = "#FFFFFF",
 		high = "#e64b35",
 		midpoint = 1,
-		breaks = seq(min,max,0.01)
+		#breaks = seq(min,max,0.1)
 	) + 
 	labs(
 		title = paste(observe,control,sep = " / "),
@@ -142,5 +160,3 @@ wcpa_compare_plot <- function(
 		legend.key.widt = unit(0.4,"cm")
 	) 
 }
-
-
