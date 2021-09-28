@@ -10,7 +10,8 @@ apa_plot <- function(
     			border_color = "black",
     			number_size = 5,
     			number_color = "black",
-    			digit = 3
+    			digit = 3,
+				legend_title = "value"
 ){
     cs <- corner_size
 
@@ -100,5 +101,6 @@ apa_plot <- function(
 		mid = "white",
 		high = max_color,
 		midpoint = mean(c(min,max))
-	)
+	) +
+	labs(fill = legend_title)
 }
