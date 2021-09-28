@@ -2,7 +2,7 @@ wcpa_matrix = function(
 				.data,
 				name,
 				res = "2500000",
-				method = "KR",
+				norm = "KR",
 				chr = c(1:22,"X","Y")
 ){
 	chr_list <- as.character(chr)
@@ -10,7 +10,7 @@ wcpa_matrix = function(
 	wcpa(.data)[
 		  sample == name & 
 		  resolution == res &
-		  normalization == method &
+		  normalization == norm &
 		  chr1 %in% chr_list & 
 		  chr2 %in% chr_list
 	][
