@@ -9,9 +9,10 @@ apa_plot <- function(
 				smooth = FALSE,
     			border_color = "black",
     			number_size = 5,
-    			number_color = "black"
+    			number_color = "black",
+    			digit = 3
 ){
-	cs <- corner_size
+    cs <- corner_size
 
 	shift <- 0.53
 
@@ -29,11 +30,11 @@ apa_plot <- function(
 
 	all <- unlist(dt)
 
-	p2m <- (all[central_pixel]/mean(all[names(all) != central_pixel])) %>% round(3)
-	p2ul <- (all[central_pixel]/mean(unlist(dt[1:cs,1:cs]))) %>% round(3)
-	p2ur <- (all[central_pixel]/mean(unlist(dt[1:cs,a:l]))) %>% round(3)
-	p2ll <- (all[central_pixel]/mean(unlist(dt[a:l,1:cs]))) %>% round(3)
-	p2lr <- (all[central_pixel]/mean(unlist(dt[a:l,a:l]))) %>% round(3)
+	p2m <- (all[central_pixel]/mean(all[names(all) != central_pixel])) %>% round(digit)
+	p2ul <- (all[central_pixel]/mean(unlist(dt[1:cs,1:cs]))) %>% round(digit)
+	p2ur <- (all[central_pixel]/mean(unlist(dt[1:cs,a:l]))) %>% round(digit)
+	p2ll <- (all[central_pixel]/mean(unlist(dt[a:l,1:cs]))) %>% round(digit)
+	p2lr <- (all[central_pixel]/mean(unlist(dt[a:l,a:l]))) %>% round(digit)
 
 	if(is.na(min)){min <- min(all)}
 	if(is.na(max)){max <- max(all)}
