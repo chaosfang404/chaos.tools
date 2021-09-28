@@ -6,7 +6,10 @@ apa_plot <- function(
 				min_color = "#3c5488" , 
 				max = NA, 
 				max_color = "#e64b35",
-				smooth = FALSE
+				smooth = FALSE,
+    			border_color = "black",
+    			number_size = 5,
+    			number_color = "black"
 ){
 	cs <- corner_size
 
@@ -26,7 +29,7 @@ apa_plot <- function(
 
 	all <- unlist(dt)
 
-	p2m <- all[central_pixel]/mean(all[names(all) != central_pixel])
+	p2m <- (all[central_pixel]/mean(all[names(all) != central_pixel])) %>% round(3)
 	p2ul <- (all[central_pixel]/mean(unlist(dt[1:cs,1:cs]))) %>% round(3)
 	p2ur <- (all[central_pixel]/mean(unlist(dt[1:cs,a:l]))) %>% round(3)
 	p2ll <- (all[central_pixel]/mean(unlist(dt[a:l,1:cs]))) %>% round(3)
@@ -54,7 +57,7 @@ apa_plot <- function(
 			xmax = c(cs +1,cs + 1, l + 1, l + 1) - shift, 
 			ymin = c(0, l - cs, 0, l - cs) + shift,
 			ymax =c(cs + 1, l + 1, cs + 1, l + 1) - shift,
-			color = "black",
+			color = border_color,
 			alpha = 0
 	) +
 	annotate(
@@ -62,28 +65,32 @@ apa_plot <- function(
 		x= (cs/2) + shift, 
 		y = (cs/2) + shift, 
 		label = p2ll,
-		size = 5
+		size = number_size,
+        color = number_color
 	) + 
 	annotate(
 		"text",
 		x= (l - cs/2) + shift, 
 		y = (cs/2) + shift, 
 		label = p2lr,
-		size = 5
+		size = number_size,
+        color = number_color
 	) + 
 	annotate(
 		"text",
 		x= (cs/2) + shift, 
 		y = (l - cs/2) + shift, 
 		label = p2ul,
-		size = 5
+		size = number_size,
+        color = number_color
 	) + 
 	annotate(
 		"text",
 		x= (l - cs/2) + shift, 
 		y = (l - cs/2) + shift, 
 		label = p2ur,
-		size = 5
+		size = number_size,
+        color = number_color
 	) +
 	theme_void() + 
 	scale_fill_gradient2(
