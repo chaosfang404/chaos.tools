@@ -18,128 +18,79 @@ apa_plot <- function(
 
 	a <- l - cs + 1
 
-	left_top <- dt[1:6,1:6] %>% 
-					unlist %>% 
-					mean %>% 
-					round(3)
-	left_bottom <- dt[a:l,1:3] %>% 
-					unlist %>% 
-					mean %>% 
-					round(3)
-	right_top <- dt[1:3,a:l] %>% 
-					unlist %>% 
-					mean %>% 
-					round(3)
-	right_bottom <- dt[a:l,a:l] %>% 
-					unlist %>% 
-					mean %>% 
-					round(3)
+	central_pixel <- paste0(
+						"V",
+						ceiling(l/2),
+						ceiling(l/2)
+					)
 
-	if(is.na(min)){min <- dt %>% unlist %>% min}
-	if(is.na(max)){max <- dt %>% unlist %>% max}
+	all <- unlist(dt)
+
+	p2m <- all[central_pixel]/mean(all[names(all) != central_pixel])
+	p2ul <- (all[central_pixel]/mean(unlist(dt[1:cs,1:cs]))) %>% round(3)
+	p2ur <- (all[central_pixel]/mean(unlist(dt[1:cs,a:l]))) %>% round(3)
+	p2ll <- (all[central_pixel]/mean(unlist(dt[a:l,1:cs]))) %>% round(3)
+	p2lr <- (all[central_pixel]/mean(unlist(dt[a:l,a:l]))) %>% round(3)
+
+	if(is.na(min)){min <- min(all)}
+	if(is.na(max)){max <- max(all)}
+
+	p_base <- dt[,rn := factor(1:.N,levels = .N:1)] %>% 
+			melt("rn") %>%
+			ggplot(aes(variable, rn, fill = value))
 
 	if(smooth)
 	{
-		dt[,rn := factor(1:.N,levels = .N:1)] %>% 
-			melt("rn") %>% 
-			ggplot(aes(variable, rn, fill = value)) + 
-			geom_raster(interpolate = T) + 
-			annotate(
-				"rect",
-				xmin= c(0,0,l - cs, l - cs) + shift,
-				xmax = c(cs +1,cs + 1, l + 1, l + 1) - shift, 
-				ymin = c(0, l - cs, 0, l - cs) + shift,
-				ymax =c(cs + 1, l + 1, cs + 1, l + 1) - shift,
-				color = "black",
-				alpha = 0
-			) +
-			annotate(
-				"text",
-				x= (cs/2) + shift, 
-				y = (cs/2) + shift, 
-				label = left_bottom,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (l - cs/2) + shift, 
-				y = (cs/2) + shift, 
-				label = right_bottom,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (cs/2) + shift, 
-				y = (l - cs/2) + shift, 
-				label = left_top,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (l - cs/2) + shift, 
-				y = (l - cs/2) + shift, 
-				label = right_top,
-				size = 5
-			) +
-			theme_void() + 
-			scale_fill_gradient2(
-				limits = c(min,max),
-				low = min_color, 
-				mid = "white",
-				high = max_color,
-				midpoint = mean(c(min,max))
-			)
-			
+		p_heatmap <- p_base + geom_raster(interpolate = T)
 	}else
 	{
-		dt[,rn := factor(1:.N,levels = .N:1)] %>% 
-			melt("rn") %>% 
-			ggplot(aes(variable,rn, fill = value)) + 
-			geom_tile() + 
-			annotate(
-				"rect",
-				xmin= c(0,0,l - cs, l - cs) + shift,
-				xmax = c(cs +1,cs + 1, l + 1, l + 1) - shift, 
-				ymin = c(0, l - cs, 0, l - cs) + shift,
-				ymax =c(cs + 1, l + 1, cs + 1, l + 1) - shift,
-				color = "black",
-				alpha = 0
-			) +
-			annotate(
-				"text",
-				x= (cs/2) + shift, 
-				y = (cs/2) + shift, 
-				label = left_bottom,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (l - cs/2) + shift, 
-				y = (cs/2) + shift, 
-				label = right_bottom,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (cs/2) + shift, 
-				y = (l - cs/2) + shift, 
-				label = left_top,
-				size = 5
-			) + 
-			annotate(
-				"text",
-				x= (l - cs/2) + shift, 
-				y = (l - cs/2) + shift, 
-				label = right_top,
-				size = 5
-			) +
-			theme_void() + 
-			scale_fill_gradient2(
-				limits = c(min,max),
-				low = min_color, 
-				mid = "white",
-				high = max_color,
-				midpoint = mean(c(min,max))
-			)
+		p_heatmap <- p_base + geom_tile()
 	}
+
+	p_heatmap + 
+	annotate(
+			"rect",
+			xmin= c(0,0,l - cs, l - cs) + shift,
+			xmax = c(cs +1,cs + 1, l + 1, l + 1) - shift, 
+			ymin = c(0, l - cs, 0, l - cs) + shift,
+			ymax =c(cs + 1, l + 1, cs + 1, l + 1) - shift,
+			color = "black",
+			alpha = 0
+	) +
+	annotate(
+		"text",
+		x= (cs/2) + shift, 
+		y = (cs/2) + shift, 
+		label = p2ll,
+		size = 5
+	) + 
+	annotate(
+		"text",
+		x= (l - cs/2) + shift, 
+		y = (cs/2) + shift, 
+		label = p2lr,
+		size = 5
+	) + 
+	annotate(
+		"text",
+		x= (cs/2) + shift, 
+		y = (l - cs/2) + shift, 
+		label = p2ul,
+		size = 5
+	) + 
+	annotate(
+		"text",
+		x= (l - cs/2) + shift, 
+		y = (l - cs/2) + shift, 
+		label = p2ur,
+		size = 5
+	) +
+	theme_void() + 
+	scale_fill_gradient2(
+		limits = c(min,max),
+		low = min_color, 
+		mid = "white",
+		high = max_color,
+		midpoint = mean(c(min,max))
+	)
 }
