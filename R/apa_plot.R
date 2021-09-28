@@ -7,9 +7,9 @@ apa_plot <- function(
 				max = NA, 
 				max_color = "#e64b35",
 				smooth = FALSE,
-				border_color = "black",
+				border_color = "#000000",
 				number_size = 5,
-				number_color = "black",
+				number_color = "#000000",
 				digit = 3,
 				legend_title = "value"
 ){
@@ -115,9 +115,9 @@ apa_compare_plot <- function(
 						max = NA, 
 						max_color = "#e64b35",
 						smooth = FALSE,
-						border_color = "black",
+						border_color = "#000000",
 						number_size = 5,
-						number_color = "black",
+						number_color = "#000000",
 						digit = 3,
 						legend_title = "value"
 ){
