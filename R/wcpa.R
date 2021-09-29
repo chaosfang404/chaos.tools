@@ -8,9 +8,9 @@
 
 wcpa = function(.data)
 {
-	as.data.table(.data) %>%
-	setnames(c("sample","resolution","normalization","chr1","chr2","interaction")) %>%
-	.[
+	dt <- as.data.table(.data) %>%
+			setnames(c("sample","resolution","normalization","chr1","chr2","interaction"))
+	dt[
 		,
 		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
 		.(sample,resolution,normalization)	
