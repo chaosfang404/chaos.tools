@@ -5,7 +5,7 @@ inter_data <- function(
 				chr = c(1:22,"X","Y"),
 				unit = "BP",
 				resolutions = 2500000,
-				file = "interchromosomal.inteactions",
+				file = NA,
 				save = FALSE
 ){
 	if(length(samples == 1))
@@ -68,7 +68,14 @@ inter_data <- function(
 
 	data
 
-	if(save){fwrite(data,file, sep = "\t")}
+	if(save){
+		if(is.na(file))
+		{
+			file <- paste0("interchromosomal.inteactions.",as.Date(Sys.time()))
+		}
+
+		fwrite(data,file, sep = "\t")
+	}
 }
 
 
@@ -136,5 +143,12 @@ intra_data <- function(
 
 	data
 
-	if(save){fwrite(data,file, sep = "\t")}
+	if(save){
+		if(is.na(file))
+		{
+			file <- paste0("intrachromosomal.inteactions.",as.Date(Sys.time()))
+		}
+
+		fwrite(data,file, sep = "\t")
+	}
 }
