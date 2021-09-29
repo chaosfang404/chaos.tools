@@ -1,7 +1,7 @@
 inter_data <- function(
 				hic_files,
 				samples = NA,
-				norms = "KR",
+				norms = c("NONE","KR"),
 				chr = c(1:22,"X","Y"),
 				unit = "BP",
 				resolutions = 2500000,
@@ -82,7 +82,7 @@ inter_data <- function(
 intra_data <- function(
 				hic_files,
 				samples = NA,
-				norms = "KR",
+				norms = c("NONE","KR"),
 				chr = c(1:22,"X","Y"),
 				unit = "BP",
 				resolutions = 2500000,
