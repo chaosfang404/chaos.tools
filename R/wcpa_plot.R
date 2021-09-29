@@ -121,7 +121,7 @@ wcpa_compare_plot <- function(
 			mutate_when(sample == control,sample = "control") %>%
 			mutate_when(sample == observe,sample = "observe") %>%
 			wider_dt(name = "sample",value = "WCPA") %>%
-			mutate_dt(overlap = observe/control) 
+			.[,overlap := observe/control] 
 
 	if(is.na(min)){min <- min(dt$overlap)}
 	if(is.na(max)){max <- max(dt$overlap)}
