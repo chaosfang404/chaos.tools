@@ -122,8 +122,8 @@ apa_compare_plot <- function(
 						legend_title = "value"
 ){
 
-	if(is.na(min)){min <- min(dt1,dt2) %>% floor()}
-	if(is.na(max)){max <- max(dt1,dt2) %>% ceiling()}
+	if(is.na(min)){min <- floor(min(dt1,dt2))}
+	if(is.na(max)){max <- ceiling(max(dt1,dt2))}
 
 	apa_plot(
 		data.table(dt1),
