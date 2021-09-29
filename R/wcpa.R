@@ -6,13 +6,14 @@
 ##' colnames is not essential.
 ##' @author Chao Fang
 
+
 wcpa = function(.data)
 {
 	setnames(
 		data.table(.data),
 		c("sample","resolution","normalization","chr1","chr2","interaction")
 	)[
-		,
+		chr1 != chr2,
 		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
 		.(sample,resolution,normalization)	
 	][
