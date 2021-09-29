@@ -2,6 +2,8 @@ exportPattern("^[[:alpha:]]+")
 
 export(wcpa)
 export("%>%")
+export(fread)
+
 import(data.table)
 import(magrittr)
 import(glue)
