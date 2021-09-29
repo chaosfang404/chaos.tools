@@ -66,8 +66,6 @@ inter_data <- function(
 		}
 	}
 
-	data
-
 	if(save){
 		if(is.na(file))
 		{
@@ -76,6 +74,8 @@ inter_data <- function(
 
 		fwrite(data,file, sep = "\t")
 	}
+
+	data
 }
 
 
@@ -141,8 +141,6 @@ intra_data <- function(
 		}
 	}
 
-	data
-
 	if(save){
 		if(is.na(file))
 		{
@@ -151,4 +149,6 @@ intra_data <- function(
 
 		fwrite(data,file, sep = "\t")
 	}
+
+	data
 }
