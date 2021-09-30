@@ -1,7 +1,3 @@
-require(data.table)
-require(magrittr)
-require(glue)
-
 longer_col = function(
 				.data,
 				column,

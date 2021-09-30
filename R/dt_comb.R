@@ -1,6 +1,3 @@
-require(magrittr)
-require(data.table)
-
 dt_comb <- function(
 				.data,
 				c2,
