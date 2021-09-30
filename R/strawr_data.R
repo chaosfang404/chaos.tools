@@ -44,8 +44,9 @@ inter_data <- function(
 													chr2loc = as.character(chr2),
 													unit = unit,
 													binsize = resolution
-												)$counts %>%
-												sum()
+												) %>%
+												replace_na_dt(to  = 0)
+												
 								data <- rbind(
 											data,
 											data.table(
@@ -54,10 +55,9 @@ inter_data <- function(
 												normalization = norm,
 												chr1 = as.character(chr1),
 												chr2 = as.character(chr2),
-												interaction = interaction
+												interaction = sum(interaction$counts)
 											)
-										) %>%
-										tidyfst::replace_na_dt(to = 0)
+										)
 							}
 						}
 					}
