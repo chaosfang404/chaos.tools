@@ -72,7 +72,7 @@ inter_data <- function(
 			file <- paste0("interchromosomal.inteactions.",as.Date(Sys.time()))
 		}
 
-		fwrite(data,file, sep = "\t")
+		fwrite(data, file, sep = "\t", col.names = F)
 	}
 
 	data
@@ -147,7 +147,7 @@ intra_data <- function(
 			file <- paste0("intrachromosomal.inteactions.",as.Date(Sys.time()))
 		}
 
-		fwrite(data,file, sep = "\t")
+		fwrite(data, file, sep = "\t", col.names = F)
 	}
 
 	data
