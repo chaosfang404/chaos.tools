@@ -39,7 +39,7 @@ wcpa = function(.data)
 wcpa_plot = function(
 				.data,
 				name = NA,
-				res = "2500000",
+				res = 2500000,
 				norm = "KR",
 				chr = c(1:22,"X","Y"),
 				axis_size = "10",
@@ -208,7 +208,7 @@ wcpa_compare_plot <- function(
 wcpa_matrix = function(
 				.data,
 				name,
-				res = "2500000",
+				res = 2500000,
 				norm = "KR",
 				chr = c(1:22,"X","Y"),
 				format = "data.table"
