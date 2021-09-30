@@ -69,7 +69,7 @@ inter_data <- function(
 	if(save){
 		if(is.na(file))
 		{
-			file <- paste0("interchromosomal.inteactions.",as.Date(Sys.time()))
+			file <- paste0("interchromosomal.interactions.",as.Date(Sys.time()))
 		}
 
 		fwrite(data, file, sep = "\t", col.names = F)
@@ -144,7 +144,7 @@ intra_data <- function(
 	if(save){
 		if(is.na(file))
 		{
-			file <- paste0("intrachromosomal.inteactions.",as.Date(Sys.time()))
+			file <- paste0("intrachromosomal.interactions.",as.Date(Sys.time()))
 		}
 
 		fwrite(data, file, sep = "\t", col.names = F)
