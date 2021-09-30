@@ -136,7 +136,7 @@ wcpa_compare_plot <- function(
 						.data,
 						control,
 						observe,
-						res = "2500000",
+						res = 2500000,
 						norm = "KR",
 						chr = c(1:22,"X","Y"),
 						axis_size = 10,
@@ -149,7 +149,9 @@ wcpa_compare_plot <- function(
 ){
 	dt <- wcpa(.data) %>%
 			.[
-				sample %in% c(observe,control),
+				sample %in% c(observe,control) &
+				normalization == norm &
+				resolution == res,
 				.(sample, chr1, chr2, WCPA)
 			] %>%
 			complete_dt(
