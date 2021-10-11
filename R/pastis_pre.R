@@ -27,7 +27,7 @@ pastis_pre <- function(
 					rev() %>%
 					.[1] %>%
 					str_replace(".hic","") %>%
-					paste0("_",res_label,"iter_",iteration)
+					paste0("_",res_label)
 	}
 
 	work_dir <- name
