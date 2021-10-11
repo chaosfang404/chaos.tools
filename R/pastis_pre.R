@@ -27,7 +27,7 @@ pastis_pre <- function(
 					rev() %>%
 					.[1] %>%
 					str_replace(".hic","") %>%
-					paste0("_",res_label)
+					paste0("_",res_label,"iter_",iteration)
 	}
 
 	work_dir <- name
@@ -149,7 +149,7 @@ pastis_pre <- function(
 		pastis_cmd
 	) %>%
 	data.table() %>%
-	write.table(paste0(file_prefix,".sh"),sep = "\t", col.names = F,row.names = F, quote = T)
+	write.table(paste0(name,".sh"),sep = "\t", col.names = F,row.names = F, quote = T)
 
-	print(paste0("All files were saved in ", work_dir))
+	print("Preparation for pastis has finished")
 }
