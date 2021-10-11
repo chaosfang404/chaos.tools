@@ -34,16 +34,18 @@ pastis_pre <- function(
 	dir.create(work_dir)
 
 	## get chr info
-	chr_size_info <- chr_size(ref = ref, extra = T) %>%
-						.[
-							,chr := str_replace(chr,"chr","")
-						][
-							chr %in% chr_list
-						][
-							,chr := factor(chr,levels = chr_list)
-						][
-							,bin_end := floor(length/resolution)
-						][]
+	chr_size_info <- chr_size(
+						ref = ref, 
+						extra = T
+					)[
+						,chr := str_replace(chr,"chr","")
+					][
+						chr %in% chr_list
+					][
+						,chr := factor(chr,levels = chr_list)
+					][
+						,bin_end := floor(length/resolution)
+					][]
 
 	## create bed file
 	bed_data <- data.table(NULL)
