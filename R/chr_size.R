@@ -1280,7 +1280,7 @@ chr_size <- function(ref = "hg19" )
 				"chr9_random",
 				"chrUn_random",
 				"chrX_random",
-				"chrY_random",
+				"chrY_random"
 			)
 		length <- c(197195432,
 					181748087,
@@ -5220,7 +5220,7 @@ chr_size <- function(ref = "hg19" )
 					22422827,
 					204112,
 					347038,
-					19517,
+					19517
 				)
 	}else if(ref == "danRer10" | ref == "GRCz10")
 	{
