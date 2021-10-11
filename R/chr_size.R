@@ -1,4 +1,4 @@
-chr_size <- function(ref = "hg19", main = TRUE)
+chr_size <- function(ref = "hg19", extra = FALSE)
 {
 	if (ref == "list")
 	{
@@ -11212,13 +11212,11 @@ chr_size <- function(ref = "hg19", main = TRUE)
 				)
 	}
 
-	chr_data <- data.table(chr,length)
-
-	if (main = T)
+	if (isTRUE(extra))
 	{
-		chr_data[!stringr::str_detect(chr,"_") & chr != "chrM"]
+		data.table(chr,length)
 	}else
 	{
-		chr_data
+		data.table(chr,length)[!stringr::str_detect(chr,"_") & chr != "chrM"]
 	}
 }
