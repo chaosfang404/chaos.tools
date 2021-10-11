@@ -10,8 +10,6 @@ pastis_pre <- function(
 
 	chr_list <- as.character(chr_list)
 
-	file_prefix <- 	paste0(work_dir,"/",name)
-
 	## create folder
 	if(is.na(name))
 	{
@@ -33,8 +31,8 @@ pastis_pre <- function(
 	}
 
 	work_dir <- name
-
 	if(!dir.exists(work_dir)){dir.create(work_dir)}
+	file_prefix <- 	paste0(work_dir,"/",name)
 
 	## get chr info
 	chr_size_info <- chr_size(
