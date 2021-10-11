@@ -151,5 +151,5 @@ pastis_pre <- function(
 	data.table() %>%
 	write.table(paste0(name,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
 
-	print("Preparation for ",name" has finished")
+	print("Preparation for ",name, " has finished")
 }
