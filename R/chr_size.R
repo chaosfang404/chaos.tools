@@ -11217,6 +11217,10 @@ chr_size <- function(ref = "hg19", extra = FALSE)
 		data.table(chr,length)
 	}else
 	{
-		data.table(chr,length)[!stringr::str_detect(chr,"_") & !stringr::str_detect(chr,"Het") & & !str_detect(chr,"chrU") & chr != "chrM"]
+		data.table(chr,length)[
+			!stringr::str_detect(chr,"_") & 
+			!stringr::str_detect(chr,"Het") & 
+			!stringr::str_detect(chr,"chrU") & 
+			chr != "chrM"]
 	}
 }
