@@ -36,7 +36,7 @@ pastis_pre <- function(
 	## get chr info
 	chr_size_info <- chr_size(ref = ref, extra = T) %>%
 						.[
-							chr := str_replace(chr,"chr","")
+							,chr := str_replace(chr,"chr","")
 						][
 							chr %in% chr_list
 						][
