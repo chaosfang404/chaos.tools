@@ -1,4 +1,4 @@
-chr_size <- function(ref == "hg19" )
+chr_size <- function(ref = "hg19" )
 {
 	if (ref == "hg19" | ref == "GRCh37")
 	{
