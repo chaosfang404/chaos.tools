@@ -1,4 +1,4 @@
-chr_size <- function(ref = "hg19" )
+chr_size <- function(ref == "hg19" )
 {
 	if (ref == "hg19" | ref == "GRCh37")
 	{
@@ -1244,7 +1244,7 @@ chr_size <- function(ref = "hg19" )
 					14945,
 					1976
 				)
-	}else if(ref = "mm9")
+	}else if(ref == "mm9")
 	{
 		chr <- c("chr1",
 				"chr2",
