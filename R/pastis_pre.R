@@ -79,9 +79,9 @@ pastis_pre <- function(
 	count_data <- data.table(NULL)
 	for (i in 1:nrow(pairs))
 	{
-		chr1 <- pairs[i,V1]
-		chr2 <- pairs[i,V2]
-		tmp <- strawr::straw("NONE",hic_file,as.character(chr1),as.character(chr2),"BP",resolution) %>% 
+		chr1 <- pairs[i,V1] %>% as.character()
+		chr2 <- pairs[i,V2] %>% as.character()
+		tmp <- strawr::straw("NONE",hic_file,chr1,chr2,"BP",resolution) %>% 
 				mutate_dt(
 					chr_x = chr1, 
 					chr_y = chr2
