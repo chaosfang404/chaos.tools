@@ -83,8 +83,8 @@ pastis_pre <- function(
 		chr2 <- pairs[i,V2] %>% as.character()
 		tmp <- strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution) %>%
 				dplyr::mutate(
-					chr_x = chr1,
-					chr_y = chr2
+					chr_x = as.character(chr1),
+					chr_y = as.character(chr2)
 				) %>%
 				left_join_dt(
 					bed_data,
