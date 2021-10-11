@@ -1,6 +1,18 @@
-chr_size <- function(ref = "hg19" )
+chr_size <- function(ref = "hg19", main = TRUE)
 {
-	if (ref == "hg19" | ref == "GRCh37")
+	if (ref == "list")
+	{
+		c("hg19", "GRCh37",
+		"hg38", "GRCh38",
+		"mm9",
+		"mm10",
+		"mm39",
+		"dm3",
+		"dm6",
+		"danRer10", "GRCz10",
+		"danRer11", "GRCz11"
+		)
+	}else if (ref == "hg19" | ref == "GRCh37")
 	{
 		chr <- c("chr1",
 				"chr2",
@@ -11200,5 +11212,13 @@ chr_size <- function(ref = "hg19" )
 				)
 	}
 
-	data.table(chr,length)
+	chr_data <- data.table(chr,length)
+
+	if (main = T)
+	{
+		chr_data[!stringr::str_detect(chr,"_") & chr != "chrM"]
+	}else
+	{
+		chr_data
+	}
 }
