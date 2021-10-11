@@ -10,6 +10,8 @@ pastis_pre <- function(
 
 	chr_list <- as.character(chr_list)
 
+	file_prefix <- 	paste0(work_dir,"/",name)
+
 	## create folder
 	if(is.na(name))
 	{
@@ -49,36 +51,28 @@ pastis_pre <- function(
 					]
 
 	## create bed file
-	bed_file <- paste0(work_dir,"/",name,".bed")
-
-	if(!file.exists(bed_file))
+	bed_data <- data.table(NULL)
+	for(i in chr_list)
 	{
-		bed_data <- data.table(NULL)
-		for(i in chr_list)
-		{
-			tmp <- data.table(
-						chr = i,
-						start = seq(0,chr_size_info[chr == i,length],resolution)
-					)[
-						,end := start + resolution - 1
-					][
-						chr == i & 
-						end > chr_size_info[chr == i,length],
-						end := chr_size_info[chr == i,length]
-					]
-			bed_data <- rbind(bed_data,tmp)
-		}
-	
-		bed_data[,bin_No := 1:.N]
-	
-		bed_data %>%
-		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
-		fwrite(paste0(work_dir,"/",name,".bed"), sep = "\t", col.names = F)
-	}else
-	{
-		bed_data <- fread(bed_file) %>%
-					setnames(c("chr", "start", "end", "bin_No"))
+		tmp <- data.table(
+					chr = i,
+					start = seq(0,chr_size_info[chr == i,length],resolution)
+				)[
+					,end := start + resolution - 1
+				][
+					chr == i & 
+					end > chr_size_info[chr == i,length],
+					end := chr_size_info[chr == i,length]
+				]
+		bed_data <- rbind(bed_data,tmp)
 	}
+
+	bed_data[,bin_No := 1:.N]
+
+	bed_data %>%
+	mutate_dt(start = format(start,scientific = F, trim = T)) %>%
+	fwrite(paste0(file_prefix,".bed"), sep = "\t", col.names = F)
+
 
 	## create chr pairs for all interaction
 	pairs <- combn(chr_list,2) %>% 
@@ -91,8 +85,9 @@ pastis_pre <- function(
 	{
 		chr1 <- pairs[i,V1] %>% as.character()
 		chr2 <- pairs[i,V2] %>% as.character()
-		tmp <- strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution) %>%
-				data.table() %>%
+		tmp <- data.table(
+					strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
+				) %>% 
 				mutate_dt(
 					chr_x = chr1,
 					chr_y = chr2
@@ -124,7 +119,7 @@ pastis_pre <- function(
 	}
 	count_data %>% 
 	arrange_dt(chr_x_bin,chr_y_bin) %>%
-	fwrite(paste0(work_dir,"/",name,".count"),sep = "\t", col.names = F)
+	fwrite(paste0(file_prefix,".count"),sep = "\t", col.names = F)
 
 	## generate config.ini
 	c("[all]",
@@ -156,7 +151,7 @@ pastis_pre <- function(
 		pastis_cmd
 	) %>%
 	data.table() %>%
-	write.table(paste0(work_dir,"/",name,".sh"),sep = "\t", col.names = F,row.names = F, quote = T)
+	write.table(paste0(file_prefix,".sh"),sep = "\t", col.names = F,row.names = F, quote = T)
 
 	print(paste0("All files were saved in ", work_dir))
 }
