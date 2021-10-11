@@ -129,5 +129,5 @@ pastis_pre <- function(
 		paste0("pastis-pm2 ",getwd(),"/",name)
 	) %>%
 	data.table() %>%
-	fwrite(paste0(name,".sh"),sep = "\t", col.names = F, qoute = F)
+	fwrite(paste0(name,".sh"),sep = "\t", col.names = F)
 }
