@@ -4,7 +4,8 @@ pastis_pre <- function(
 				ref = "hg19",
 				chr_list = c(1:22,"X","Y"),
 				resolution = 1e6,
-				iteration = 100
+				iteration = 100,
+				method = "pm2"
 ){
 
 	## create folder
@@ -31,13 +32,11 @@ pastis_pre <- function(
 	}
 
 	dir.create(work_dir)
-	setwd(work_dir)
-
 
 	## get chr info
 	chr_size_info <- chr_size(ref = ref, extra = T) %>%
 						mutate_dt(chr = str_replace(chr,"chr","")) %>%
-						.[chr %in% chr_list] %>%
+						filter_dt(chr %in% chr_list) %>%
 						mutate_dt(
 							chr = factor(chr,levels = chr_list),
 							bin_end = floor(chr_length/resolution)
@@ -64,7 +63,7 @@ pastis_pre <- function(
 
 	bed_data %>%
 	mutate_dt(start = format(start,scientific = F, trim = T)) %>%
-	fwrite(paste0(name,"bed"), sep = "\t", col.names = F)
+	fwrite(paste0(work_dir,"/",name,"bed"), sep = "\t", col.names = F)
 
 	## create chr pairs for all interaction
 	pairs <- combn(chr_list,2) %>% 
@@ -103,7 +102,7 @@ pastis_pre <- function(
 	}
 	count_data %>% 
 	arrange_dt(chr_x_bin,chr_y_bin) %>%
-	fwrite(paste0(name,".count"),sep = "\t", col.names = F)
+	fwrite(paste0(work_dir,"/",name,".count"),sep = "\t", col.names = F)
 
 	## generate config.ini
 	c("[all]",
@@ -115,7 +114,13 @@ pastis_pre <- function(
 		"normalize: True"
 	) %>%
 	data.table() %>%
-	fwrite("config.ini",sep = "\t", col.names = F)
+	fwrite(file.path(work_dir,"config.ini"),sep = "\t", col.names = F)
+
+	if (method == "mds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
+	if (method == "nmds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
+	if (method == "pm1"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
+	if (method == "pm2"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
+	if (method == "poisson"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
 
 	## generate shell scripte
 	c("#!/bin/sh",
@@ -126,8 +131,8 @@ pastis_pre <- function(
 		"#BSUB -W 360:00",
 		"",
 		"source activate env_3d",
-		paste0("pastis-pm2 ",getwd(),"/",name)
+		pastis_cmd
 	) %>%
 	data.table() %>%
-	fwrite(paste0(name,".sh"),sep = "\t", col.names = F)
+	fwrite(paste0(work_dir,"/",name,".sh"),sep = "\t", col.names = F)
 }
