@@ -45,7 +45,7 @@ pastis_pre <- function(
 						,chr := factor(chr,levels = chr_list)
 					][
 						,bin_end := floor(length/resolution)
-					][]
+					]
 
 	## create bed file
 	bed_data <- data.table(NULL)
@@ -54,14 +54,13 @@ pastis_pre <- function(
 		tmp <- data.table(
 					chr = i,
 					start = seq(0,chr_size_info[chr == i,length],resolution)
-				) %>% 
-				.[
+				)[
 					,end := start + resolution - 1
 				][
 					chr == i & 
 					end > chr_size_info[chr == i,length],
 					end := chr_size_info[chr == i,length]
-				][]
+				]
 		bed_data <- rbind(bed_data,tmp)
 	}
 
