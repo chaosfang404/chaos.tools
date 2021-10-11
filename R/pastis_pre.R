@@ -36,6 +36,7 @@ pastis_pre <- function(
 
 	## get chr info
 	chr_size_info <- chr_size(ref = ref, extra = T) %>%
+						mutate_dt(chr = str_replace(chr,"chr",""))
 						filter_dt(chr %in% chr_list) %>%
 						mutate_dt(
 							chr = factor(chr,levels = chr_list)
@@ -98,7 +99,7 @@ pastis_pre <- function(
 				) %>% 
 				rename_dt(chr_y_bin = bin_No) %>%
 				.[, .(chr_x_bin, chr_y_bin, counts)]
-					count_data <- rbind(count_data,tmp)
+		count_data <- rbind(count_data,tmp)
 	}
 	count_data %>% 
 	arrange_dt(chr_x_bin,chr_y_bin) %>%
@@ -121,12 +122,12 @@ pastis_pre <- function(
 		paste0("#BSUB -J ",name,"_pastis"),
 		"#BSUB -q ser",
 		"#BSUB -n 1",
-		"#BSUB -R "span[ptile=40]"",
+		'#BSUB -R "span[ptile=40]"',
 		"#BSUB -W 360:00",
 		"",
 		"source activate env_3d",
 		paste0("pastis-pm2 ",getwd(),"/",name)
 	) %>%
 	data.table() %>%
-	fwrite(paste0(name,".sh"),sep = "\t", col.names = F)
+	fwrite(paste0(name,".sh"),sep = "\t", col.names = F, qoute = F)
 }
