@@ -36,12 +36,12 @@ pastis_pre <- function(
 
 	## get chr info
 	chr_size_info <- chr_size(ref = ref, extra = T) %>%
-						mutate_dt(chr = str_replace(chr,"chr",""))
+						mutate_dt(chr = str_replace(chr,"chr","")) %>%
 						filter_dt(chr %in% chr_list) %>%
 						mutate_dt(
-							chr = factor(chr,levels = chr_list)
-						) %>%
-						mutate_dt(bin_end = floor(chr_length/resolution))
+							chr = factor(chr,levels = chr_list),
+							bin_end = floor(chr_length/resolution))
+						)
 
 	## create bed file
 	bed_data <- data.table(NULL)
