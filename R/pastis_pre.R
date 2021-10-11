@@ -6,7 +6,7 @@ pastis_pre <- function(
 				resolution = 1e6,
 				iteration = 100
 ){
-	
+
 	## create folder
 	if(is.na(name))
 	{
@@ -37,7 +37,7 @@ pastis_pre <- function(
 	## get chr info
 	chr_size_info <- chr_size(ref = ref, extra = T) %>%
 						mutate_dt(chr = str_replace(chr,"chr","")) %>%
-						filter_dt(chr %in% chr_list) %>%
+						.[chr %in% chr_list] %>%
 						mutate_dt(
 							chr = factor(chr,levels = chr_list),
 							bin_end = floor(chr_length/resolution)
