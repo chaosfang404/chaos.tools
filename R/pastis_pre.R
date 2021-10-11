@@ -31,7 +31,7 @@ pastis_pre <- function(
 		work_dir <- name
 	}
 
-	dir.create(work_dir)
+	if(!dir.exists(work_dir)){dir.create(work_dir)}
 
 	## get chr info
 	chr_size_info <- chr_size(
@@ -91,7 +91,7 @@ pastis_pre <- function(
 				)[
 					,chr_x := chr1
 				][ 
-					,chr_y = chr2
+					,chr_y := chr2
 				][] %>%
 				left_join_dt(
 					bed_data,
