@@ -142,7 +142,7 @@ pastis_pre <- function(
 
 	## generate shell scripte
 	c("#!/bin/sh",
-		paste0("#BSUB -J ",name,"_pastis"),
+		paste0("#BSUB -J ",name,".iter_",iteration, "_pastis"),
 		"#BSUB -q ser",
 		"#BSUB -n 1",
 		'#BSUB -R "span[ptile=40]"',
