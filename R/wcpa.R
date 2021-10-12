@@ -7,188 +7,175 @@
 ##' @author Chao Fang
 
 
-# wcpa_data <- function(
-# 				hic_file,
-# 				name = NA,
-# 				norm = "NONE",
-# 				chr_list = c(1:22,"X","Y"),
-# 				resolution = 2.5e6
-# ){
-# 	chr_list <- as.character(chr_list)
-# 
-# 	if(is.na(name))
-# 	{
-# 		name <- basename(hic_file,".hic")
-# 	}
-# 
-# 	res_label <- resolution %>%
-# 					format(
-# 						scientific = F,
-# 						trim = T
-# 					)
-# 
-# 	count_data <- data.table(NULL)
-# 	for(chr1 in chr_list)
-# 	{
-# 		for(chr2 in chr_list)
-# 		{
-# 			if(chr1 != chr2)
-# 			{
-# 				tmp <- data.table(
-# 							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
-# 						)[
-# 							,counts
-# 						] %>%
-# 						sum()
-# 				count_data <- rbind(
-# 									count_data,
-# 									data.table(
-# 										sample = name,
-# 										resolution = resolution,
-# 										normalization = norm,
-# 										chr1 = str_replace(chr1,"chr",""),
-# 										chr2 = str_replace(chr2,"chr",""),
-# 										interaction = tmp
-# 									)
-# 								)
-# 			}
-# 		}
-# 	}
-# 	count_data
-# }
+wcpa_pre <- function(
+				hic_file,
+				name = NA,
+				norm = "NONE",
+				chr_list = c(1:22,"X","Y"),
+				resolution = 2.5e6
+){
+	chr_list <- as.character(chr_list)
+
+	if(is.na(name))
+	{
+		name <- basename(hic_file,".hic")
+	}
+
+	res_label <- resolution %>%
+					format(
+						scientific = F,
+						trim = T
+					)
+
+	count_data <- data.table(NULL)
+	for(chr1 in chr_list)
+	{
+		for(chr2 in chr_list)
+		{
+			if(chr1 != chr2)
+			{
+				tmp <- data.table(
+							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
+						)[
+							,counts
+						] %>%
+						sum()
+				count_data <- rbind(
+									count_data,
+									data.table(
+										sample = name,
+										resolution = resolution,
+										normalization = norm,
+										chr1 = str_replace(chr1,"chr",""),
+										chr2 = str_replace(chr2,"chr",""),
+										interaction = tmp
+									)
+								)
+			}
+		}
+	}
+	count_data
+}
 
 
-# wcpa <- function(.data)
-# {
-# 	dt <- data.table(.data) %>%
-# 			setnames(
-# 				c("sample","resolution","normalization","chr1","chr2","interaction")
-# 		)
-# 	dt[
-# 		chr1 != chr2
-# 	][
-# 		,
-# 		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-# 		.(sample,resolution,normalization)
-# 	][
-# 		,
-# 		.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
-# 		.(sample,resolution,normalization,chr1)
-# 	][
-# 		,
-# 		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
-# 		.(sample,resolution,normalization,chr2)
-# 	][
-# 		,
-# 		.(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
-# 	][
-# 		order(sample,resolution,normalization,chr1,chr2)
-# 	][
-# 		,
-# 		WCPA := interaction/(((chr1_total/sample_total)*(chr2_total/(sample_total - chr1_total)) + (chr2_total/sample_total)*(chr1_total/(sample_total - chr2_total))) * sample_total/2)
-# 	]
-# }
+wcpa <- function(
+			hic_file,
+			name = NA,
+			norm = "NONE",
+			chr_list = c(1:22,"X","Y"),
+			resolution = 2.5e6
+){
+	wcpa_pre(
+		hic_file = hic_file,
+		name = name,
+		norm = norm,
+		chr_list = chr_list,
+		resolution = resolution
+	)[
+		chr1 != chr2
+	][
+		,
+		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
+		.(sample,resolution,normalization)
+	][
+		,
+		.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
+		.(sample,resolution,normalization,chr1)
+	][
+		,
+		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
+		.(sample,resolution,normalization,chr2)
+	][
+		,
+		.(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
+	][
+		order(sample,resolution,normalization,chr1,chr2)
+	][
+		,
+		WCPA := interaction/(((chr1_total/sample_total)*(chr2_total/(sample_total - chr1_total)) + (chr2_total/sample_total)*(chr1_total/(sample_total - chr2_total))) * sample_total/2)
+	][]
+}
 
+wcpa_plot <- function(
+				hic_file,
+				name = NA,
+				resolution = 2.5e6,
+				norm = "NONE",
+				chr_list = c(1:22,"X","Y"),
+				axis_size = "10",
+				border_color = "#FFFFFF",
+				scales = "fixed",
+				legend_breaks = NA,
+				min_color = "#3c5488",
+				mid_color = "#FFFFFF",
+				max_color = "#e64b35"
+){
+	chr_list <- as.character(chr_list)
+	if(is.na(name)){name <- basename(hic_file,".hic")}
 
-# wcpa_plot <- function(
-# 				.data,
-# 				name = NA,
-# 				resolution = 2.5e6,
-# 				norm = "NONE",
-# 				chr_list = c(1:22,"X","Y"),
-# 				axis_size = "10",
-# 				border_color = "#FFFFFF",
-# 				scales = "fixed",
-# 				legend_breaks = NA,
-# 				min_color = "#3c5488",
-# 				mid_color = "#FFFFFF",
-# 				max_color = "#e64b35"
-# ){
-# 	chr_list <- as.character(chr_list)
-# 
-# 	dt <- wcpa(.data)[
-# 				resolution == resolution & normalization == norm,
-# 				.(sample, chr1, chr2, WCPA)
-# 			]
-# 
-# 	if(length(name) == 1)
-# 	{
-# 		if(is.na(name))
-# 		{
-# 			name <- dt[,sample] %>% unique()
-# 		}
-# 	}
-# 
-# 	if(length(legend_breaks) == 1)
-# 	{
-# 		if(is.na(legend_breaks))
-# 		{
-# 			legend_breaks <- seq(
-# 								min(dt[,WCPA]),
-# 								max(dt[,WCPA]),
-# 								(max(dt[,WCPA]) - min(dt[,WCPA]))/4,
-# 							) %>%
-# 							round(2)
-# 		}
-# 	}
-# 
-# 	p_base <- dt[sample %in% name] %>%
-# 				complete_dt(
-# 					sample = name,
-# 					chr1 = chr,
-# 					chr2 = chr,
-# 					fill = NA
-# 				) %>%
-# 				.[
-# 					,sample := factor(sample, levels = name)
-# 				][
-# 					,chr1 := factor(chr1, levels = chr)
-# 				][
-# 					,chr2 := factor(chr2, levels = rev(chr))
-# 				] %>%
-# 				ggplot(aes(chr1,chr2,fill = WCPA)) + 
-# 				geom_tile(
-# 					color = border_color,
-# 					size = 0.2
-# 				) + 
-# 				scale_fill_gradient2(
-# 					low = min_color,
-# 					mid = mid_color,
-# 					high = max_color,
-# 					midpoint = mean(c(min(dt[,WCPA]),max(dt[,WCPA]))),
-# 					breaks = legend_breaks
-# 				) + 
-# 				labs(
-# 					x = element_blank(),
-# 					y = element_blank()
-# 				) + 
-# 				theme(
-# 					plot.background = element_blank(),
-# 					panel.grid.major = element_blank(),
-# 					panel.background = element_blank(),
-# 					panel.grid.minor = element_blank(),
-# 					axis.ticks.x = element_blank(), 
-# 					axis.ticks.y = element_blank(),
-# 					axis.text.x = element_text(size = axis_size),
-# 					axis.text.y = element_text(size = axis_size),
-# 					legend.key.widt = unit(0.4,"cm"),
-# 					legend.title = element_blank()
-# 				)
-# 
-# 	if(length(name) == 1)
-# 	{
-# 		p_base
-# 
-# 	}else
-# 	{
-# 		p_base + 
-# 		facet_wrap(
-# 			~sample,
-# 			ncol = 2,
-# 			scales = scales
-# 		)
-# 	}
-# }
+	dt <- wcpa(
+			hic_file = hic_file,
+			name = name,
+			norm = norm,
+			chr_list = chr_list,
+			resolution = resolution
+		)[
+			resolution == resolution & normalization == norm,
+			.(chr1, chr2, WCPA)
+		]
+
+	if(length(legend_breaks) == 1)
+	{
+		if(is.na(legend_breaks))
+		{
+			legend_breaks <- seq(
+								min(dt[,WCPA]),
+								max(dt[,WCPA]),
+								(max(dt[,WCPA]) - min(dt[,WCPA]))/4,
+							) %>%
+							round(2)
+		}
+	}
+
+	complete_dt(
+		dt,
+		chr1 = chr_list,
+		chr2 = chr_list,
+		fill = NA
+	)[
+		,chr1 := factor(chr1, levels = chr_list)
+	][
+		,chr2 := factor(chr2, levels = rev(chr_list))
+	] %>%
+	ggplot(aes(chr1,chr2,fill = WCPA)) + 
+	geom_tile(
+		color = border_color,
+		size = 0.2
+	) + 
+	scale_fill_gradient2(
+		low = min_color,
+		mid = mid_color,
+		high = max_color,
+		midpoint = mean(c(min(dt[,WCPA]),max(dt[,WCPA]))),
+		breaks = legend_breaks
+	) + 
+	labs(
+		x = element_blank(),
+		y = element_blank()
+	) + 
+	theme(
+		plot.background = element_blank(),
+		panel.grid.major = element_blank(),
+		panel.background = element_blank(),
+		panel.grid.minor = element_blank(),
+		axis.ticks.x = element_blank(), 
+		axis.ticks.y = element_blank(),
+		axis.text.x = element_text(size = axis_size),
+		axis.text.y = element_text(size = axis_size),
+		legend.key.widt = unit(0.4,"cm"),
+		legend.title = element_blank()
+	)
+}
 
 
 
@@ -263,34 +250,36 @@
 # 		legend.key.widt = unit(0.4,"cm")
 # 	) 
 # }
-
-
-#wcpa_matrix <- function(
-#				.data,
-#				name,
-#				res = 2500000,
-#				norm = "KR",
-#				chr = c(1:22,"X","Y")
-#){
-#	dt <- wcpa(.data)[
-#				sample == name & 
-#				resolution == res &
-#				normalization == norm &
-#				chr1 %in% chr & 
-#				chr2 %in% chr
-#		][
-#			, 
-#			.(
-#				chr1 = factor(chr1,levels = chr),
-#				chr2 = factor(chr2,levels = chr),
-#				WCPA
-#			)
-#		] %>%
-#		melt(
-#			"chr1",
-#			variable.name = "chr2",
-#			value.name = "WCPA"
-#		) %>%
-#		setnames("chr","chr1")
-#	dt
-#}
+# 
+# 
+# wcpa_matrix <- function(
+# 				hic_file,
+# 				name = NA,
+# 				res = 2500000,
+# 				norm = "KR",
+# 				chr = c(1:22,"X","Y")
+# ){
+# 	if(is.na(name)){name <- basename(hic_file,".hic")}
+# 
+# 	dt <- wcpa(.data)[
+# 				sample == name & 
+# 				resolution == res &
+# 				normalization == norm &
+# 				chr1 %in% chr & 
+# 				chr2 %in% chr
+# 		][
+# 			, 
+# 			.(
+# 				chr1 = factor(chr1,levels = chr),
+# 				chr2 = factor(chr2,levels = chr),
+# 				WCPA
+# 			)
+# 		] %>%
+# 		melt(
+# 			"chr1",
+# 			variable.name = "chr2",
+# 			value.name = "WCPA"
+# 		) %>%
+# 		setnames("chr","chr1")
+# 	dt
+# }
