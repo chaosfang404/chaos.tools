@@ -7,55 +7,55 @@
 ##' @author Chao Fang
 
 
-wcpa_data <- function(
-				hic_file,
-				name = NA,
-				norm = "NONE",
-				chr_list = c(1:22,"X","Y"),
-				resolution = 2.5e6
-){
-	chr_list <- as.character(chr_list)
-
-	if(is.na(name))
-	{
-		name <- basename(hic_file,".hic")
-	}
-
-	res_label <- resolution %>%
-					format(
-						scientific = F,
-						trim = T
-					)
-
-	count_data <- data.table(NULL)
-	for(chr1 in chr_list)
-	{
-		for(chr2 in chr_list)
-		{
-			if(chr1 != chr2)
-			{
-				tmp <- data.table(
-							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
-						)[
-							,counts
-						] %>%
-						sum()
-				count_data <- rbind(
-									count_data,
-									data.table(
-										sample = name,
-										resolution = resolution,
-										normalization = norm,
-										chr1 = str_replace(chr1,"chr",""),
-										chr2 = str_replace(chr2,"chr",""),
-										interaction = tmp
-									)
-								)
-			}
-		}
-	}
-	count_data
-}
+# wcpa_data <- function(
+# 				hic_file,
+# 				name = NA,
+# 				norm = "NONE",
+# 				chr_list = c(1:22,"X","Y"),
+# 				resolution = 2.5e6
+# ){
+# 	chr_list <- as.character(chr_list)
+# 
+# 	if(is.na(name))
+# 	{
+# 		name <- basename(hic_file,".hic")
+# 	}
+# 
+# 	res_label <- resolution %>%
+# 					format(
+# 						scientific = F,
+# 						trim = T
+# 					)
+# 
+# 	count_data <- data.table(NULL)
+# 	for(chr1 in chr_list)
+# 	{
+# 		for(chr2 in chr_list)
+# 		{
+# 			if(chr1 != chr2)
+# 			{
+# 				tmp <- data.table(
+# 							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
+# 						)[
+# 							,counts
+# 						] %>%
+# 						sum()
+# 				count_data <- rbind(
+# 									count_data,
+# 									data.table(
+# 										sample = name,
+# 										resolution = resolution,
+# 										normalization = norm,
+# 										chr1 = str_replace(chr1,"chr",""),
+# 										chr2 = str_replace(chr2,"chr",""),
+# 										interaction = tmp
+# 									)
+# 								)
+# 			}
+# 		}
+# 	}
+# 	count_data
+# }
 
 
 wcpa <- function(.data)
