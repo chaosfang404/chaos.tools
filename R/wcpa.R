@@ -210,8 +210,7 @@ wcpa_matrix <- function(
 				name,
 				res = 2500000,
 				norm = "KR",
-				chr = c(1:22,"X","Y"),
-				format = "data.table"
+				chr = c(1:22,"X","Y")
 ){
 	wcpa(.data)[
 			sample == name & 
@@ -227,7 +226,7 @@ wcpa_matrix <- function(
 			WCPA
 		)
 	] %>%
-	tidyfst::wider_dt(
+	wider_dt(
 		chr1,
 		name = "chr2",
 		value = "WCPA"
