@@ -9,6 +9,7 @@ pastis_pre <- function(
 ){
 
 	chr_list <- as.character(chr_list)
+	iter_label <- paste0("iter_",iteration)
 
 	## create folder
 	if(is.na(name))
@@ -26,7 +27,7 @@ pastis_pre <- function(
 					paste0("_",res_label)
 	}
 
-	work_dir <- name
+	work_dir <- paste0(name,"_iter_",iteration)
 	if(!dir.exists(work_dir)){dir.create(work_dir)}
 	file_prefix <- 	paste0(work_dir,"/",name)
 
@@ -123,7 +124,7 @@ pastis_pre <- function(
 
 	## generate config.ini
 	c("[all]",
-		paste0("output_name: structure.iter_",iteration),
+		"output_name: structure",
 		"verbose: 0",
 		paste0("max_iter: ", iteration),
 		paste0("counts: ", name, ".count"),
@@ -151,7 +152,7 @@ pastis_pre <- function(
 		pastis_cmd
 	) %>%
 	data.table() %>%
-	write.table(paste0(name,"iter_",iteration,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
+	write.table(paste0(name,".iter_",iteration,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
 
-	print(paste0("Preparation for ", name, " has finished"))
+	print(paste0("Preparation for ", name,".iter_",iteration, " has finished"))
 }
