@@ -265,13 +265,13 @@ wcpa_compare_plot <- function(
 }
 
 
-wcpa_matrix <- function(
-				.data,
-				name,
-				res = 2500000,
-				norm = "KR",
-				chr = c(1:22,"X","Y")
-){
+## wcpa_matrix <- function(
+## 				.data,
+## 				name,
+## 				res = 2500000,
+## 				norm = "KR",
+## 				chr = c(1:22,"X","Y")
+## ){
 	dt <- wcpa(.data)[
 				sample == name & 
 				resolution == res &
@@ -293,4 +293,4 @@ wcpa_matrix <- function(
 		) %>%
 		setnames("chr","chr1")
 	dt
-}
+## }
