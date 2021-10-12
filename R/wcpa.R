@@ -9,8 +9,10 @@
 
 wcpa <- function(.data)
 {
+	data.table(
+		.data
+	) %>%
 	setnames(
-		data.table(.data),
 		c("sample","resolution","normalization","chr1","chr2","interaction")
 	)[
 		chr1 != chr2,
@@ -83,9 +85,13 @@ wcpa_plot <- function(
 					chr2 = chr,
 					fill = NA
 				) %>%
-				.[,sample := factor(sample, levels = name)] %>%
-				.[,chr1 := factor(chr1, levels = chr)] %>%
-				.[,chr2 := factor(chr2, levels = rev(chr))] %>%
+				.[
+					,sample := factor(sample, levels = name)
+				][
+					,chr1 := factor(chr1, levels = chr)
+				][
+					,chr2 := factor(chr2, levels = rev(chr))
+				] %>%
 				ggplot(aes(chr1,chr2,fill = WCPA)) + 
 				geom_tile(
 					color = border_color,
@@ -226,10 +232,11 @@ wcpa_matrix <- function(
 			WCPA
 		)
 	] %>%
-	wider_dt(
-		chr1,
-		name = "chr2",
-		value = "WCPA"
+	melt(
+		"chr1",
+		variable.name = "chr2",
+		value.name = "WCPA"
 	) %>%
-	rename_dt(chr = chr1)
+	setnames("chr","chr1") %>%
+	.[]
 }
