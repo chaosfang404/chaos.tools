@@ -118,6 +118,7 @@ pastis_pre <- function(
 			count_data <- rbind(count_data,tmp)
 		}
 		count_data %>% 
+		filter_dt(chr_x_bin != chr_y_bin) %>%
 		arrange_dt(chr_x_bin,chr_y_bin) %>%
 		fwrite(count_file,sep = "\t", col.names = F)
 	}
