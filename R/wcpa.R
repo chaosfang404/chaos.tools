@@ -16,7 +16,7 @@ wcpa_pre <- function(
 
 	if(is.na(name))
 	{
-		name <- basename(hic_file,".hic")
+		name <- base_name(hic_file,".hic")
 	}
 
 	res_label <- resolution %>%
@@ -228,8 +228,8 @@ wcpa_compare_plot <- function(
 						max = NA,
 						max_color = "#e64b35"
 ){
-	if(is.na(control_name)){control_name <- basename(control_hic,".hic")}
-	if(is.na(observe_name)){observe_name <- basename(observe_hic,".hic")}
+	if(is.na(control_name)){control_name <- base_name(control_hic,".hic")}
+	if(is.na(observe_name)){observe_name <- base_name(observe_hic,".hic")}
 
 	control_matrix <- wcpa_matrix(
 						control_hic,
