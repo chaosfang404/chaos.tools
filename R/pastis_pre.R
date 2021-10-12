@@ -134,11 +134,11 @@ pastis_pre <- function(
 	data.table() %>%
 	fwrite(file.path(work_dir,"config.ini"),sep = "\t", col.names = F)
 
-	if (method == "mds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
-	if (method == "nmds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
-	if (method == "pm1"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
-	if (method == "pm2"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
-	if (method == "poisson"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", name)}
+	if (method == "mds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", work_dir)}
+	if (method == "nmds"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", work_dir)}
+	if (method == "pm1"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", work_dir)}
+	if (method == "pm2"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", work_dir)}
+	if (method == "poisson"){pastis_cmd <- paste0("pastis-", method, " ", getwd(), "/", work_dir)}
 
 	## generate shell scripte
 	c("#!/bin/sh",
