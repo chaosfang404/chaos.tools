@@ -7,7 +7,7 @@
 ##' @author Chao Fang
 
 
-wcpa = function(.data)
+wcpa <- function(.data)
 {
 	setnames(
 		data.table(.data),
@@ -36,7 +36,7 @@ wcpa = function(.data)
 }
 
 
-wcpa_plot = function(
+wcpa_plot <- function(
 				.data,
 				name = NA,
 				res = 2500000,
@@ -205,7 +205,7 @@ wcpa_compare_plot <- function(
 }
 
 
-wcpa_matrix = function(
+wcpa_matrix <- function(
 				.data,
 				name,
 				res = 2500000,

@@ -1,4 +1,4 @@
-separate_col = function(
+separate_col <- function(
 					.data,
 					column,
 					into = "tmp_splited_columns_names",
@@ -28,16 +28,15 @@ separate_col = function(
 
 	if(remove)
 	{
-		.data %>%
-			as.data.table %>%
-			.[,(column):=NULL] %>%
-			.[,names(split_columns):=split_columns] %>%
-			.[]
+		data.table(.data)[
+			,(column) := NULL
+		][
+			,names(split_columns) := split_columns
+		][]
 	} else
 	{
-		data %>%
-			as.data.table %>%
-			.[,names(split_columns):=split_columns] %>%
-			.[]
+		data.table(.data)[
+			,names(split_columns) := split_columns
+		][]
 	}
 }

@@ -49,27 +49,30 @@ pastis_pre <- function(
 					]
 
 	## create bed file
-	bed_data <- data.table(NULL)
-	for(i in chr_list)
+	bed_file <- paste0(file_prefix,".bed")
+	if(!file.exists(bed_file))
 	{
-		tmp <- data.table(
-					chr = i,
-					start = seq(0,chr_size_info[chr == i,length],resolution)
-				)[
-					,end := start + resolution - 1
-				][
-					chr == i & 
-					end > chr_size_info[chr == i,length],
-					end := chr_size_info[chr == i,length]
-				]
-		bed_data <- rbind(bed_data,tmp)
-	}
+		bed_data <- data.table(NULL)
+		for(i in chr_list)
+		{
+			tmp <- data.table(
+						chr = i,
+						start = seq(0,chr_size_info[chr == i,length],resolution)
+					)[
+						,end := start + resolution - 1
+					][
+						chr == i & 
+						end > chr_size_info[chr == i,length],
+						end := chr_size_info[chr == i,length]
+					]
+			bed_data <- rbind(bed_data,tmp)
+		}
 
-	bed_data[,bin_No := 1:.N]
+		bed_data[,bin_No := 1:.N]
 
-	bed_data %>%
-	mutate_dt(start = format(start,scientific = F, trim = T)) %>%
-	fwrite(paste0(file_prefix,".bed"), sep = "\t", col.names = F)
+		bed_data %>%
+		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
+		fwrite(bed_file, sep = "\t", col.names = F)
 
 
 	## create chr pairs for all interaction
@@ -121,7 +124,7 @@ pastis_pre <- function(
 
 	## generate config.ini
 	c("[all]",
-		"output_name: structure",
+		paste0("output_name: structure.iter_",iteration),
 		"verbose: 0",
 		paste0("max_iter: ", iteration),
 		paste0("counts: ", name, ".count"),
@@ -151,5 +154,5 @@ pastis_pre <- function(
 	data.table() %>%
 	write.table(paste0(name,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
 
-	print("Preparation for ",name, " has finished")
+	print(paste0("Preparation for ", name, " has finished"))
 }
