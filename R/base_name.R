@@ -1,4 +1,4 @@
-basename <- function(
+base_name <- function(
 				full_name,
 				ext = NA
 ){
