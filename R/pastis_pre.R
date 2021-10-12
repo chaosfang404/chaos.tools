@@ -22,11 +22,7 @@ pastis_pre <- function(
 		}
 
 		name <- hic_file %>% 
-					str_split("/") %>%
-					unlist() %>%
-					rev() %>%
-					.[1] %>%
-					str_replace(".hic","") %>%
+					basename() %>%
 					paste0("_",res_label)
 	}
 

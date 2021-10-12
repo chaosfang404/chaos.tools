@@ -7,17 +7,69 @@
 ##' @author Chao Fang
 
 
+wcpa_data <- function(
+				hic_file,
+				name = NA,
+				norm = "NONE",
+				chr_list = c(1:22,"X","Y"),
+				resolution = 2.5e6
+){
+	chr_list <- as.character(chr_list)
+
+	if(is.na(name))
+	{
+		name <- basename(hic_file,".hic")
+	}
+
+	res_label <- resolution %>%
+					format(
+						scientific = F,
+						trim = T
+					)
+
+	count_data <- data.table(NULL)
+	for(chr1 in chr_list)
+	{
+		for(chr2 in chr_list)
+		{
+			if(chr1 != chr2)
+			{
+				tmp <- data.table(
+							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
+						)[
+							,counts
+						] %>%
+						sum()
+				count_data <- rbind(
+									count_data,
+									data.table(
+										sample = name,
+										resolution = resolution,
+										normalization = norm,
+										chr1 = str_replace(chr1,"chr",""),
+										chr2 = str_replace(chr2,"chr",""),
+										interaction = tmp
+									)
+								)
+			}
+		}
+	}
+	count_data
+}
+
+
 wcpa <- function(.data)
 {
-	data.table(
-		.data
-	) %>%
-	setnames(
-		c("sample","resolution","normalization","chr1","chr2","interaction")
-	)[
-		chr1 != chr2,
+	dt <- data.table(.data) %>%
+			setnames(
+				c("sample","resolution","normalization","chr1","chr2","interaction")
+		)
+	dt[
+		chr1 != chr2
+	][
+		,
 		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-		.(sample,resolution,normalization)	
+		.(sample,resolution,normalization)
 	][
 		,
 		.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
@@ -34,16 +86,16 @@ wcpa <- function(.data)
 	][
 		,
 		WCPA := interaction/(((chr1_total/sample_total)*(chr2_total/(sample_total - chr1_total)) + (chr2_total/sample_total)*(chr1_total/(sample_total - chr2_total))) * sample_total/2)
-	][]
+	]
 }
 
 
 wcpa_plot <- function(
 				.data,
 				name = NA,
-				res = 2500000,
-				norm = "KR",
-				chr = c(1:22,"X","Y"),
+				resolution = 2.5e6,
+				norm = "NONE",
+				chr_list = c(1:22,"X","Y"),
 				axis_size = "10",
 				border_color = "#FFFFFF",
 				scales = "fixed",
@@ -52,12 +104,14 @@ wcpa_plot <- function(
 				mid_color = "#FFFFFF",
 				max_color = "#e64b35"
 ){
+	chr_list <- as.character(chr_list)
+
 	dt <- wcpa(.data)[
-				resolution == res & normalization == norm,
+				resolution == resolution & normalization == norm,
 				.(sample, chr1, chr2, WCPA)
 			]
 
-	if(length(name) ==1)
+	if(length(name) == 1)
 	{
 		if(is.na(name))
 		{
@@ -65,7 +119,7 @@ wcpa_plot <- function(
 		}
 	}
 
-	if(length(legend_breaks) ==1)
+	if(length(legend_breaks) == 1)
 	{
 		if(is.na(legend_breaks))
 		{
