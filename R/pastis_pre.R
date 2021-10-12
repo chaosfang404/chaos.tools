@@ -72,51 +72,54 @@ pastis_pre <- function(
 	}
 
 	## create chr pairs for all interaction
-	pairs <- combn(chr_list,2) %>% 
-				t() %>% 
-				rbind(data.table(V1=chr_list,V2 = chr_list))
-
-	## create count data from .hic
-	count_data <- data.table(NULL)
-	for (i in 1:nrow(pairs))
+	count_file <- paste0(file_prefix,".count")
+	if(!file.exists(count_file))
 	{
-		chr1 <- pairs[i,V1] %>% as.character()
-		chr2 <- pairs[i,V2] %>% as.character()
-		tmp <- data.table(
-					strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
-				)[
-					,chr_x := chr1
-				][
-					,chr_y := chr2
-				] %>%
-				left_join_dt(
-					bed_data,
-					by = c(
-						"chr_x" = "chr",
-						"x" = "start"
+		pairs <- combn(chr_list,2) %>% 
+					t() %>% 
+					rbind(data.table(V1=chr_list,V2 = chr_list))
+
+		count_data <- data.table(NULL)
+		for (i in 1:nrow(pairs))
+		{
+			chr1 <- pairs[i,V1] %>% as.character()
+			chr2 <- pairs[i,V2] %>% as.character()
+			tmp <- data.table(
+						strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
+					)[
+						,chr_x := chr1
+					][
+						,chr_y := chr2
+					] %>%
+					left_join_dt(
+						bed_data,
+						by = c(
+							"chr_x" = "chr",
+							"x" = "start"
+						)
+					) %>% 
+					rename_dt(chr_x_bin = bin_No) %>%
+					left_join_dt(
+						bed_data,
+						by = c(
+							"chr_y" = "chr",
+							"y" = "start"
+						)
+					) %>% 
+					rename_dt(
+						chr_y_bin = bin_No
+					) %>%
+					select_dt(
+						chr_x_bin,
+						chr_y_bin,
+						counts
 					)
-				) %>% 
-				rename_dt(chr_x_bin = bin_No) %>%
-				left_join_dt(
-					bed_data,
-					by = c(
-						"chr_y" = "chr",
-						"y" = "start"
-					)
-				) %>% 
-				rename_dt(
-					chr_y_bin = bin_No
-				) %>%
-				select_dt(
-					chr_x_bin,
-					chr_y_bin,
-					counts
-				)
-		count_data <- rbind(count_data,tmp)
+			count_data <- rbind(count_data,tmp)
+		}
+		count_data %>% 
+		arrange_dt(chr_x_bin,chr_y_bin) %>%
+		fwrite(count_file,sep = "\t", col.names = F)
 	}
-	count_data %>% 
-	arrange_dt(chr_x_bin,chr_y_bin) %>%
-	fwrite(paste0(file_prefix,".count"),sep = "\t", col.names = F)
 
 	## generate config.ini
 	c("[all]",
@@ -148,7 +151,7 @@ pastis_pre <- function(
 		pastis_cmd
 	) %>%
 	data.table() %>%
-	write.table(paste0(name,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
+	write.table(paste0(name,"iter_",iteration,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
 
 	print(paste0("Preparation for ", name, " has finished"))
 }
