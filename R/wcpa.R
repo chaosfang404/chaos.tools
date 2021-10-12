@@ -1,10 +1,3 @@
-##' @title WCPA(Whole Chromosomal Positioning analysis)
-##' @description calculation of WCPA with interaction data.
-##' interaction data is extracted with straw from .hic files.
-##' only .hic file is accepted.
-##' @author Chao Fang
-
-
 wcpa_pre <- function(
 				hic_file,
 				name = NA,
