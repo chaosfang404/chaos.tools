@@ -90,105 +90,105 @@
 # }
 
 
-wcpa_plot <- function(
-				.data,
-				name = NA,
-				resolution = 2.5e6,
-				norm = "NONE",
-				chr_list = c(1:22,"X","Y"),
-				axis_size = "10",
-				border_color = "#FFFFFF",
-				scales = "fixed",
-				legend_breaks = NA,
-				min_color = "#3c5488",
-				mid_color = "#FFFFFF",
-				max_color = "#e64b35"
-){
-	chr_list <- as.character(chr_list)
-
-	dt <- wcpa(.data)[
-				resolution == resolution & normalization == norm,
-				.(sample, chr1, chr2, WCPA)
-			]
-
-	if(length(name) == 1)
-	{
-		if(is.na(name))
-		{
-			name <- dt[,sample] %>% unique()
-		}
-	}
-
-	if(length(legend_breaks) == 1)
-	{
-		if(is.na(legend_breaks))
-		{
-			legend_breaks <- seq(
-								min(dt[,WCPA]),
-								max(dt[,WCPA]),
-								(max(dt[,WCPA]) - min(dt[,WCPA]))/4,
-							) %>%
-							round(2)
-		}
-	}
-
-	p_base <- dt[sample %in% name] %>%
-				complete_dt(
-					sample = name,
-					chr1 = chr,
-					chr2 = chr,
-					fill = NA
-				) %>%
-				.[
-					,sample := factor(sample, levels = name)
-				][
-					,chr1 := factor(chr1, levels = chr)
-				][
-					,chr2 := factor(chr2, levels = rev(chr))
-				] %>%
-				ggplot(aes(chr1,chr2,fill = WCPA)) + 
-				geom_tile(
-					color = border_color,
-					size = 0.2
-				) + 
-				scale_fill_gradient2(
-					low = min_color,
-					mid = mid_color,
-					high = max_color,
-					midpoint = mean(c(min(dt[,WCPA]),max(dt[,WCPA]))),
-					breaks = legend_breaks
-				) + 
-				labs(
-					x = element_blank(),
-					y = element_blank()
-				) + 
-				theme(
-					plot.background = element_blank(),
-					panel.grid.major = element_blank(),
-					panel.background = element_blank(),
-					panel.grid.minor = element_blank(),
-					axis.ticks.x = element_blank(), 
-					axis.ticks.y = element_blank(),
-					axis.text.x = element_text(size = axis_size),
-					axis.text.y = element_text(size = axis_size),
-					legend.key.widt = unit(0.4,"cm"),
-					legend.title = element_blank()
-				)
-
-	if(length(name) == 1)
-	{
-		p_base
-
-	}else
-	{
-		p_base + 
-		facet_wrap(
-			~sample,
-			ncol = 2,
-			scales = scales
-		)
-	}
-}
+# wcpa_plot <- function(
+# 				.data,
+# 				name = NA,
+# 				resolution = 2.5e6,
+# 				norm = "NONE",
+# 				chr_list = c(1:22,"X","Y"),
+# 				axis_size = "10",
+# 				border_color = "#FFFFFF",
+# 				scales = "fixed",
+# 				legend_breaks = NA,
+# 				min_color = "#3c5488",
+# 				mid_color = "#FFFFFF",
+# 				max_color = "#e64b35"
+# ){
+# 	chr_list <- as.character(chr_list)
+# 
+# 	dt <- wcpa(.data)[
+# 				resolution == resolution & normalization == norm,
+# 				.(sample, chr1, chr2, WCPA)
+# 			]
+# 
+# 	if(length(name) == 1)
+# 	{
+# 		if(is.na(name))
+# 		{
+# 			name <- dt[,sample] %>% unique()
+# 		}
+# 	}
+# 
+# 	if(length(legend_breaks) == 1)
+# 	{
+# 		if(is.na(legend_breaks))
+# 		{
+# 			legend_breaks <- seq(
+# 								min(dt[,WCPA]),
+# 								max(dt[,WCPA]),
+# 								(max(dt[,WCPA]) - min(dt[,WCPA]))/4,
+# 							) %>%
+# 							round(2)
+# 		}
+# 	}
+# 
+# 	p_base <- dt[sample %in% name] %>%
+# 				complete_dt(
+# 					sample = name,
+# 					chr1 = chr,
+# 					chr2 = chr,
+# 					fill = NA
+# 				) %>%
+# 				.[
+# 					,sample := factor(sample, levels = name)
+# 				][
+# 					,chr1 := factor(chr1, levels = chr)
+# 				][
+# 					,chr2 := factor(chr2, levels = rev(chr))
+# 				] %>%
+# 				ggplot(aes(chr1,chr2,fill = WCPA)) + 
+# 				geom_tile(
+# 					color = border_color,
+# 					size = 0.2
+# 				) + 
+# 				scale_fill_gradient2(
+# 					low = min_color,
+# 					mid = mid_color,
+# 					high = max_color,
+# 					midpoint = mean(c(min(dt[,WCPA]),max(dt[,WCPA]))),
+# 					breaks = legend_breaks
+# 				) + 
+# 				labs(
+# 					x = element_blank(),
+# 					y = element_blank()
+# 				) + 
+# 				theme(
+# 					plot.background = element_blank(),
+# 					panel.grid.major = element_blank(),
+# 					panel.background = element_blank(),
+# 					panel.grid.minor = element_blank(),
+# 					axis.ticks.x = element_blank(), 
+# 					axis.ticks.y = element_blank(),
+# 					axis.text.x = element_text(size = axis_size),
+# 					axis.text.y = element_text(size = axis_size),
+# 					legend.key.widt = unit(0.4,"cm"),
+# 					legend.title = element_blank()
+# 				)
+# 
+# 	if(length(name) == 1)
+# 	{
+# 		p_base
+# 
+# 	}else
+# 	{
+# 		p_base + 
+# 		facet_wrap(
+# 			~sample,
+# 			ncol = 2,
+# 			scales = scales
+# 		)
+# 	}
+# }
 
 
 
