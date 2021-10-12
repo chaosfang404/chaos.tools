@@ -272,25 +272,25 @@ wcpa_compare_plot <- function(
 ## 				norm = "KR",
 ## 				chr = c(1:22,"X","Y")
 ## ){
-	dt <- wcpa(.data)[
-				sample == name & 
-				resolution == res &
-				normalization == norm &
-				chr1 %in% chr & 
-				chr2 %in% chr
-		][
-			, 
-			.(
-				chr1 = factor(chr1,levels = chr),
-				chr2 = factor(chr2,levels = chr),
-				WCPA
-			)
-		] %>%
-		melt(
-			"chr1",
-			variable.name = "chr2",
-			value.name = "WCPA"
-		) %>%
-		setnames("chr","chr1")
-	dt
+## 	dt <- wcpa(.data)[
+## 				sample == name & 
+## 				resolution == res &
+## 				normalization == norm &
+## 				chr1 %in% chr & 
+## 				chr2 %in% chr
+## 		][
+## 			, 
+## 			.(
+## 				chr1 = factor(chr1,levels = chr),
+## 				chr2 = factor(chr2,levels = chr),
+## 				WCPA
+## 			)
+## 		] %>%
+## 		melt(
+## 			"chr1",
+## 			variable.name = "chr2",
+## 			value.name = "WCPA"
+## 		) %>%
+## 		setnames("chr","chr1")
+## 	dt
 ## }
