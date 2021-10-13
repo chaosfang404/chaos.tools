@@ -148,7 +148,7 @@ pastis_pre <- function(
 
 	## generate shell scripte
 	c("#!/bin/sh",
-		paste0("#BSUB -J ",name,".iter_",iteration, "_pastis"),
+		paste0("#BSUB -J ",name,"_iter_",iteration, "_pastis"),
 		"#BSUB -q ser",
 		"#BSUB -n 1",
 		'#BSUB -R "span[ptile=40]"',
@@ -158,7 +158,7 @@ pastis_pre <- function(
 		pastis_cmd
 	) %>%
 	data.table() %>%
-	write.table(paste0(name,".iter_",iteration,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
+	write.table(paste0(name,"_iter_",iteration,".sh"),sep = "\t", col.names = F,row.names = F, quote = F)
 
 	print(paste0("Preparation for ", name,".iter_",iteration, " has finished"))
 }
