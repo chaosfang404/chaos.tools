@@ -74,8 +74,10 @@ pastis_pre <- function(
 		fwrite(bed_file, sep = "\t", col.names = F)
 	}else
 	{
-		bed_data <- fread(bed_file)[,chr := as.character(chr)]
-		setnames(bed_data,c("chr","start","end","bin_No"))
+		bed_data <- fread(bed_file) %>%
+						setnames(c("chr","start","end","bin_No"))
+
+		bed_data[,chr := as.character(chr)]
 	}
 
 	## create chr pairs for all interaction
