@@ -78,7 +78,7 @@ pastis_pre <- function(
 	}
 
 	## create chr pairs for all interaction
-	count_file <- paste0(file_prefix,".count")
+	count_file <- paste0(file_prefix,".matrix")
 	if(!file.exists(count_file))
 	{
 		pairs <- combn(chr_list,2) %>% 
@@ -133,7 +133,7 @@ pastis_pre <- function(
 		"output_name: structure",
 		"verbose: 0",
 		paste0("max_iter: ", iteration),
-		paste0("counts: ", name, ".count"),
+		paste0("counts: ", name, ".matrix"),
 		paste0("lengths: ", name, ".bed"),
 		"normalize: True"
 	) %>%
