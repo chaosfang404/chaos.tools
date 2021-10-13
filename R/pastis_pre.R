@@ -74,13 +74,14 @@ pastis_pre <- function(
 		fwrite(bed_file, sep = "\t", col.names = F)
 	}else
 	{
-		bed_data <- setnames(
-						fread(bed_file),
-						c("chr","start","end","bin_No")
-					)[
-						,chr := as.character(chr)
-					]
-
+		bed_data <- fread(bed_file) %>%
+					rename_dt(
+						chr = V1,
+						start = V2,
+						end = V3,
+						bin_No = V4
+					) %>%
+					mutate_dt(chr = as.character(chr))
 	}
 
 	## create chr pairs for all interaction
