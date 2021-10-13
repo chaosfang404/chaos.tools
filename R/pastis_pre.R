@@ -5,7 +5,8 @@ pastis_pre <- function(
 				chr_list = c(1:22,"X","Y"),
 				resolution = 1e6,
 				iteration = 100,
-				method = "pm2"
+				method = "pm2",
+				verbose = TRUE
 ){
 
 	chr_list <- as.character(chr_list)
@@ -129,9 +130,12 @@ pastis_pre <- function(
 	}
 
 	## generate config.ini
+
+	if(isTRUE(verbose)){verbose_label <- 1}else{verbose_label <- 0}
+
 	c("[all]",
 		"output_name: structure",
-		"verbose: 1",
+		paste0("verbose: ",verbose_label),
 		paste0("max_iter: ", iteration),
 		paste0("counts: ", name, ".matrix"),
 		paste0("lengths: ", name, ".bed"),
