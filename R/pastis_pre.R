@@ -131,7 +131,7 @@ pastis_pre <- function(
 	## generate config.ini
 	c("[all]",
 		"output_name: structure",
-		"verbose: 0",
+		"verbose: 1",
 		paste0("max_iter: ", iteration),
 		paste0("counts: ", name, ".matrix"),
 		paste0("lengths: ", name, ".bed"),
