@@ -66,16 +66,16 @@ pastis_pre <- function(
 			bed_data <- rbind(bed_data,tmp)
 		}
 
-		bed_data[,bin_No := 1:.N]
-
 		bed_data %>%
-		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
+		mutate_dt(
+			bin_No = 1:.N,
+			start = format(start,scientific = F, trim = T)
+		) %>%
 		fwrite(bed_file, sep = "\t", col.names = F)
 	}else
 	{
-		bed_data <- fread(bed_file) %>%
-					setnames(c("chr","start","end","bin_No")) %>%
-					mutate_dt(chr <- as.character(chr))
+		bed_data <- fread(bed_file)[,chr := as.character(chr)]
+		setnames(bed_data,c("chr","start","end","bin_No"))
 	}
 
 	## create chr pairs for all interaction
@@ -135,7 +135,7 @@ pastis_pre <- function(
 
 	c("[all]",
 		"output_name: structure",
-		paste0("verbose: ",verbose_label),
+		paste0("verbose: ", verbose_label),
 		paste0("max_iter: ", iteration),
 		paste0("counts: ", name, ".matrix"),
 		paste0("lengths: ", name, ".bed"),
