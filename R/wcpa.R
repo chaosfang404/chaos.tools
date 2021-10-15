@@ -198,7 +198,7 @@ wcpa_plot <- function(
 					axis.ticks.y = element_blank(),
 					axis.text.x = element_text(size = axis_size),
 					axis.text.y = element_text(size = axis_size),
-					legend.key.widt = unit(0.4,"cm"),
+					legend.key.width = unit(0.4,"cm"),
 					legend.title = element_blank()
 				)
 	if(length(unique(dt$sample)) > 1)
