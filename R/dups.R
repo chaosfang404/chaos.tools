@@ -8,30 +8,30 @@ dups <- function(
 	if(is.na(col))
 	{
 		dt[duplicated(dt)]
-	}else 
+	}else
 	{
 		if(isTRUE(all))
 		{
 			setnames(
 				dt,
 				old = col,
-				new = "i_hope_you_will_find_out"
+				new = "i_hope_you_will_not_find_out"
 			)
 
 			dup_list <- dt[
-							duplicated(i_hope_you_will_find_out),
-							i_hope_you_will_find_out
+							duplicated(i_hope_you_will_not_find_out),
+							i_hope_you_will_not_find_out
 						]
 
 			dt2 <- dt[
-						i_hope_you_will_find_out %in% dup_list
+						i_hope_you_will_not_find_out %in% dup_list
 					][
-						order(i_hope_you_will_find_out)
+						order(i_hope_you_will_not_find_out)
 					]
 
 			setnames(
 				dt2,
-				old = "i_hope_you_will_find_out", 
+				old = "i_hope_you_will_not_find_out", 
 				new = col
 			)[]
 		}else
@@ -39,14 +39,14 @@ dups <- function(
 			setnames(
 				dt,
 				old = col,
-				new = "i_hope_you_will_find_out"
+				new = "i_hope_you_will_not_find_out"
 			)
 
-			dt2 <- dt[duplicated(i_hope_you_will_find_out)]
+			dt2 <- dt[duplicated(i_hope_you_will_not_find_out)]
 
 			setnames(
 				dt2,
-				old = "i_hope_you_will_find_out",
+				old = "i_hope_you_will_not_find_out",
 				new = col
 			)[]
 		}
