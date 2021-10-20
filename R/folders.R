@@ -15,7 +15,7 @@ desktop <- function()
 	platform <- Sys.info()[1]
 	user_name <- Sys.info()[7]
 
-	if(platform == "Windwos")
+	if(platform == "Windows")
 	{
 		desk_dir <- paste0("C:/Users/",user_name,"/Desktop")
 	}else if(platform == "Linux")
@@ -25,4 +25,3 @@ desktop <- function()
 
 	return(desk_dir)
 }
-
