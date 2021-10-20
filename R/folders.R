@@ -10,13 +10,18 @@ scratch <- function()
 	}
 }
 
-# desktop <- function()
-# {
-# 	if(Sys.info()[1] == "Windwos")
-# 	{
-# 		return("c:/Users/Chao/Desktop")
-# 	}else if(Sys.info()[1] == "Linux")
-# 	{
-# 		return("~/chao/Desktop")
-# 	}
-# }
+desktop <- function()
+{
+	platform <- Sys.info()[1]
+	user_name <- Sys.info()[7]
+
+	if(platform == "Windwos")
+	{
+		desk_dir <- paste0("C:/Users/",user_name,"/Desktop")
+	}else if(platform == "Linux")
+	{
+		desk_dir <- paste0("~/",user_name, "/Desktop")
+	}
+
+	return(desk_dir)
+}
