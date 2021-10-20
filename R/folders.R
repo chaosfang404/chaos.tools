@@ -10,13 +10,13 @@ scratch <- function()
 	}
 }
 
-desktop <- function()
-{
-	if(Sys.info()[1] == "Windwos")
-	{
-		return("c:/Users/Chao/Desktop")
-	}else if(Sys.info()[1] == "Linux")
-	{
-		return("~/chao/Desktop")
-	}
-}
+# desktop <- function()
+# {
+# 	if(Sys.info()[1] == "Windwos")
+# 	{
+# 		return("c:/Users/Chao/Desktop")
+# 	}else if(Sys.info()[1] == "Linux")
+# 	{
+# 		return("~/chao/Desktop")
+# 	}
+# }
