@@ -26,6 +26,7 @@ hic_inter <- function(
 				replace_na_dt(to = 0)
 		inter_data <- rbind(inter_data,tmp)
 	}
+	inter_data
 }
 
 hic_intra <- function(
@@ -45,4 +46,5 @@ hic_intra <- function(
 				replace_na_dt(to = 0)
 		intra_data <- rbind(intra_data,tmp)
 	}
+	intra_data
 }
