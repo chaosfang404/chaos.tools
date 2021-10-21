@@ -9,7 +9,7 @@ hic_interaction <- function(
 
 	if(length(chr_list) == 1)
 	{
-		if(!is.na(chr_lsit))
+		if(!is.na(chr_list))
 		{
 			chr_list_dt <- chr_list %>% rep(2) %>% combn(2) %>% t() %>% data.table()
 		}else
