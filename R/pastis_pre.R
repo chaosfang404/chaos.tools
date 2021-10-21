@@ -2,12 +2,24 @@ pastis_pre <- function(
 				hic_file,
 				name = NA,
 				ref = "hg19",
-				chr_list = c(1:22,"X","Y"),
+				chr_list = NA,
 				resolution = 1e6,
 				iteration = 100,
 				method = "pm2",
 				verbose = TRUE
 ){
+	if(length(chr_list) == 1)
+	{
+		if(is.na(chr_list))
+		{
+			chr_list <- data.table(
+							strawr::readHicChroms(hic_file)
+						)[
+							name != "ALL",name
+						]
+		}
+	}
+
 
 	chr_list <- as.character(chr_list)
 	iter_label <- paste0("iter_",iteration)
