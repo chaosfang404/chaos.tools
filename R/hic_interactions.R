@@ -66,6 +66,8 @@ hic_interaction <- function(
 					,chr1 := chr1
 				][
 					,chr2 := chr2
+				][
+					,normalization := norm
 				] %>%
 				rename_dt(chr1_bin =x, chr2_bin = y) %>%
 				replace_na_dt(to = 0)
