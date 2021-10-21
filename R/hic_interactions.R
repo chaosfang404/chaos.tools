@@ -15,7 +15,7 @@ hic_interaction <- function(
 		}else
 		{
 			chr_list <- data.table(
-							readHicChroms(hic_file)
+							strawr::readHicChroms(hic_file)
 						)[
 							name != "ALL",name
 						]
