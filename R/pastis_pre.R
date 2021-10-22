@@ -8,20 +8,14 @@ pastis_pre <- function(
 				method = "pm2",
 				verbose = TRUE
 ){
-	if(length(chr_list) == 1)
-	{
-		if(is.na(chr_list))
-		{
-			chr_list <- data.table(
-							strawr::readHicChroms(hic_file)
-						)[
-							name != "ALL",name
-						]
-		}
-	}
+	chr_list <- chr_list %>% unique() %>% as.character()
 
+	chr_list_dt <- chr_list_dt(
+						hic_file = hic_file,
+						chr_list = chr_list,
+						inter = "all"
+					)
 
-	chr_list <- as.character(chr_list)
 	iter_label <- paste0("iter_",iteration)
 
 	## create folder
@@ -45,27 +39,26 @@ pastis_pre <- function(
 	file_prefix <- 	paste0(work_dir,"/",name)
 
 	## get chr info
-	chr_size_info <- chr_size(
-						ref = ref, 
-						extra = T
+	chr_size_info <- data.table(
+						strawr::readHicChroms(hic_file)
 					)[
-						,chr := str_replace(chr,"chr","")
-					][
-						chr %in% chr_list
+						name %in% chr_list,
+						.(chr = name, length)
 					][
 						,chr := factor(chr,levels = chr_list)
 					][
 						,bin_end := floor(length/resolution)
 					]
 
+
 	## create bed file
 	bed_file <- paste0(file_prefix,".bed")
 	if(!file.exists(bed_file))
 	{
-		bed_data <- data.table(NULL)
-		for(i in chr_list)
-		{
-			tmp <- data.table(
+		tmp <- function(
+					i
+				){
+					data.table(
 						chr = i,
 						start = seq(0,chr_size_info[chr == i,length],resolution)
 					)[
@@ -75,10 +68,10 @@ pastis_pre <- function(
 						end > chr_size_info[chr == i,length],
 						end := chr_size_info[chr == i,length]
 					]
-			bed_data <- rbind(bed_data,tmp)
-		}
+				}
 
-		bed_data[,bin_No := 1:.N]
+		bed_data <- apply(data.table(chr_list),tmp) %>%
+					rbindlist() %>%
 
 		bed_data %>%
 		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
@@ -101,12 +94,12 @@ pastis_pre <- function(
 					t() %>% 
 					rbind(data.table(V1=chr_list,V2 = chr_list))
 
-		count_data <- data.table(NULL)
-		for (i in 1:nrow(pairs))
-		{
-			chr1 <- pairs[i,V1] %>% as.character()
-			chr2 <- pairs[i,V2] %>% as.character()
-			tmp <- data.table(
+		tmp <- function(
+					x
+				){
+					chr1 <- x[1]
+					chr2 <- x[2]
+					data.table(
 						strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
 					)[
 						,chr_x := chr1
@@ -136,9 +129,9 @@ pastis_pre <- function(
 						chr_y_bin,
 						counts
 					)
-			count_data <- rbind(count_data,tmp)
-		}
-		count_data %>% 
+				}
+		apply(pairs,tmp) %>%
+		rbindlist() %>% 
 		filter_dt(chr_x_bin != chr_y_bin) %>%
 		arrange_dt(chr_x_bin,chr_y_bin) %>%
 		fwrite(count_file,sep = "\t", col.names = F)
