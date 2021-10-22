@@ -55,24 +55,25 @@ hic_interaction <- function(
 		}
 	}
 
-	data <- data.table(NULL)
-	for (i in 1:nrow(chr_list_dt))
-	{
-		chr1 <- chr_list_dt[i,V1]
-		chr2 <- chr_list_dt[i,V2]
+	tmp <- function(
+				x
+			){
+				chr1 = x[1]
+				chr2 = x[2]
+				tmp_data <- data.table(
+								strawr::straw(norm, hic_file, chr1, chr2, "BP", resolution)
+							)[
+								,chr1 := chr1
+							][
+								,chr2 := chr2
+							][
+								,normalization := norm
+							] %>%
+							rename_dt(chr1_bin =x, chr2_bin = y) %>%
+							replace_na_dt(to = 0)
+				tmp_data
+			}
+	apply(chr_list_dt,1,tmp) %>%
+	rbindlist()
 
-		tmp <- data.table(
-					strawr::straw(norm, hic_file, chr1, chr2, "BP", resolution)
-				)[
-					,chr1 := chr1
-				][
-					,chr2 := chr2
-				][
-					,normalization := norm
-				] %>%
-				rename_dt(chr1_bin =x, chr2_bin = y) %>%
-				replace_na_dt(to = 0)
-		data <- rbind(data,tmp)
-	}
-	data
 }
