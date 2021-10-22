@@ -8,13 +8,14 @@ pastis_pre <- function(
 				method = "pm2",
 				verbose = TRUE
 ){
-	chr_list <- chr_list %>% unique() %>% as.character()
-
 	chr_list_dt <- chr_list_dt(
 						hic_file = hic_file,
 						chr_list = chr_list,
 						inter = "all"
 					)
+
+	chr_list <- chr_list_dt[,V1] %>% unique() %>% as.character()
+
 
 	iter_label <- paste0("iter_",iteration)
 
@@ -55,10 +56,10 @@ pastis_pre <- function(
 	bed_file <- paste0(file_prefix,".bed")
 	if(!file.exists(bed_file))
 	{
-		tmp <- function(
-					i
-				){
-					data.table(
+		bed_data <- data.table(NULL)
+		for(i in chr_list)
+		{
+			tmp <- data.table(
 						chr = i,
 						start = seq(0,chr_size_info[chr == i,length],resolution)
 					)[
@@ -67,11 +68,11 @@ pastis_pre <- function(
 						chr == i & 
 						end > chr_size_info[chr == i,length],
 						end := chr_size_info[chr == i,length]
+					][
+						bin_No := start/resolution +1
 					]
-				}
-
-		bed_data <- apply(data.table(chr_list),tmp) %>%
-					rbindlist()
+			bed_data <- rbind(bed_data,tmp)
+		}
 
 		bed_data %>%
 		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
@@ -90,7 +91,7 @@ pastis_pre <- function(
 	count_file <- paste0(file_prefix,".matrix")
 	if(!file.exists(count_file))
 	{
-		tmp <- function(
+		tmp_2 <- function(
 					x
 				){
 					chr1 <- x[1]
@@ -126,8 +127,9 @@ pastis_pre <- function(
 						counts
 					)
 				}
-		apply(chr_list_dt,tmp) %>%
-		rbindlist() %>% 
+		tmp_data1 <- apply(chr_list_dt,tmp_2) %>% rbindlist()
+		
+		tmp_data1 %>%
 		filter_dt(chr_x_bin != chr_y_bin) %>%
 		arrange_dt(chr_x_bin,chr_y_bin) %>%
 		fwrite(count_file,sep = "\t", col.names = F)
