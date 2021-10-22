@@ -18,7 +18,8 @@ hic_interaction <- function(
 							strawr::readHicChroms(hic_file)
 						)[
 							name != "ALL",name
-						]
+						] %>%
+						as.character()
 			if(inter == "inter")
 			{
 				chr_list_dt <- chr_list %>% combn(2) %>% t() %>% data.table()
