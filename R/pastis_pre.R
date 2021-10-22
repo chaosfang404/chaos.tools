@@ -71,7 +71,7 @@ pastis_pre <- function(
 				}
 
 		bed_data <- apply(data.table(chr_list),tmp) %>%
-					rbindlist() %>%
+					rbindlist()
 
 		bed_data %>%
 		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
@@ -90,10 +90,6 @@ pastis_pre <- function(
 	count_file <- paste0(file_prefix,".matrix")
 	if(!file.exists(count_file))
 	{
-		pairs <- combn(chr_list,2) %>% 
-					t() %>% 
-					rbind(data.table(V1=chr_list,V2 = chr_list))
-
 		tmp <- function(
 					x
 				){
@@ -130,7 +126,7 @@ pastis_pre <- function(
 						counts
 					)
 				}
-		apply(pairs,tmp) %>%
+		apply(chr_list_dt,tmp) %>%
 		rbindlist() %>% 
 		filter_dt(chr_x_bin != chr_y_bin) %>%
 		arrange_dt(chr_x_bin,chr_y_bin) %>%
