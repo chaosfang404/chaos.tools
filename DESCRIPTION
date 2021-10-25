@@ -1,7 +1,7 @@
 Package: chaos.tools
 Type: Package
 Title: utilities for chaos
-Version: 0.1.3
+Version: 0.1.4
 Author: Chao Fang
 Maintainer: Chao Fang <fc-ibb105@outlook.com>
 Description: utilities created by chaos
