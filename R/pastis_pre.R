@@ -56,23 +56,26 @@ pastis_pre <- function(
 	bed_file <- paste0(file_prefix,".bed")
 	if(!file.exists(bed_file))
 	{
-		bed_data <- data.table(NULL)
-		for(i in chr_list)
-		{
-			tmp <- data.table(
-						chr = i,
-						start = seq(0,chr_size_info[chr == i,length],resolution)
-					)[
-						,end := start + resolution - 1
-					][
-						chr == i & 
-						end > chr_size_info[chr == i,length],
-						end := chr_size_info[chr == i,length]
-					][
-						bin_No := start/resolution +1
-					]
-			bed_data <- rbind(bed_data,tmp)
+		bed_data_func <- function(
+							x
+		){
+			chr <- x[1]
+			length <- x[2]
+			data.table(
+				chr = chr,
+				start = seq(0,length,resolution)
+			)[
+				,end := start + resolution - 1
+			][
+				chr == i & 
+				end > length,
+				end := length
+			][
+				bin_No := start/resolution +1
+			]
 		}
+
+		bed_data <- apply(chr_size_info,1,bed_data_func) %>% rbindlist()
 
 		bed_data %>%
 		mutate_dt(start = format(start,scientific = F, trim = T)) %>%
@@ -91,45 +94,45 @@ pastis_pre <- function(
 	count_file <- paste0(file_prefix,".matrix")
 	if(!file.exists(count_file))
 	{
-		tmp_2 <- function(
+		count_data_func <- function(
 					x
-				){
-					chr1 <- x[1]
-					chr2 <- x[2]
-					data.table(
-						strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
-					)[
-						,chr_x := chr1
-					][
-						,chr_y := chr2
-					] %>%
-					left_join_dt(
-						bed_data,
-						by = c(
-							"chr_x" = "chr",
-							"x" = "start"
-						)
-					) %>% 
-					rename_dt(chr_x_bin = bin_No) %>%
-					left_join_dt(
-						bed_data,
-						by = c(
-							"chr_y" = "chr",
-							"y" = "start"
-						)
-					) %>% 
-					rename_dt(
-						chr_y_bin = bin_No
-					) %>%
-					select_dt(
-						chr_x_bin,
-						chr_y_bin,
-						counts
-					)
-				}
-		tmp_data1 <- apply(chr_list_dt,tmp_2) %>% rbindlist()
+		){
+			chr1 <- x[1]
+			chr2 <- x[2]
+			data.table(
+				strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
+			)[
+				,chr_x := chr1
+			][
+				,chr_y := chr2
+			] %>%
+			left_join_dt(
+				bed_data,
+				by = c(
+					"chr_x" = "chr",
+					"x" = "start"
+				)
+			) %>% 
+			rename_dt(chr_x_bin = bin_No) %>%
+			left_join_dt(
+				bed_data,
+				by = c(
+					"chr_y" = "chr",
+					"y" = "start"
+				)
+			) %>% 
+			rename_dt(
+				chr_y_bin = bin_No
+			) %>%
+			select_dt(
+				chr_x_bin,
+				chr_y_bin,
+				counts
+			)
+		}
+		count_data <- apply(chr_list_dt,1,count_data_func) %>% rbindlist()
 		
-		tmp_data1 %>%
+		count_data %>%
 		filter_dt(chr_x_bin != chr_y_bin) %>%
 		arrange_dt(chr_x_bin,chr_y_bin) %>%
 		fwrite(count_file,sep = "\t", col.names = F)
