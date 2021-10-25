@@ -9,10 +9,13 @@ wcpa_pre <- function(
 				hic_file,
 				name = NA,
 				norm = "NONE",
-				chr_list = c(1:22,"X","Y"),
-				resolution = 2.5e6
+				chr_list = NA
 ){
-	chr_list <- as.character(chr_list)
+	chr_list_dt <- chr_list_dt(
+					hic_file = hic_file,
+					chr_list = chr_list,
+					inter = "inter"
+				)
 
 	if(is.na(name))
 	{
@@ -25,34 +28,27 @@ wcpa_pre <- function(
 						trim = T
 					)
 
-	count_data <- data.table(NULL)
-	for(chr1 in chr_list)
-	{
-		for(chr2 in chr_list)
-		{
-			if(chr1 != chr2)
-			{
-				tmp <- data.table(
-							strawr::straw(norm,hic_file,chr1,chr2,"BP",resolution)
-						) %>%
-						na.omit() %>%
-						.[,counts] %>%
-						sum()
-				count_data <- rbind(
-									count_data,
-									data.table(
-										sample = name,
-										resolution = resolution,
-										normalization = norm,
-										chr1 = str_replace(chr1,"chr",""),
-										chr2 = str_replace(chr2,"chr",""),
-										interaction = tmp
-									)
-								)
-			}
-		}
+
+	count_data_func <- function(
+							x
+	){
+		tmp <- data.table(
+					strawr::straw(norm,hic_file,x[1],x[2],"BP",2.5e6)
+				) %>%
+				na.omit() %>%
+				.[,counts] %>%
+				sum()
+
+		data.table(
+			sample = name,
+			normalization = norm,
+			chr1 = str_replace(x[1],"chr",""),
+			chr2 = str_replace(x[2],"chr",""),
+			interaction = tmp
+		)
 	}
-	count_data
+
+	apply(chr_list_dt,1,count_data_func) %>% rbindlist()
 }
 
 
@@ -60,34 +56,32 @@ wcpa <- function(
 			hic_file,
 			name = NA,
 			norm = "NONE",
-			chr_list = c(1:22,"X","Y"),
-			resolution = 2.5e6
+			chr_list = NA
 ){
 	wcpa_pre(
 		hic_file = hic_file,
 		name = name,
 		norm = norm,
-		chr_list = chr_list,
-		resolution = resolution
+		chr_list = chr_list
 	)[
 		chr1 != chr2
 	][
 		,
 		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-		.(sample,resolution,normalization)
+		.(sample,normalization)
 	][
 		,
 		.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
-		.(sample,resolution,normalization,chr1)
+		.(sample,normalization,chr1)
 	][
 		,
 		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
-		.(sample,resolution,normalization,chr2)
+		.(sample,normalization,chr2)
 	][
 		,
-		.(sample,resolution,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
+		.(sample,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
 	][
-		order(sample,resolution,normalization,chr1,chr2)
+		order(sample,normalization,chr1,chr2)
 	][
 		,
 		WCPA := interaction/(((chr1_total/sample_total)*(chr2_total/(sample_total - chr1_total)) + (chr2_total/sample_total)*(chr1_total/(sample_total - chr2_total))) * sample_total/2)
@@ -98,29 +92,53 @@ wcpa_matrix <- function(
 					hic_file,
 					name = NA,
 					norm = "NONE",
-					chr_list = c(1:22,"X","Y"),
-					resolution = 2.5e6
+					chr_list = NA
 ){
-	sample_matrix <- data.table(hic = hic_file, name = name)
-
-	dt <- data.table(NULL)
-	for (i in 1:nrow(sample_matrix))
+	if(length(name) == 1)
 	{
-		dt1 <- wcpa(
-					sample_matrix[i,hic],
-					name = sample_matrix[i,name],
-					norm = norm,
-					chr_list = chr_list,
-					resolution = resolution
-				)[
-					resolution == resolution & normalization == norm,
-					.(sample,chr1, chr2, WCPA)
-				]
-		dt <- rbind(dt,dt1)
+		if(is.na(name))
+		{
+			name <- base_name(hic_file)
+		}
 	}
 
+	if(length(chr_list) == 1)
+	{
+		if(is.na(chr_list))
+		{
+			chr_list <- data.table(
+							strawr::readHicChroms(hic_file)
+						)[
+							name != "ALL",name
+						] %>%
+						as.character()
+		}
+	}
+
+	sample_matrix <- data.table(hic = hic_file, name = name)
+
+	dt_func <- function(
+					x
+	){
+		wcpa(
+			hic_file = x[1],
+			name = x[2],
+			norm = norm,
+			chr_list = chr_list
+		)[
+			normalization == norm,
+			.(sample,chr1, chr2, WCPA)
+		]
+	}
+
+	dt <- apply(sample_matrix,1,dt_func) %>%
+			rbindlist()
+	dt2 <- rbind(
+				dt,
+				dt[,.(sample,chr1 = chr2,chr2 = chr1,WCPA)]
+			)
 	complete_dt(
-		dt,
+		dt2,
 		sample = name,
 		chr1 = chr_list,
 		chr2 = chr_list,
@@ -136,7 +154,6 @@ wcpa_matrix <- function(
 wcpa_plot <- function(
 				hic_file,
 				name = NA,
-				resolution = 2.5e6,
 				norm = "NONE",
 				chr_list = c(1:22,"X","Y"),
 				axis_size = "10",
@@ -152,8 +169,7 @@ wcpa_plot <- function(
 				hic_file,
 				name = name,
 				norm = norm,
-				chr_list = chr_list,
-				resolution = resolution
+				chr_list = chr_list
 			)
 
 	if(length(legend_breaks) == 1)
@@ -217,7 +233,6 @@ wcpa_compare_plot <- function(
 						observe_hic,
 						control_name = NA,
 						observe_name = NA,
-						resolution = 2.5e6,
 						norm = "NONE",
 						chr_list = c(1:22,"X","Y"),
 						axis_size = 10,
@@ -235,8 +250,7 @@ wcpa_compare_plot <- function(
 						control_hic,
 						name = control_name,
 						norm = norm,
-						chr_list = chr_list,
-						resolution = resolution
+						chr_list = chr_list
 					)[,sample := "control"] %>%
 					dcast(
 						chr1 + chr2 ~ sample,
@@ -247,8 +261,7 @@ wcpa_compare_plot <- function(
 						observe_hic,
 						name = observe_name,
 						norm = norm,
-						chr_list = chr_list,
-						resolution = resolution
+						chr_list = chr_list
 					)[,sample := "observe"] %>%
 					dcast(
 						chr1 + chr2 ~ sample,
