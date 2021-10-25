@@ -1,7 +1,7 @@
 separate_col <- function(
 					.data,
 					column,
-					into = "tmp_splited_columns_names",
+					into = NA,
 					sep = "[^[:alnum:]]+",
 					remove = TRUE
 ){
@@ -10,23 +10,20 @@ separate_col <- function(
 						tstrsplit(split = sep) %>%
 						setDT()
     
-	if(identical(into,"tmp_splited_columns_names"))
+	if(is.na(into))
 	{
-		into2 <- paste(
+		into <- paste(
 					"splited",
 					column,
 					seq(1,ncol(split_columns),1),
 					sep = "_"
-				)        
-	} else
-	{
-		into2 <- into
+				)
 	}
   
 	split_columns %>%
-		setnames(into2) 
+		setnames(into) 
 
-	if(remove)
+	if(isTRUE(remove))
 	{
 		data.table(.data)[
 			,(column) := NULL
