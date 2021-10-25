@@ -43,10 +43,9 @@ pastis_pre <- function(
 	chr_size_info <- data.table(
 						strawr::readHicChroms(hic_file)
 					)[
-						name %in% chr_list,
-						.(chr = name, length)
+						name %in% chr_list
 					][
-						,chr := factor(chr,levels = chr_list)
+						,name := factor(name,levels = chr_list)
 					][
 						,bin_end := floor(length/resolution)
 					]
@@ -59,20 +58,19 @@ pastis_pre <- function(
 		bed_data_func <- function(
 							x
 		){
-			chr <- x[1]
-			length <- x[2]
-			data.table(
-				chr = chr,
-				start = seq(0,length,resolution)
-			)[
-				,end := start + resolution - 1
-			][
-				chr == i & 
-				end > length,
-				end := length
-			][
-				bin_No := start/resolution +1
-			]
+			bed_data_tmp <- data.table(
+								chr = x[1],
+								start = seq(0,x[2],resolution)
+							)[
+								,end := start + resolution - 1
+							][
+								chr == chr & 
+								end > length,
+								end := length
+							][
+								,bin_No := start/resolution +1
+							]
+			bed_data_tmp
 		}
 
 		bed_data <- apply(chr_size_info,1,bed_data_func) %>% rbindlist()
@@ -97,14 +95,12 @@ pastis_pre <- function(
 		count_data_func <- function(
 					x
 		){
-			chr1 <- x[1]
-			chr2 <- x[2]
 			data.table(
-				strawr::straw("NONE", hic_file, chr1, chr2, "BP", resolution)
+				strawr::straw("NONE", hic_file, x[1], x[2], "BP", resolution)
 			)[
-				,chr_x := chr1
+				,chr_x := x[1]
 			][
-				,chr_y := chr2
+				,chr_y := x[2]
 			] %>%
 			left_join_dt(
 				bed_data,
