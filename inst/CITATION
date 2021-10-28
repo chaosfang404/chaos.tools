@@ -1,11 +1,11 @@
-citHeader("To cite ggcor in publications use:")
+citHeader("To cite chaos.tools in publications use:")
 
 citEntry(
   entry    = "manual",
   title    = paste("chaos.tools:", meta$Title),
   author   = "Chao Fang",
   year     = "2021",
-  note     = "R package version 0.1.0",
+  note     = "R package version 0.1.3",
   url      = meta$URL,
-  textVersion = "Chao Fang(2021). chaos.tools: Extended tools for Chaos. R package version 0.1.0."
+  textVersion = "Chao Fang(2021). chaos.tools: Extended tools for Chaos. R package version 0.1.3."
 )
