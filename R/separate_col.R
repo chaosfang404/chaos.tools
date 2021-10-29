@@ -44,15 +44,16 @@ separate_col <- function(
 
 	if(isTRUE(remove))
 	{
-		data.table(.data)[
-			,(column) := NULL
-		][
-			,names(split_columns) := split_columns
-		][]
+		dt <- data.table(.data)[
+					,(column) := NULL
+				][
+					,names(split_columns) := split_columns
+				]
 	} else
 	{
-		data.table(.data)[
-			,names(split_columns) := split_columns
-		][]
+		dt <- data.table(.data)[
+					,names(split_columns) := split_columns
+				]
 	}
+	dt
 }
