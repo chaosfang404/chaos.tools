@@ -2,6 +2,7 @@ separate_col <- function(
 					.data,
 					column,
 					into = NA,
+					select = NA,
 					sep = "[^[:alnum:]]+",
 					remove = TRUE
 ){
@@ -9,19 +10,37 @@ separate_col <- function(
 						.[[column]] %>%
 						tstrsplit(split = sep) %>%
 						setDT()
-    
-	if(is.na(into))
+ 
+	default_name <- paste(
+						"splited",
+						column,
+						seq(1,ncol(split_columns),1),
+						sep = "_"
+					)
+
+	setnames(split_columns,default_name)
+
+	if(length(select) == 1)
 	{
-		into <- paste(
-					"splited",
-					column,
-					seq(1,ncol(split_columns),1),
-					sep = "_"
-				)
+		if(is.na(select))
+		{
+			select = seq(1,ncol(split_columns),1)
+		}
 	}
-  
-	split_columns %>%
-		setnames(into) 
+
+	selected_columns <- paste("splited",column,select,sep = "_")
+	split_columns <- split_columns[,..selected_columns]
+
+	if(length(into) == 1)
+	{
+		if(is.na(into))
+		{
+			into <- default_name[select]
+		}
+	}
+
+	setnames(split_columns,into)
+
 
 	if(isTRUE(remove))
 	{
