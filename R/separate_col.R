@@ -48,12 +48,12 @@ separate_col <- function(
 					,(column) := NULL
 				][
 					,names(split_columns) := split_columns
-				]
+				][]
 	} else
 	{
 		dt <- data.table(.data)[
 					,names(split_columns) := split_columns
-				]
+				][]
 	}
 	dt
 }
