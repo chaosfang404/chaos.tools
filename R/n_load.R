@@ -7,6 +7,9 @@ n_load <- function(
 		chaos.tools,
 		ggplot2,
 		ggsci,
-		ggthemes
+		ggthemes,
+		stringr
 	)
+
+	setDTthreads(threads = parallel::detectCores())
 }
