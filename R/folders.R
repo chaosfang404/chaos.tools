@@ -22,15 +22,15 @@ desktop <- function(
 
 	if(platform == "Windows")
 	{
-		desk_dir <- paste0("C:/Users/",username,"/Desktop")
+		desk_dir <- file.path("C:/Users",username,"Desktop")
 	}else if(platform == "Linux")
 	{
 		if(!stringr::str_detect(Sys.info()[2],"WSL"))
 		{
-			desk_dir <- paste0("~/",username, "/Desktop")
+			desk_dir <- file.path("~",username, "Desktop")
 		}else
 		{
-			desk_dir <- paste0("/mnt/c/",username,"/Desktop")
+			desk_dir <- file.path("/mnt/c/Users",username,"Desktop")
 		}
 	}
 
