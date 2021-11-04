@@ -1,15 +1,14 @@
 comb2 <- function(
-			.data,
 			...,
 			sep = "_"
 ){
-	all <- .data
+	list_all <- list(...)
 
-	list_rest <- list(...)
-	
-	if (length(list_rest) >= 1)
+	all <- list_all[[1]]
+
+	if (length(list_rest) >= 2)
 	{
-		for (i in 1:length(list_rest))
+		for (i in 2:length(list_rest))
 		{
 			paste2 <- function(
 						x
@@ -26,22 +25,20 @@ comb2 <- function(
 }
 
 str_comb <- function(
-				.data,
 				...,
 				sep = "_"
 ){
-	str <- comb2(.data,...,sep = sep) %>% unlist
+	str <- comb2(...,sep = sep) %>% unlist
 	names(str) <- NULL
 	str
 }
 
 
 dt_comb <- function(
-				.data,
 				...,
 				sep = "_"
 ){
-	str_comb(.data,...,sep = sep) %>%
+	str_comb(...,sep = sep) %>%
 	data.table() %>%
 	separate_col(".") %>% 
 	setnames(paste0("V",1:ncol(.))) %>% 
