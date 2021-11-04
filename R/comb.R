@@ -6,14 +6,14 @@ comb2 <- function(
 
 	all <- list_all[[1]]
 
-	if (length(list_rest) >= 2)
+	if (length(list_all) >= 2)
 	{
-		for (i in 2:length(list_rest))
+		for (i in 2:length(list_all))
 		{
 			paste2 <- function(
 						x
 			){
-				paste(x,list_rest[[i]],sep = sep)
+				paste(x,list_all[[i]],sep = sep)
 			}
 		
 			all <- sapply(all,paste2)
