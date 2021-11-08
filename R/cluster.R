@@ -1,9 +1,12 @@
 cluster <- function(
 			.data,
-			AR = "left",
+			AR = NA,
 			gene = NA
 ){
-	if(AR == "left")
+	if(is.na(AR))
+	{
+		dt <- .data
+	}else if(AR == "left")
 	{
 		dt <- .data[left_AR > 0 & right_AR == 0]
 	}else if(AR == "right")
