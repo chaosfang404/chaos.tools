@@ -14,6 +14,9 @@ str_comb <- function(
 				sep = "_"
 ){
 	dt_comb(...) %>% 
-	unite_dt(colnames(.)) %>% 
+	unite_dt(
+		colnames(.),
+		sep = sep
+	) %>% 
 	.[,V1]
 }
