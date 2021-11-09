@@ -6720,7 +6720,7 @@ ce10	chrII	15279345	main
 ce10	chrI	15072423	main
 ce10	chrIII	13783700	main
 ce10	chrM	13794	mitchondrion
-covid-19	NC_045512v2	29903 main
+covid-19	NC_045512v2	29903	main
 sacCer3	chrIV	1531933	main
 sacCer3	chrXV	1091291	main
 sacCer3	chrVII	1090940	main
