@@ -11234,30 +11234,24 @@ chr_size2 <- function(
 
 	if (ref == "list")
 	{
-		c("hg19",
-		"hg38",
-		"mm9",
-		"mm10",
-		"mm39",
-		"dm3",
-		"dm6",
-		"danRer10",
-		"danRer11"
-		)
+		all_genome[,V1] %>% unique()
 	}else
 	{
-		dt <- all_genome[V1 == ref,.(V2,V3,V4)]
+		if(isFALSE(mit))
+		{
+			dt <- all_genome[
+						V1 == ref & V4 != "mitochondrion",
+						.(V2,V3,V4)
+					]
+		}
+	
+		if(isFALSE(extra))
+		{
+			dt <- dt[V4 != "extra"]
+		}
+	
+		dt[,.(chr = V2,length = V3)]
 	}
 
-	if(isFALSE(mit))
-	{
-		dt <- dt[V4 != "mitochondrion"]
-	}
-
-	if(isFALSE(extra))
-	{
-		dt <- dt[V4 != "extra"]
-	}
-
-	dt[,.(chr = V2,length = V3)]
+	
 }
