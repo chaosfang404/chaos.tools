@@ -715,7 +715,7 @@ dm6	chr3R	32079331	main
 dm6	chr4	1348131	main
 dm6	chrX	23542271	main
 dm6	chrY	3667352	main
-dm6	chrM	19524	mitchondrion
+dm6	chrM	19524	mitochondrion
 dm6	chrUn_CP007081v1	88768	extra
 dm6	chrUn_CP007076v1	87365	extra
 dm6	chrUn_CP007080v1	86267	extra
@@ -2618,7 +2618,7 @@ danRer10	chr22	39226288	main
 danRer10	chr23	46272358	main
 danRer10	chr24	42251103	main
 danRer10	chr25	36898761	main
-danRer10	chrM	16596	mitchondrion
+danRer10	chrM	16596	mitochondrion
 danRer10	chrUn_KN149696v1	368637	extra
 danRer10	chrUn_KN149690v1	343018	extra
 danRer10	chrUn_KN150474v1	312116	extra
@@ -3679,7 +3679,7 @@ danRer11	chr22	39133080	main
 danRer11	chr23	46223584	main
 danRer11	chr24	42172926	main
 danRer11	chr25	37502051	main
-danRer11	chrM	16596	mitchondrion
+danRer11	chrM	16596	mitochondrion
 danRer11	chr8_KZ115264v1_alt	976511	extra
 danRer11	chr12_KZ115372v1_alt	937928	extra
 danRer11	chr1_KZ114841v1_alt	865375	extra
@@ -5599,7 +5599,7 @@ rn7	chr19	57337602	main
 rn7	chr20	54435887	main
 rn7	chrX	152453651	main
 rn7	chrY	18315841	main
-rn7	chrM	16313	mitchondrion
+rn7	chrM	16313	mitochondrion
 rn7	chrY_NW_023637720v1_random	1794995	extra
 rn7	chr12_NW_023637711v1_random	1402623	extra
 rn7	chrUn_NW_023637723v1	648519	extra
@@ -5774,7 +5774,7 @@ rn6	chr18	88201929	main
 rn6	chr19	62275575	main
 rn6	chr20	56205956	main
 rn6	chr12	52716770	main
-rn6	chrM	16313	mitchondrion
+rn6	chrM	16313	mitochondrion
 rn6	chrY_KL568162v1_random	10937627	extra
 rn6	chrY_KL568139v1_random	9752924	extra
 rn6	chrY_KL568161v1_random	7627431	extra
@@ -6712,14 +6712,14 @@ ce11	chrIV	17493829	main
 ce11	chrII	15279421	main
 ce11	chrI	15072434	main
 ce11	chrIII	13783801	main
-ce11	chrM	13794	mitchondrion
+ce11	chrM	13794	mitochondrion
 ce10	chrV	20924149	main
 ce10	chrX	17718866	main
 ce10	chrIV	17493793	main
 ce10	chrII	15279345	main
 ce10	chrI	15072423	main
 ce10	chrIII	13783700	main
-ce10	chrM	13794	mitchondrion
+ce10	chrM	13794	mitochondrion
 covid-19	NC_045512v2	29903	main
 sacCer3	chrIV	1531933	main
 sacCer3	chrXV	1091291	main
@@ -6737,11 +6737,11 @@ sacCer3	chrIX	439888	main
 sacCer3	chrIII	316620	main
 sacCer3	chrVI	270161	main
 sacCer3	chrI	230218	main
-sacCer3	chrM	85779	mitchondrion
+sacCer3	chrM	85779	mitochondrion
 TAIR10.1	chr1	30427671	main
 TAIR10.1	chr2	19698289	main
 TAIR10.1	chr3	23459830	main
 TAIR10.1	chr4	18585056	main
 TAIR10.1	chr5	26975502	main
-TAIR10.1	chrM	367808	mitchondrion
+TAIR10.1	chrM	367808	mitochondrion
 TAIR10.1	chrPltd	154478	extra
