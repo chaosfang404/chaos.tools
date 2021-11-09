@@ -11224,3 +11224,43 @@ chr_size <- function(ref = "hg19", extra = FALSE)
 			chr != "chrM"]
 	}
 }
+
+chr_size2 <- function(
+				ref = "hg19",
+				mit = FALSE,
+				extra = FALSE
+){
+	all_genome <- fread(
+					system.file("extdata","chr_size.info.txt",package = "chaos.tools"),
+					sep="\t")
+				)
+
+	if (ref == "list")
+	{
+		c("hg19",
+		"hg38",
+		"mm9",
+		"mm10",
+		"mm39",
+		"dm3",
+		"dm6",
+		"danRer10",
+		"danRer11"
+		)
+	}else
+	{
+		dt <- all_genome[V1 == ref,.(V2,V3,V4)]
+	}
+
+	if(isFALSE(mit))
+	{
+		dt <- dt[V4 != "mitochondrion"]
+	}
+
+	if(isFALSE(extra))
+	{
+		dt <- dt[V4 != "extra"]
+	}
+
+	dt[,.(chr = V2,length = V3)]
+}
