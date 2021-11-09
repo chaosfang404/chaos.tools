@@ -11232,7 +11232,7 @@ chr_size2 <- function(
 ){
 	all_genome <- fread(
 					system.file("extdata","chr_size.info.txt",package = "chaos.tools"),
-					sep="\t")
+					sep="\t"
 				)
 
 	if (ref == "list")
