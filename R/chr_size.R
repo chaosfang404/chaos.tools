@@ -1,7 +1,8 @@
 chr_size <- function(
 				ref = "hg19",
 				mit = FALSE,
-				extra = FALSE
+				extra = FALSE,
+				online = FALSE
 ){
 	all_genome <- system.file(
 						"extdata",
@@ -10,25 +11,56 @@ chr_size <- function(
 					) %>%
 					fread()
 
+	genome_list <- all_genome[,V1] %>% unique()
+
+	ucsc_url <- paste0("https://hgdownload.soe.ucsc.edu/goldenPath/",ref,"/bigZips/",ref,".chrom.sizes")
+
 	if (ref == "list")
 	{
-		all_genome[,V1] %>% unique()
+		genome_list
 	}else
 	{
-		if(isFALSE(mit))
+		
+		if(ref %in% genome_list)
 		{
-			dt <- all_genome[V1 == ref & V4 != "mitochondrion"]
+			if(isTRUE(online))
+			{
+				dt <- fread(ucsc_url) %>%
+						setnames(c("chr","length")) %>%
+						.[,name := ref] %>%
+						.[str_detect(chr,"_"),group := "extra"] %>%
+						.[chr == "chrM", group := "mitochondrion"] %>%
+						.[is.na(group), group := "main",.(name,chr,length,group)] %>%
+						.[order(chr)]
+			}else
+			{
+				dt <- all_genome[
+							V1 == ref,
+							.(name = V1,chr = V2,length = V3,group = V4)
+						]
+			}
 		}else
 		{
-			dt <- all_genome[V1 == ref]
+			dt <- fread(ucsc_url) %>%
+					setnames(c("chr","length")) %>%
+					.[,name := ref] %>%
+					.[str_detect(chr,"_"),group := "extra"] %>%
+					.[chr == "chrM", group := "mitochondrion"] %>%
+					.[is.na(group), group := "main",.(name,chr,length,group)] %>%
+					.[order(chr)]
+		}
+
+		if(isFALSE(mit))
+		{
+			dt[group != "mitochondrion"]
 		}
 	
 		if(isFALSE(extra))
 		{
-			dt[V4 != "extra",.(chr = V2,length = V3)]
+			dt[group != "extra",.(chr,length)]
 		}else
 		{
-			dt[,.(chr = V2,length = V3)]
+			dt[,.(chr,length)]
 		}
 	}
 }
