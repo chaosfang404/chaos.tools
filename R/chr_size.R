@@ -3,7 +3,12 @@ chr_size <- function(
 				mit = FALSE,
 				extra = FALSE
 ){
-	all_genome <- fread(system.file("extdata","chr_size.info.txt",package = "chaos.tools"))
+	all_genome <- system.file(
+						"extdata",
+						"chr_size.info.txt",
+						package = "chaos.tools"
+					) %>%
+					fread()
 
 	if (ref == "list")
 	{
