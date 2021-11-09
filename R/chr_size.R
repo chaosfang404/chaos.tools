@@ -52,7 +52,7 @@ chr_size <- function(
 
 		if(isFALSE(mit))
 		{
-			dt[group != "mitochondrion"]
+			dt <- dt[group != "mitochondrion"]
 		}
 	
 		if(isFALSE(extra))
