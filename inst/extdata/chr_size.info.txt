@@ -1,3 +1,4 @@
+name	chr	length	group
 hg19	chr1	249250621	main
 hg19	chr2	243199373	main
 hg19	chr3	198022430	main
