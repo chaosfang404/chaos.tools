@@ -1,15 +1,21 @@
 online_genome_process <- function(
 							ref
 ){
-	paste0("https://hgdownload.soe.ucsc.edu/goldenPath/",ref,"/bigZips/",ref,".chrom.sizes") %>%
-	fread() %>%
-	setnames(c("chr","length")) %>%
-	.[,name := ref] %>%
-	.[str_detect(chr,"_"),group := "extra"] %>%
-	.[chr == "chrM", group := "mitochondrion"] %>%
-	.[is.na(group), group := "main",.(name,chr,length,group)] %>%
-	.[,group := factor(group,levels = c("main","mitochondrion","extra"))] %>%
-	.[order(group,chr)]
+	fread(
+		paste0("https://hgdownload.soe.ucsc.edu/goldenPath/",ref,"/bigZips/",ref,".chrom.sizes")
+	)[
+		,.(chr = V1, length = V2)
+	][
+		,name := ref
+	][
+		str_detect(chr,"_"),group := "extra"][chr == "chrM", group := "mitochondrion"
+	][
+		is.na(group), group := "main",.(name,chr,length,group)
+	][
+		,group := factor(group,levels = c("main","mitochondrion","extra"))
+	][
+		order(group,chr)
+	]
 }
 
 chr_size <- function(
@@ -25,7 +31,8 @@ chr_size <- function(
 					) %>%
 					fread()
 
-	genome_list <- local_genome[,name] %>% unique()
+	genome_list <- local_genome[,name] %>% 
+					unique()
 
 	if (ref == "list")
 	{
@@ -41,7 +48,8 @@ chr_size <- function(
 			}else
 			{
 				dt <- local_genome[
-							name == ref,group := factor(group,levels = c("main","mitochondrion","extra"))
+							name == ref,
+							group := factor(group,levels = c("main","mitochondrion","extra"))
 						]
 			}
 		}else
