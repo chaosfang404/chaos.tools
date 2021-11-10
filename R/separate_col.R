@@ -14,22 +14,19 @@ separate_col <- function(
 	default_name <- paste(
 						"splited",
 						column,
-						seq(1,ncol(split_columns),1),
+						1:ncol(split_columns),
 						sep = "_"
 					)
-
-	setnames(split_columns,default_name)
 
 	if(length(select) == 1)
 	{
 		if(is.na(select))
 		{
-			select = seq(1,ncol(split_columns),1)
+			select = 1:ncol(split_columns)
 		}
 	}
 
 	selected_columns <- paste("splited",column,select,sep = "_")
-	split_columns <- split_columns[,..selected_columns]
 
 	if(length(into) == 1)
 	{
@@ -37,6 +34,8 @@ separate_col <- function(
 		{
 			into <- default_name[select]
 
+			##a simplified way when there is only 1 column were selected
+			##and the original column was not need
 			if(length(select) == 1)
 			{
 				if(!is.na(select))
@@ -50,21 +49,23 @@ separate_col <- function(
 		}
 	}
 
-	setnames(split_columns,into)
-
+	renamed_split_columns <-  split_columns %>%
+								setnames(default_name) %>%
+								.[,..selected_columns] %>%
+								setnames(into)
 
 	if(isTRUE(remove))
 	{
-		dt <- data.table(.data)[
-					,(column) := NULL
-				][
-					,names(split_columns) := split_columns
-				][]
+		data.table(
+			.data
+		)[,(column) := NULL] %>%
+		cbind(renamed_split_columns)
 	} else
 	{
-		dt <- data.table(.data)[
-					,names(split_columns) := split_columns
-				][]
+		data.table(
+			.data
+		) %>% 
+		cbind(renamed_split_columns)
 	}
-	dt
+	
 }
