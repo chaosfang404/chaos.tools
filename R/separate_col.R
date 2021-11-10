@@ -36,6 +36,17 @@ separate_col <- function(
 		if(is.na(into))
 		{
 			into <- default_name[select]
+
+			if(length(select) == 1)
+			{
+				if(!is.na(select))
+				{
+					if(isTRUE(remove))
+					{
+						into <- column
+					}
+				}
+			}
 		}
 	}
 
