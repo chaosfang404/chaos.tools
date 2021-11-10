@@ -20,3 +20,37 @@ str_comb <- function(
 	) %>% 
 	.[,V1]
 }
+
+
+dt_comb2 <- function(
+			x,
+			inter = "all"
+){
+	if(inter == "inter")
+	{
+		x %>% 
+		combn(2) %>% 
+		t() %>% 
+		as.data.table()
+
+	}else if(inter == "intra")
+	{
+		data.table(
+			V1 = x, 
+			V2 = x
+		)
+
+	}else if(inter == "all")
+	{
+		rbind( 
+			x %>% 
+			combn(2) %>% 
+			t() %>% 
+			as.data.table(),
+			data.table(
+				V1 = x,
+				V2 = x
+			)
+		)
+	}
+}
