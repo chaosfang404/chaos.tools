@@ -48,8 +48,9 @@ chr_size <- function(
 			}else
 			{
 				dt <- local_genome[
-							name == ref,
-							group := factor(group,levels = c("main","mitochondrion","extra"))
+							name == ref
+						][
+							,group := factor(group,levels = c("main","mitochondrion","extra"))
 						]
 			}
 		}else
