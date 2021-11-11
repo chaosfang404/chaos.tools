@@ -1,3 +1,14 @@
+#' Fast separate column
+#' @examples
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x")
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",sep = "_")
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = 1)
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = 2,into = "y")
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = 3,into = "y",remove = F)
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = 1,remove = F)
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = c(1,3),remove = F)
+#' data.frame(x=paste0(1:5,"_",letters[1:5],".",LETTERS[1:5])) %>% separate_col("x",select = c(1,3),into = c("y","z"),remove = F)
+#' @export
 separate_col <- function(
 					.data,
 					column,
