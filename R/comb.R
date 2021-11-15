@@ -1,56 +1,77 @@
 dt_comb <- function(
-				...
+				...,
+				rep = NA,
+				inter = "full"
 ){
-	sapply(
-		list(...),
-		function(x){rep(x,length.out = max(sapply(list(...),length)))}
-	) %>% 
-	data.table() %>% 
-	complete_dt()
+	if(!is.na(rep))
+	{
+		if(rep == 2)
+		{
+			if(inter == "inter")
+			{
+				c(...) %>% 
+				combn(2) %>% 
+				t() %>% 
+				as.data.table()
+			}else if(inter == "intra")
+			{
+				data.table(
+					V1 = ..., 
+					V2 = ...
+				)
+			}else if(inter == "half")
+			{
+				rbind( 
+					c(...) %>% 
+					combn(2) %>% 
+					t() %>% 
+					as.data.table(),
+					data.table(
+						V1 = ...,
+						V2 = ...
+					)
+				)
+			}else if(inter == "full")
+			{
+				data.table(...,...) %>%
+				complete_dt()
+			}
+		}else
+		{
+			list(...) %>%
+			rep(rep) %>% 
+			data.frame() %>% 
+			complete_dt() %>%
+			setnames(
+				paste0("V",1:ncol(.))
+			) %>%
+			.[]
+		}
+	}else
+	{
+		sapply(
+			list(...), 
+			function(x){rep(x, length.out = max(sapply(list(...), length)))}
+		) %>% 
+		data.table() %>% 
+		complete_dt()
+	}
 }
 
 str_comb <- function(
 				...,
+				rep = NA,
+				inter = "full",
 				sep = "_"
 ){
-	dt_comb(...) %>% 
+	dt_comb(
+		...,
+		rep = rep,
+		inter = inter
+	) %>% 
 	unite_dt(
 		colnames(.),
 		sep = sep
 	) %>% 
 	.[,V1]
-}
-
-
-dt_comb2 <- function(
-			x,
-			inter = "all"
-){
-	if(inter == "inter")
-	{
-		x %>% 
-		combn(2) %>% 
-		t() %>% 
-		as.data.table()
-
-	}else if(inter == "intra")
-	{
-		data.table(
-			V1 = x, 
-			V2 = x
-		)
-
-	}else if(inter == "all")
-	{
-		rbind( 
-			x %>% 
-			combn(2) %>% 
-			t() %>% 
-			as.data.table(),
-			data.table(
-				V1 = x,
-				V2 = x
-			)
-		)
-	}
 }
