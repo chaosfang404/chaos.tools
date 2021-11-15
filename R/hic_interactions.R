@@ -16,7 +16,7 @@ hic_interaction <- function(
 			){
 				chr1 = x[1]
 				chr2 = x[2]
-				data.table(
+				as.data.table(
 					strawr::straw(norm, hic_file, chr1, chr2, "BP", resolution)
 				)[
 					,chr1 := chr1
@@ -24,12 +24,13 @@ hic_interaction <- function(
 					,chr2 := chr2
 				][
 					,normalization := norm
+				][
+					,counts := str_replace_na(counts,0)
 				] %>%
-				rename_dt(
-					chr1_bin = x, 
-					chr2_bin = y
-				) %>%
-				replace_na_dt(to = 0)
+				setnames(
+					old = c("x","y"),
+					new = c("chr1_bin","chr2_bin")
+				)
 			}
 	apply(chr_list_dt,1,tmp) %>%
 	rbindlist()
