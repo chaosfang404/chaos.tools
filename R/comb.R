@@ -1,4 +1,4 @@
-dt_comb2 <- function(
+dt_comb <- function(
 				...,
 				rep = NA,
 				inter = "full"
