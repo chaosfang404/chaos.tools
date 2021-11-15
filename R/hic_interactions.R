@@ -3,7 +3,7 @@ hic_interaction <- function(
 						chr_list = NA,
 						norm = "KR",
 						resolution = 1e6,
-						inter = "all"
+						inter = "half"
 ){
 	chr_list_dt <- chr_list_dt(
 					hic_file = hic_file,

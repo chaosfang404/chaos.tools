@@ -11,7 +11,7 @@ pastis_pre <- function(
 	chr_list_dt <- chr_list_dt(
 						hic_file = hic_file,
 						chr_list = chr_list,
-						inter = "all"
+						inter = "half"
 					)
 
 	chr_list <- chr_list_dt[,V1] %>% unique() %>% as.character()

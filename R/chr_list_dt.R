@@ -1,7 +1,7 @@
 chr_list_dt <- function(
 					hic_file = NA,
 					chr_list = NA,
-					inter = "all"
+					inter = "half"
 ){
 	chr_list <- chr_list %>% 
 				unique() %>% 
@@ -25,11 +25,18 @@ chr_list_dt <- function(
 				name
 			] %>%
 			as.character() %>%
-			dt_comb2(inter = inter)
+			dt_comb(
+				rep = 2,
+				inter = inter
+			)
 
 		}
 	}else
 	{
-		dt_comb2(chr_list,inter = inter)
+		dt_comb(
+			chr_list,
+			rep = 2,
+			inter = inter
+		)
 	}
 }

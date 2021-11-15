@@ -1,4 +1,4 @@
-dt_comb <- function(
+dt_comb2 <- function(
 				...,
 				rep = NA,
 				inter = "full"
@@ -16,8 +16,8 @@ dt_comb <- function(
 			}else if(inter == "intra")
 			{
 				data.table(
-					V1 = ..., 
-					V2 = ...
+					V1 = c(...), 
+					V2 = c(...)
 				)
 			}else if(inter == "half")
 			{
@@ -27,14 +27,20 @@ dt_comb <- function(
 					t() %>% 
 					as.data.table(),
 					data.table(
-						V1 = ...,
-						V2 = ...
+						V1 = c(...),
+						V2 = c(...)
 					)
 				)
 			}else if(inter == "full")
 			{
-				data.table(...,...) %>%
+				data.table(
+					c(...),
+					c(...)
+				) %>%
 				complete_dt()
+			}else
+			{
+				print("inter, intra, half and full are accepted")
 			}
 		}else
 		{
