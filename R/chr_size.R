@@ -8,9 +8,14 @@ online_genome_process <- function(
 	][
 		,name := ref
 	][
-		str_detect(chr,"_"),group := "extra"][chr == "chrM", group := "mitochondrion"
+		str_detect(chr,"_"),
+		group := "extra"
 	][
-		is.na(group), group := "main",.(name,chr,length,group)
+		chr == "chrM",
+		group := "mitochondrion"
+	][
+		is.na(group),
+		group := "main",.(name,chr,length,group)
 	][
 		,group := factor(group,levels = c("main","mitochondrion","extra"))
 	][
