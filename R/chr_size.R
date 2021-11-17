@@ -24,12 +24,31 @@ chr_size <- function(
 				extra = FALSE,
 				online = FALSE
 ){
-	local_genome <- system.file(
-						"extdata",
-						"chr_size.info.txt",
-						package = "chaos.tools"
-					) %>%
-					fread()
+	local_genome_file <- system.file(
+								"extdata",
+								"common.genome.info.txt",
+								package = "chaos.tools"
+							)
+
+	downloaded_genome_file <- system.file(
+									"extdata",
+									"downloaded.genome.info.txt",
+									package = "chaos.tools"
+								)
+
+	if(file.exists(downloaded_genome_file))
+	){
+		downloaded_genome <- data.table(NULL)
+	}else
+	{
+		downloaded_genome <- fread(local_genome_file)
+	}
+
+
+	local_genome <- rbind(
+						fread(local_genome_file),
+						downloaded_genome
+					)
 
 	genome_list <- local_genome[,name] %>% 
 					unique()
@@ -57,12 +76,9 @@ chr_size <- function(
 		{
 			dt <- online_genome_process(ref = ref)
 			fwrite(
-				rbind(local_genome, dt),
-				system.file(
-					"extdata",
-					"chr_size.info.txt",
-					package = "chaos.tools"
-				)
+				rbind(dt,downloaded_genome),
+				downloaded_genome_file,
+				sep = "\t"
 			)
 		}
 
