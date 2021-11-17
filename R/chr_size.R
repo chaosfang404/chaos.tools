@@ -56,6 +56,14 @@ chr_size <- function(
 		}else
 		{
 			dt <- online_genome_process(ref = ref)
+			fwrite(
+				rbind(local_genome, dt),
+				system.file(
+					"extdata",
+					"chr_size.info.txt",
+					package = "chaos.tools"
+				)
+			)
 		}
 
 		if(isFALSE(mit))
