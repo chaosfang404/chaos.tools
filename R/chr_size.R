@@ -37,7 +37,7 @@ chr_size <- function(
 								)
 
 	if(file.exists(downloaded_genome_file))
-	){
+	{
 		downloaded_genome <- data.table(NULL)
 	}else
 	{
