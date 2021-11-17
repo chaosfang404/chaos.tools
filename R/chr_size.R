@@ -30,27 +30,26 @@ chr_size <- function(
 								package = "chaos.tools"
 							)
 
-	downloaded_genome_file <- system.file(
-									"extdata",
-									"downloaded.genome.info.txt",
-									package = "chaos.tools"
+	downloaded_genome_file <- file.path(
+									.libPaths(),
+									"chaos.tools/extdata/downloaded.genome.info.txt"
 								)
 
-	if(file.exists(downloaded_genome_file))
+	if(!file.exists(downloaded_genome_file))
 	{
 		downloaded_genome <- data.table(NULL)
 	}else
 	{
-		downloaded_genome <- fread(local_genome_file)
+		downloaded_genome <- fread(downloaded_genome_file)
 	}
 
 
-	local_genome <- rbind(
+	all_genome <- rbind(
 						fread(local_genome_file),
 						downloaded_genome
 					)
 
-	genome_list <- local_genome[,name] %>% 
+	genome_list <- all_genome[,name] %>% 
 					unique()
 
 	if (ref == "list")
@@ -66,7 +65,7 @@ chr_size <- function(
 				dt <- online_genome_process(ref = ref)
 			}else
 			{
-				dt <- local_genome[
+				dt <- all_genome[
 							name == ref
 						][
 							,group := factor(group,levels = c("main","mitochondrion","extra"))
@@ -75,7 +74,7 @@ chr_size <- function(
 		}else
 		{
 			dt <- online_genome_process(ref = ref)
-			fwrite(
+			data.table::fwrite(
 				rbind(dt,downloaded_genome),
 				downloaded_genome_file,
 				sep = "\t"
