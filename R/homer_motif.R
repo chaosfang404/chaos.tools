@@ -118,6 +118,7 @@ homer_motif_info <- function(
 
 		dt[,motif := ""] %>%
 		kbl(
+#			"latex",
 			align ="c"
 		) %>% 
 		kable_classic(
@@ -128,7 +129,8 @@ homer_motif_info <- function(
 			image = spec_image(png_files,40,12,res = 30)
 		) %>%
 		save_kable(
-			"motif_table.pdf"
+			"motif_table.pdf",
+			self_contained = T
 		)
 	}
 }
