@@ -105,8 +105,8 @@ homer_motif_info <- function(
 		){
 			ggsave(
 				paste0(image_dir,"/",base_name(x),".png"),
-				height = 3,
-				width = 10
+				height = 6,
+				width = 20
 			)
 			print(motif_plot(x))
 			dev.off()
@@ -125,11 +125,10 @@ homer_motif_info <- function(
 		) %>%
 		column_spec(
 			2,
-			image = spec_image(png_files,400,120)
+			image = spec_image(png_files,40,12,res = 30)
 		) %>%
 		save_kable(
-			"motif_table.html",
-			self_contained = T
+			"motif_table.pdf"
 		)
 	}
 }
