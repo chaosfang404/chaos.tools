@@ -22,17 +22,31 @@ desktop <- function(
 
 	if(platform == "Windows")
 	{
-		desk_dir <- file.path("C:/Users",username,"Desktop")
+		file.path("C:/Users",username,"Desktop")
 	}else if(platform == "Linux")
 	{
 		if(!stringr::str_detect(Sys.info()[2],"WSL"))
 		{
-			desk_dir <- file.path("~",username, "Desktop")
+			file.path("~",username, "Desktop")
 		}else
 		{
-			desk_dir <- file.path("/mnt/c/Users",username,"Desktop")
+			file.path("/mnt/c/Users",username,"Desktop")
 		}
 	}
+}
 
-	desk_dir
+data_dir <- function(
+){
+	platform <- Sys.info()[1]
+
+	if(platform == "Linux")
+	{
+		if(stringr::str_detect(Sys.info()[2],"WSL"))
+		{
+			file.path("/mnt/d/work")
+		}else
+		{
+			scratch()
+		}
+	}
 }
