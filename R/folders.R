@@ -11,7 +11,7 @@ scratch <- function()
 }
 
 desktop <- function(
-			username = NA
+			username = "chao"
 ){
 	if(is.na(username))
 	{
