@@ -22,20 +22,15 @@ wcpa_pre <- function(
 		name <- base_name(hic_file,".hic")
 	}
 
-	res_label <- resolution %>%
-					format(
-						scientific = F,
-						trim = T
-					)
-
-	resolutions <- strawr::readHicBpResolutions(hic_file)
-	lowest_res <-  resolutions[order(-resolutions)][1] %>% as.numeric()
+	lowest_res <- hic_file %>%
+					strawr::readHicBpResolutions() %>% 
+					.[order(-.)] %>% 
+					.[1] %>% 
+					as.numeric()
 
 	count_data_func <- function(
 							x
 	){
-		data.table(readHicBpResolutions(a))[order(-V1)][1,V1]
-
 		tmp <- data.table(
 					strawr::straw(norm,hic_file,x[1],x[2],"BP",lowest_res)
 				) %>%
