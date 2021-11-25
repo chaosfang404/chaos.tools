@@ -38,7 +38,7 @@ expand_slice <- function(
 					body_slice_number = 50,
 					trim = "ceiling"
 ){
-	dt <- as.data.table(test)
+	dt <- as.data.table(.data)
 
 	restname <- colnames(dt)[4:ncol(dt)]
 
