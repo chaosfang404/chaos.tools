@@ -25,7 +25,8 @@ hic_interaction <- function(
 				][
 					,normalization := norm
 				][
-					,counts := str_replace_na(counts,0)
+					is.na(counts),
+					counts := 0
 				] %>%
 				setnames(
 					old = c("x","y"),
@@ -34,5 +35,4 @@ hic_interaction <- function(
 			}
 	apply(chr_list_dt,1,tmp) %>%
 	rbindlist()
-
 }

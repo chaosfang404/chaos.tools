@@ -8,7 +8,7 @@ online_genome_process <- function(
 	][
 		,name := ref
 	][
-		str_detect(chr,"_"),
+		grepl(chr,pattern ="_"),
 		group := "extra"
 	][
 		chr == "chrM",

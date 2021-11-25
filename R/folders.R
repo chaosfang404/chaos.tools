@@ -25,7 +25,7 @@ desktop <- function(
 		file.path("C:/Users",username,"Desktop")
 	}else if(platform == "Linux")
 	{
-		if(!stringr::str_detect(Sys.info()[2],"WSL"))
+		if(!grepl(Sys.info()[2],pattern = "WSL"))
 		{
 			file.path("~",username, "Desktop")
 		}else
@@ -41,7 +41,7 @@ data_dir <- function(
 
 	if(platform == "Linux")
 	{
-		if(stringr::str_detect(Sys.info()[2],"WSL"))
+		if(grepl(Sys.info()[2],pattern = "WSL"))
 		{
 			file.path("/mnt/d/work")
 		}else

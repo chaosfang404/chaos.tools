@@ -46,8 +46,8 @@ wcpa_pre <- function(
 		data.table(
 			sample = name,
 			normalization = norm,
-			chr1 = str_replace(x[1],"chr",""),
-			chr2 = str_replace(x[2],"chr",""),
+			chr1 = gsub(x[1],pattern = "chr",replacement = ""),
+			chr2 = gsub(x[2],pattern = "chr",replacement = ""),
 			interaction = tmp
 		)
 	}

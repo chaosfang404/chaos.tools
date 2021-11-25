@@ -2,7 +2,7 @@ op <- function(
 		file
 ){
 	
-	ext <- str_split(file,"[.]") %>% 
+	ext <- strsplit(file,"[.]") %>% 
 			unlist() %>% 
 			rev() %>% 
 			head(1)

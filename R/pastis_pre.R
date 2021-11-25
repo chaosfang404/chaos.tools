@@ -14,7 +14,9 @@ pastis_pre <- function(
 						inter = "half"
 					)
 
-	chr_list <- chr_list_dt[,V1] %>% unique() %>% as.character()
+	chr_list <- chr_list_dt[,V1] %>% 
+				unique() %>% 
+				as.character()
 
 
 	iter_label <- paste0("iter_",iteration)
@@ -73,7 +75,8 @@ pastis_pre <- function(
 			bed_data_tmp
 		}
 
-		bed_data <- apply(chr_size_info,1,bed_data_func) %>% rbindlist()
+		bed_data <- apply(chr_size_info,1,bed_data_func) %>% 
+					rbindlist()
 
 		bed_data %>%
 		mutate_dt(start = format(start,scientific = F, trim = T)) %>%

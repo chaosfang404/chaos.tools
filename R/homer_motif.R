@@ -70,7 +70,7 @@ homer_motif_info <- function(
 				sep = "\t"
 			)
 		)[
-			,motif := str_replace(V1,"[>]","")
+			,motif := gsub(V1,pattern = ">",replacement = "")
 		][
 			,name := base_name(x)
 		][
