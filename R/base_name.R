@@ -6,7 +6,7 @@ base_name <- function(
 							x
 	){
 		shortname <- x[1] %>% 
-						stringr::str_split("/") %>%
+						strsplit("/") %>%
 						unlist() %>%
 						rev() %>%
 						.[1]
@@ -14,22 +14,28 @@ base_name <- function(
 		if(is.na(ext))
 		{
 			ext2 <- shortname %>%
-					stringr::str_split("[.]") %>%
+					strsplit("[.]") %>%
 					unlist() %>%
 					rev() %>%
 					.[1]
 
 			final <- shortname %>%
-						stringr::str_replace(paste0(".",ext2),"")
+						gsub(
+							pattern = paste0(".",ext2),
+							replacement = ""
+						)
 		}else
 		{
 			final <- shortname %>%
-						stringr::str_replace(ext,"")
+						gsub(
+							pattern = ext,
+							replacement = ""
+						)
 		}
 
 		final
 	}
 
-	apply(data.table(full_name), 1, short_name_func)
+	sapply(full_name, short_name_func) %>%
+	as.character()
 }
-
