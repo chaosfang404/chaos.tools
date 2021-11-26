@@ -2,6 +2,9 @@ shuffle <- function(
 				.data,
 				ref = "hg19"
 ){
+	dt <- as.data.table(.data)
+
+
 	chr_info <- chr_size(
 					ref = ref,
 					extra = T,
@@ -9,21 +12,21 @@ shuffle <- function(
 				) %>%
 				setkey()
 
-	first_3_names <- colnames(.data[,1:3])
+	first_3_names <- colnames(dt[,1:3])
 
-	dt <- .data[,1:3] %>%
-			setnames(c("chr","start","end")) %>%
-			setkey()
+	dt_first_3 <- dt[,1:3] %>%
+					setnames(c("chr","start","end")) %>%
+					setkey()
 
-	if(ncol(.data) >=4)
+	if(ncol(dt) >=4)
 	{
-		dt_rest <- .data[,4:ncol(.data)]
+		dt_rest <- dt[,4:ncol(dt)]
 	}else
 	{
 		dt_rest <- NULL
 	}
 	
-	chr_character <- dt[,chr] %>% 
+	chr_character <- dt$chr %>% 
 					grepl(pattern = "chr") %>% 
 					unique()
 
@@ -38,7 +41,7 @@ shuffle <- function(
 		}
 	}else
 	{
-		dt[
+		dt_first_3[
 			,chr := gsub(chr,pattern = "chr",replacement = "")
 		][
 			,chr := paste0("chr",chr)
@@ -47,7 +50,7 @@ shuffle <- function(
 	}
 
 	merge(
-		dt,
+		dt_first_3,
 		chr_info
 	)[
 		,peak_length := end - start
