@@ -52,7 +52,16 @@ data_dir <- function(
 }
 
 integration_dir <- function(
-						integration_name
+						integration_name,
+						setwd = FALSE
 ){
-	paste0(data_dir(), "/integration/",integration_name)
+	tmp <- paste0(data_dir(), "/integration/",integration_name)
+	if(dir.exists(tmp))
+	{
+		if(isTRUE(setwd)){setwd(tmp)}
+		tmp
+	}else
+	{
+		print("Dir doesn't exist")
+	}
 }
