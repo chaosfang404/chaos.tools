@@ -50,3 +50,9 @@ data_dir <- function(
 		}
 	}
 }
+
+integration_dir <- function(
+						integration_name
+){
+	paste0(data_dir(), "/integration/",integration_name)
+}
