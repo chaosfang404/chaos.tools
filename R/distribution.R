@@ -177,13 +177,13 @@ distribution <- function(
 					fill = 0
 				)
 
-	if(random_col > 0)
+	if(random_times > 0)
 	{
 		mean_random <- apply(overlap[,..random_col],1,mean)
 		overlap[,relative := real - mean_random]
 	}else
 	{
-		overlap
+		overlap[,relative := real]
 	}
 	
 }
