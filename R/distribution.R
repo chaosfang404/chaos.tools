@@ -180,9 +180,40 @@ distribution <- function(
 	if(random_times > 0)
 	{
 		mean_random <- apply(overlap[,..random_col],1,mean)
-		overlap[,relative := real - mean_random][]
+		dt <- overlap[,relative := real - mean_random][]
 	}else
 	{
-		overlap[,relative := real][]
+		dt <- overlap[,relative := real][]
 	}
+
+	if(isFALSE(plot))
+	{
+		dt
+	}else
+	{
+		dt %>%
+		ggplot(aes(block,relative)) + 
+		theme_bw() +
+		scale_color_npg() +
+		scale_x_continuous(
+			breaks = c(
+						1,
+						flank_slice_number ,
+						flank_slice_number + body_slice_number ,
+						flank_slice_number*2 + body_slice_number
+					), 
+			labels = c(
+						paste0(expand/-1000,"k"),
+						"start",
+						"end",
+						paste0(expand/1000,"k")
+					),
+			expand = c(0,0)	
+		) +
+		labs(
+			x = "", 
+			y = "relative Peak count"
+		) 
+	}
+
 }
