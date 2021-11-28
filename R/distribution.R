@@ -147,14 +147,14 @@ distribution <- function(
 	{
 		if(!is.na(align_key))
 		{
-			align_key <- c("align",align_key)
+			align_key <- c("align","exp",align_key)
 		}else
 		{
-			align_key <- c("align")
+			align_key <- c("align","exp")
 		}
 	}else
 	{
-		align_key <- c("align",align_key)
+		align_key <- c("align","exp",align_key)
 	}
 
 	final_col <- c(
@@ -162,12 +162,12 @@ distribution <- function(
 					align_key,
 					"relative",
 					"real",
-					colnames(dt)[startWith(colnames(dt),"random")]
+					colnames(dt) %>% .[startWith(.,"random")]
 				)
 
 	overlap[
 		,.N,
-		c(reference_key,align_key,"exp")
+		c(reference_key,align_key)
 	] %>%
 	wider_dt(
 		name = "exp",
