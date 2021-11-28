@@ -162,7 +162,7 @@ distribution <- function(
 					align_key,
 					"relative",
 					"real",
-					colnames(dt) %>% .[startsWith(.,"random")]
+					colnames(overlap) %>% .[startsWith(.,"random")]
 				)
 
 	dt <- overlap[
