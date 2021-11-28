@@ -180,9 +180,9 @@ distribution <- function(
 	if(random_times > 0)
 	{
 		mean_random <- apply(overlap[,..random_col],1,mean)
-		overlap[,relative := real - mean_random]
+		overlap[,relative := real - mean_random][]
 	}else
 	{
-		overlap[,relative := real]
+		overlap[,relative := real][]
 	}
 }
