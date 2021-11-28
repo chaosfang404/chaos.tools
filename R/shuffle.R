@@ -26,7 +26,7 @@ shuffle <- function(
 		dt_rest <- NULL
 	}
 	
-	chr_character <- dt$chr %>% 
+	chr_character <- dt_first_3$chr %>% 
 					grepl(pattern = "chr") %>% 
 					unique()
 

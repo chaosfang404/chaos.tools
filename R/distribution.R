@@ -16,7 +16,9 @@ distribution <- function(
 					trim = "ceiling",
 					direction_col_number = NA,
 					random_times = 3,
-					peak_ref = "hg19"
+					peak_ref = "hg19",
+					reference_key = NA,
+					align_key = NA
 ){
 	if(length(reference_name) == 1)
 	{
@@ -48,7 +50,7 @@ distribution <- function(
 							x
 	){
 		fread(
-			x[1],
+			x[1]
 		)[
 			,V1 := chr_omit(V1)
 		] %>%
@@ -76,8 +78,7 @@ distribution <- function(
 	read_align <- function(x)
 	{
 		fread(
-			x[1],
-			header = F
+			x[1]
 		)[
 			,V1 := chr_omit(V1)
 		][
@@ -113,17 +114,18 @@ distribution <- function(
 		align_random <- NULL
 	}
 
-	rbind(
-		align_real,
-		align_random
-	) %>%
-	setnames(
-		old = c("V1","V2","V3"),
-		new = c("chr","start","end")
-	) %>%
-	setkey(chr,start,end) %>%
-	foverlaps(
-		reference_info,
-		nomatch = NULL
-	) 
+	dt <- rbind(
+				align_real,
+				align_random
+			) %>%
+			setnames(
+				old = c("V1","V2","V3"),
+				new = c("chr","start","end")
+			) %>%
+			setkey(chr,start,end) %>%
+			foverlaps(
+				reference_info,
+				nomatch = NULL
+			) 
+	dt
 }
