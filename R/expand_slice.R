@@ -275,7 +275,7 @@ expand_slice <- function(
 	tmp <- function(x)
 	{
 		chr <- x[1]
-		if(!is.na(direction_col))
+		if(!is.na(direction_col_number))
 		{
 			if(x[direction_col_number] == "-")
 			{
@@ -334,7 +334,7 @@ expand_slice <- function(
 					,chr := chr
 				]
 
-		if(!is.na(direction_col))
+		if(!is.na(direction_col_number))
 		{
 			if(x[direction_col_number] == "-")
 			{
