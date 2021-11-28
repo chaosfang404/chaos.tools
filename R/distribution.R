@@ -18,7 +18,8 @@ distribution <- function(
 					random_times = 3,
 					peak_ref = "hg19",
 					reference_key = NA,
-					align_key = NA
+					align_key = NA,
+					plot = FALSE
 ){
 	if(length(reference_name) == 1)
 	{
@@ -114,18 +115,67 @@ distribution <- function(
 		align_random <- NULL
 	}
 
-	dt <- rbind(
-				align_real,
-				align_random
-			) %>%
-			setnames(
-				old = c("V1","V2","V3"),
-				new = c("chr","start","end")
-			) %>%
-			setkey(chr,start,end) %>%
-			foverlaps(
-				reference_info,
-				nomatch = NULL
-			) 
-	dt
+	overlap <- rbind(
+					align_real,
+					align_random
+				) %>%
+				setnames(
+					old = c("V1","V2","V3"),
+					new = c("chr","start","end")
+				) %>%
+				setkey(chr,start,end) %>%
+				foverlaps(
+					reference_info,
+					nomatch = NULL
+				) 
+
+	if(length(reference_key) == 1)
+	{
+		if(!is.na(reference_key))
+		{
+			reference_key <- c("block","reference","expand",reference_key)
+		}else
+		{
+			reference_key <- c("block","reference","expand")
+		}
+	}else
+	{
+		reference_key <- c("block","reference","expand",reference_key)
+	}
+
+	if(length(align_key) == 1)
+	{
+		if(!is.na(align_key))
+		{
+			align_key <- c("align",align_key)
+		}else
+		{
+			align_key <- c("align")
+		}
+	}else
+	{
+		align_key <- c("align",align_key)
+	}
+
+	final_col <- c(
+					reference_key,
+					align_key,
+					"relative",
+					"real",
+					colnames(dt)[startWith(colnames(dt),"random")]
+				)
+
+	overlap[
+		,.N,
+		c(reference_key,align_key,"exp")
+	] %>%
+	wider_dt(
+		name = "exp",
+		value = "N"
+	) %>%
+	replace_na_dt(to = 0) %>%
+	.[
+		,relative := real - apply(select_dt(.,"random"),1,mean)
+	] %>%
+	.[,..final_col]
 }
