@@ -165,17 +165,18 @@ distribution <- function(
 					colnames(dt) %>% .[startWith(.,"random")]
 				)
 
-	overlap[
-		,.N,
-		c(reference_key,align_key)
-	] %>%
-	wider_dt(
-		name = "exp",
-		value = "N"
-	) %>%
-	replace_na_dt(to = 0) %>%
-	.[
-		,relative := real - apply(select_dt(.,"random"),1,mean)
-	] %>%
-	.[,..final_col]
+	dt <- overlap[
+			,.N,
+			c(reference_key,align_key)
+		] %>%
+		wider_dt(
+			name = "exp",
+			value = "N"
+		) %>%
+		replace_na_dt(to = 0) %>%
+		.[
+			,relative := real - apply(select_dt(.,"random"),1,mean)
+		] %>%
+		.[,..final_col]
+	dt
 }
