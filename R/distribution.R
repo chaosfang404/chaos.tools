@@ -110,24 +110,12 @@ distribution <- function(
 						) %>%
 						apply(1,align_random_fun) %>%
 						rbindlist()
+		random_col <- paste0("random_",1:random_times)
 	}else
 	{
 		align_random <- NULL
+		random_col <- NULL
 	}
-
-	overlap <- rbind(
-					align_real,
-					align_random
-				) %>%
-				setnames(
-					old = c("V1","V2","V3"),
-					new = c("chr","start","end")
-				) %>%
-				setkey(chr,start,end) %>%
-				foverlaps(
-					reference_info,
-					nomatch = NULL
-				) 
 
 	if(length(reference_key) == 1)
 	{
@@ -147,14 +135,14 @@ distribution <- function(
 	{
 		if(!is.na(align_key))
 		{
-			align_key <- c("align","exp",align_key)
+			align_key <- c("align",align_key)
 		}else
 		{
-			align_key <- c("align","exp")
+			align_key <- c("align")
 		}
 	}else
 	{
-		align_key <- c("align","exp",align_key)
+		align_key <- c("align",align_key)
 	}
 
 	final_col <- c(
@@ -162,21 +150,40 @@ distribution <- function(
 					align_key,
 					"relative",
 					"real",
-					colnames(overlap) %>% .[startsWith(.,"random")]
+					random_col
 				)
 
-	dt <- overlap[
-			,.N,
-			c(reference_key,align_key)
-		] %>%
-		wider_dt(
-			name = "exp",
-			value = "N"
-		) %>%
-		replace_na_dt(to = 0) %>%
-		.[
-			,relative := real - apply(select_dt(.,"random"),1,mean)
-		] %>%
-		.[,..final_col]
-	dt
+
+	overlap <- rbind(
+					align_real,
+					align_random
+				) %>%
+				setnames(
+					old = c("V1","V2","V3"),
+					new = c("chr","start","end")
+				) %>%
+				setkey(chr,start,end) %>%
+				foverlaps(
+					reference_info,
+					nomatch = NULL
+				) %>%
+				.[
+					,.N,
+					c(reference_key,align_key,"exp")
+				] %>%
+				wider_dt(
+					name = "exp",
+					value = "N",
+					fill = 0
+				)
+
+	if(random_col > 0)
+	{
+		mean_random <- apply(overlap[,..random_col],1,mean)
+		overlap[,relative := real - mean_random]
+	}else
+	{
+		overlap
+	}
+	
 }
