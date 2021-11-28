@@ -16,7 +16,7 @@ distribution <- function(
 					trim = "ceiling",
 					direction_col_number = NA,
 					random_times = 3,
-					peak_ref = "hg19",
+					align_ref = "hg19",
 					reference_key = NA,
 					align_key = NA,
 					plot = FALSE
