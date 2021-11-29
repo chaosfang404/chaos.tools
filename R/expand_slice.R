@@ -358,5 +358,6 @@ expand_slice <- function(
 		cbind(dt1,dt2)
 	}
 	apply(dt,1,tmp) %>%
-	rbindlist()
+	rbindlist() %>%
+	.[]
 }
