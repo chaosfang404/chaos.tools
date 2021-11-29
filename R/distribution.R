@@ -61,9 +61,11 @@ distribution <- function(
 			body_slice_number = body_slice_number,
 			direction_col_number = direction_col_number,
 			trim = trim
-		)[
+		) %>%
+		.[
 			,reference := x[2]
-		][
+		] %>%
+		.[
 			,expand := x[3]
 		]
 	}
