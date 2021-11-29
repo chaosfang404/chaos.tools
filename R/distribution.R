@@ -1,8 +1,11 @@
 chr_omit <- function(
 				.data
 ){
-	.data %>%
-	gsub(pattern = "chr",replacement = "")
+	gsub(
+		.data,
+		pattern = "chr",
+		replacement = ""
+	)
 }
 
 distribution <- function(
@@ -50,30 +53,23 @@ distribution <- function(
 	ref_expand_slice <- function(
 							x
 	){
-		fread(
-			x[1]
-		)[
-			,V1 := chr_omit(V1)
-		] %>%
 		expand_slice(
+			fread(x[1])[,V1 := chr_omit(V1)],
 			expand = as.numeric(x[3]),
 			flank_slice_number = flank_slice_number,
 			body_slice_number = body_slice_number,
 			direction_col_number = direction_col_number,
 			trim = trim
-		) %>%
-		.[
+		)[
 			,reference := x[2]
-		] %>%
-		.[
+		][
 			,expand := x[3]
 		]
 	}
 
 	ref_info <- ref_dt %>%
 				apply(1,ref_expand_slice) %>%
-				rbindlist() %>%
-				setkey(chr,start,end)
+				rbindlist()
 
 	ref_essential_col <- c("chr","start","end","block","reference","expand")
 
