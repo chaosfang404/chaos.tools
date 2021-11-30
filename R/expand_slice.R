@@ -270,6 +270,11 @@ expand_slice <- function(
 ){
 	dt <- as.data.table(.data)
 
+	if(ncol(dt) < 4)
+	{
+		dt[,V4 := paste0("ref_ID_",1:.N)]
+	}
+
 	restname <- colnames(dt)[4:ncol(dt)]
 
 	tmp <- function(x)

@@ -21,8 +21,7 @@ distribution <- function(
 					random_times = 3,
 					genome = "hg19",
 					ref_keep = NA,
-					align_keep = NA,
-					plot = FALSE
+					align_keep = NA
 ){
 	if(length(reference_name) == 1)
 	{
@@ -76,10 +75,12 @@ distribution <- function(
 	ref_rest_col <- colnames(ref_info) %>% 
 							.[! . %in% ref_essential_col]
 
+	ref_rest_col_new <- paste0("ref_",ref_rest_col)
+
 	ref_info %>%
 	setnames(
 		old = ref_rest_col,
-		new = paste0("ref_",ref_rest_col)
+		new = ref_rest_col_new
 	) %>%
 	setkey(chr,start,end)
 
@@ -137,15 +138,20 @@ distribution <- function(
 				)
 
 	align_essential_col <- c("chr","start","end","align","exp")
+
 	align_rest_col <- colnames(align_info) %>% 
 							.[! . %in% align_essential_col]
 
-	align_info %>%
-	setnames(
-		old = align_rest_col,
-		new = paste0("align_",align_rest_col)
-	) %>%
-	setkey(chr,start,end)
+	if(length(align_rest_col) > 0)
+	{
+		setnames(
+			align_info,
+			old = align_rest_col,
+			new = paste0("align_",align_rest_col)
+		)
+	}
+
+	setkey(align_info,chr,start,end)
 
 	if(length(ref_keep) == 1)
 	{
@@ -179,53 +185,29 @@ distribution <- function(
 				align_info,
 				ref_info,
 				nomatch = NULL
-			) %>%
-			.[
-				,.N,
-				c("block","reference","expand",ref_keep_col,"align","exp",align_keep_col)
-			] %>%
-			wider_dt(
-				name = "exp",
-				value = "N",
-				fill = 0
 			)
+
+	left_col <- c("block","reference","expand",ref_keep_col,"align","exp",align_keep_col)
+
+	distribution <- overlap[,.N, left_col] %>%
+					wider_dt(name = "exp", value = "N", fill = 0)
 
 	if(random_times > 0)
 	{
-		mean_random <- apply(overlap[,..random_col],1,mean)
-		dt <- overlap[,relative := real - mean_random][]
+		mean_random <- apply(distribution[,..random_col],1,mean)
 	}else
 	{
-		dt <- overlap[,relative := real][]
+		mean_random <- 0
 	}
 
-	if(isFALSE(plot))
-	{
-		dt
-	}else
-	{
-		dt %>%
-		ggplot(aes(block,relative)) + 
-		theme_bw() +
-		scale_color_npg() +
-		scale_x_continuous(
-			breaks = c(
-						1,
-						flank_slice_number ,
-						flank_slice_number + body_slice_number ,
-						flank_slice_number*2 + body_slice_number
-					), 
-			labels = c(
-						paste0(expand/-1000,"k"),
-						"start",
-						"end",
-						paste0(expand/1000,"k")
-					),
-			expand = c(0,0)	
-		) +
-		labs(
-			x = "", 
-			y = "relative Peak count"
-		) 
-	}
+	distribution[,relative := real - mean_random]
+
+	matrix <- overlap[,.N,c(left_col,"ref_V4")] %>% 
+				wider_dt(name = "exp", value = "N",fill = 0)
+
+	list(
+		overlap = overlap,
+		distribution = distribution,
+		matrix = matrix
+	)
 }
