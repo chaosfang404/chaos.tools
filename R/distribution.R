@@ -62,7 +62,7 @@ distribution <- function(
 		)[
 			,reference := x[2]
 		][
-			,expand := x[3]
+			,expand := as.numeric(x[3])
 		]
 	}
 
