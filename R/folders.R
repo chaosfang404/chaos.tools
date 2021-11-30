@@ -48,6 +48,9 @@ data_dir <- function(
 		{
 			scratch()
 		}
+	}else if(platform == "Windows")
+	{
+		file.path("D:/work")
 	}
 }
 
