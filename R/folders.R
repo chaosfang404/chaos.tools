@@ -72,7 +72,7 @@ integration_dir <- function(
 			print(paste0("create the dir with integration_dir(",tmp,",creat = TRUE)",))
 		}else
 		{
-			dir.creat(tmp)
+			dir.create(tmp)
 			setwd(tmp)
 		}
 
