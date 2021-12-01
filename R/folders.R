@@ -55,39 +55,7 @@ data_dir <- function(
 }
 
 integration_dir <- function(
-						integration_name,
-						creat = FALSE,
-						setwd = FALSE
+						integration_name
 ){
-	tmp <- paste0(data_dir(), "/integration/",integration_name)
-	current_dir <- getwd()
-
-	if(!dir.exists(tmp))
-	{
-		print("Dir doesn't exist")
-		if(isFALSE(creat))
-		{
-			print(paste0("create the dir with integration_dir(...,creat = TRUE)"))
-		}else
-		{
-			dir.create(tmp)
-			print(paste0(tmp," has been created"))
-		}
-	}else
-	{
-		print(tmp)
-	}
-
-	if(isTRUE(setwd))
-	{
-		if(tmp == current_dir)
-		{
-			print(paste0("you already in ",tmp))
-		}else
-		{
-			setwd(tmp)
-			print(paste0("work dir has changed to ",tmp))
-		}
-	}
-
+	paste0(data_dir(), "/integration/",integration_name)
 }
