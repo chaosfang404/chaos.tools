@@ -69,7 +69,7 @@ integration_dir <- function(
 		print("Dir doesn't exist")
 		if(isFALSE(creat))
 		{
-			print(paste0("create the dir with integration_dir\(",tmp,",creat = TRUE\)",))
+			print(paste0("create the dir with integration_dir(",tmp,",creat = TRUE)"))
 		}else
 		{
 			dir.create(tmp)
