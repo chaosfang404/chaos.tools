@@ -213,14 +213,16 @@ distribution <- function(
 }
 
 
-
 distribution_plot <- function(
 						.data,
 						start = "start",
 						end = "end",
 						flank_slice_number = 25,
 						body_slice_number = 50,
-						expand = 10000
+						expand = 10000,
+						lab_x = "",
+						lab_y = "relative Peak count",
+						legend_position = c(0.9,0.9)
 ){
 	.data %>%
 	ggplot() +
@@ -243,13 +245,13 @@ distribution_plot <- function(
 		expand = c(0, 0)
 	) + 
 	labs(
-		x = "",
-		y = "relative Peak count"
+		x = lab_x,
+		y = lab_y
 	) +
 	theme(
         legend.title = element_blank(),
         legend.background = element_blank(),
         legend.key = element_blank(),
-		legend.position = c(0.9,0.9)
+		legend.position = legend_position
 	)
 }
