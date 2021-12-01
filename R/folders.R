@@ -75,7 +75,7 @@ integration_dir <- function(
 		}
 	}else
 	{
-		return(tmp)
+		print(tmp)
 	}
 
 	if(isTRUE(setwd))
