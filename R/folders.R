@@ -69,6 +69,7 @@ integration_dir <- function(
 		}else
 		{
 			dir.create(tmp)
+			print(paste0(tmp," has been created"))
 		}
 	}else
 	{
