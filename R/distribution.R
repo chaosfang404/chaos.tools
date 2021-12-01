@@ -211,3 +211,45 @@ distribution <- function(
 		matrix = matrix
 	)
 }
+
+
+
+distribution_plot <- function(
+						.data,
+						start = "start",
+						end = "end",
+						flank_slice_number = 25,
+						body_slice_number = 50,
+						expand = 10000
+){
+	.data %>%
+	ggplot() +
+	theme_bw() +
+	scale_color_npg() + 
+	scale_x_continuous(
+		breaks = c(
+					1,
+					flank_slice_number, 
+					flank_slice_number + 
+					body_slice_number, 
+					flank_slice_number * 2 + body_slice_number
+		),
+		labels = c(
+					paste0(expand/-1000, "k"),
+					"start",
+					"end",
+					paste0(expand/1000, "k")
+		),
+		expand = c(0, 0)
+	) + 
+	labs(
+		x = "",
+		y = "relative Peak count"
+	) +
+	theme(
+        legend.title = element_blank(),
+        legend.background = element_blank(),
+        legend.key = element_blank(),
+		legend.position = c(0.9,0.9)
+	)
+}
