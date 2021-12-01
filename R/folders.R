@@ -60,6 +60,8 @@ integration_dir <- function(
 						setwd = FALSE
 ){
 	tmp <- paste0(data_dir(), "/integration/",integration_name)
+	current_dir <- getwd()
+
 	if(!dir.exists(tmp))
 	{
 		print("Dir doesn't exist")
@@ -78,8 +80,14 @@ integration_dir <- function(
 
 	if(isTRUE(setwd))
 	{
-		setwd(tmp)
-		print(paste0("work dir has changed to ",tmp))
+		if(tmp == current_dir)
+		{
+			print(paste0("you already in ",tmp))
+		}else
+		{
+			setwd(tmp)
+			print(paste0("work dir has changed to ",tmp))
+		}
 	}
 
 }
