@@ -15,6 +15,7 @@ distribution <- function(
 					align_name = NA,
 					expand = 10000,
 					flank_slice_number = 25,
+					body_size = NA,
 					body_slice_number = 50,
 					trim = "ceiling",
 					direction_col_number = NA,
@@ -23,6 +24,11 @@ distribution <- function(
 					ref_keep = NA,
 					align_keep = NA
 ){
+	if(!is.na(body_size))
+	{
+		body_slice_number <- body_size * flank_slice_number / flank_slice_number
+	}
+
 	if(length(reference_name) == 1)
 	{
 		if(is.na(reference_name))
