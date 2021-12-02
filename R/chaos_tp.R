@@ -6,7 +6,7 @@ chaos_tp <- function(
 				window.size = 20L
 ){
 	chr_info <- as.data.table(
-					readHicChroms(hic_file)
+					readHicChroms(hic_file[1])
 				)[name != "ALL"]
 
 	if(length(chr_list) == 1)
