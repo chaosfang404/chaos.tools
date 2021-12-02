@@ -24,22 +24,30 @@ chaos_tp <- function(
 				) %>%
 				as.data.table()
 
+	bin_func <- function(x)
+	{
+		chr_length <- chr_info[
+							name == x[1],
+							length
+						]
+
+		seq(0,chr_length,resolution) %>%
+		data.table(
+			id = 1:length(.),
+			chr = as.character(x[1]),
+			from.coord = ., 
+			to.coord = c(.[-1],chr_length)
+		)
+	}
+
+	bin_all <- data.table(chr_list) %>%
+				apply(1,bin_func) %>%
+				rbindlist()
 
 	core_fun <- function(
 					x
 	){
-		chr_length <- chr_info[
-							name == x[2],
-							length
-						]
-
-		bins <- seq(0,chr_length,resolution) %>%
-				data.table(
-					id = 1:length(.),
-					chr = x[2],
-					from.coord = ., 
-					to.coord = c(.[-1],chr_length)
-				)
+		bins <- bin_all[chr == x[2]]
 
 		counts <- hic_interaction(
 					hic_file = x[1],
@@ -67,9 +75,7 @@ chaos_tp <- function(
 		result$bed$sample <- sample_name
 	}
 
-	result <- chr_list %>%
-			data.table() %>%
-			apply(1,core_fun)
+	result <- apply(tad_dt,1,core_fun)
 
 	length_dt <- data.table(1:length(result))
 
