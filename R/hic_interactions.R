@@ -5,12 +5,6 @@ hic_interaction <- function(
 						resolution = 1e6,
 						inter = "half"
 ){
-	chr_list_dt <- chr_list_dt(
-					hic_file = hic_file,
-					chr_list = chr_list,
-					inter = inter
-				)
-
 	tmp <- function(
 				x
 			){
@@ -33,4 +27,13 @@ hic_interaction <- function(
 					new = c("chr1_bin","chr2_bin")
 				)
 			}
+
+	chr_list_dt(
+		hic_file = hic_file,
+		chr_list = chr_list,
+		inter = inter
+	) %>%
+	apply(1,tmp) %>%
+	rbindlist()
+
 }
