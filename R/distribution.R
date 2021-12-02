@@ -26,7 +26,7 @@ distribution <- function(
 ){
 	if(!is.na(body_size))
 	{
-		body_slice_number <- body_size * flank_slice_number / flank_slice_number
+		body_slice_number <- body_size * flank_slice_number / expand
 	}
 
 	if(length(reference_name) == 1)
