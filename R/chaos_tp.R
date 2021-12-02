@@ -1,4 +1,4 @@
-chaos_tp2 <- function(
+chaos_tp <- function(
 				hic_file,
 				chr_list = NA,
 				resolution = 1e4,
