@@ -3,7 +3,8 @@ hic_interaction <- function(
 						chr_list = NA,
 						norm = "KR",
 						resolution = 1e6,
-						inter = "half"
+						inter = "half",
+						list = FALSE
 ){
 	chr_list_dt <- chr_list_dt(
 					hic_file = hic_file,
@@ -33,6 +34,14 @@ hic_interaction <- function(
 					new = c("chr1_bin","chr2_bin")
 				)
 			}
-	apply(chr_list_dt,1,tmp) %>%
-	rbindlist()
+	
+	if(isFALSE(list))
+	{
+		apply(chr_list_dt,1,tmp) %>%
+		rbindlist()
+	}else
+	{
+		apply(chr_list_dt,1,tmp)
+	}
+
 }
