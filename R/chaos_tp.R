@@ -1,12 +1,12 @@
-chaos_tp <- function(
+chaos_tp2 <- function(
 				hic_file,
 				chr_list = NA,
 				resolution = 1e4,
 				norm = "KR",
-				window.size = 20L
+				window.size = 20
 ){
 	chr_info <- as.data.table(
-					readHicChroms(hic_file[1])
+					strawr::readHicChroms(hic_file[1])
 				)[name != "ALL"]
 
 	if(length(chr_list) == 1)
@@ -20,7 +20,7 @@ chaos_tp <- function(
 	tad_dt <- expand.grid(
 					hic_file,
 					chr_list,
-					stringAsFactors = F
+					stringsAsFactors = F
 				) %>%
 				as.data.table()
 
@@ -67,12 +67,13 @@ chaos_tp <- function(
 						list(bins = bins, counts = counts),
 						class = "TopDomData"
 					) %>%
-					TopDom(window.size = window.size)
+					TopDom::TopDom(window.size = window.size)
 
 		sample_name <- base_name(x[1],".hic")
 		result$domain$sample <- sample_name
 		result$binSignal$sample <- sample_name
 		result$bed$sample <- sample_name
+		result
 	}
 
 	result <- apply(tad_dt,1,core_fun)
