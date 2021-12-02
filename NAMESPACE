@@ -1,7 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 
 export(wcpa)
-export(%>%)
+export("%>%")
 export(fread)
 
 import(data.table)
