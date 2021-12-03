@@ -63,7 +63,7 @@ chaos_tp <- function(
 
 		counts <- hic_interaction(
 					hic_file = x[1],
-					chr_list = [2],
+					chr_list = x[2],
 					resolution = as.numeric(x[3]),
 					norm = norm,
 					inter = "intra"
