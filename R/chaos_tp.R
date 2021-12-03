@@ -37,7 +37,7 @@ chaos_tp <- function(
 		data.table(
 			id = 1:length(.),
 			chr = as.character(x[1]),
-			resolution = as.character(x[2]),
+			resolution = as.numeric(x[2]),
 			from.coord = ., 
 			to.coord = c(.[-1],chr_length)
 		)
@@ -51,13 +51,8 @@ chaos_tp <- function(
 	core_fun <- function(
 					x
 	){
-		hic_file_single <- x[1]
-		chr_list_single <- x[2]
-		resolution_single <- as.numeric(x[3])
-		window.size_single <- as.numeric(x[4])
-
 		bins <- bin_all[
-					chr == x[1] & resolution == as.numeric(x[3]),
+					chr == x[2] & resolution == as.numeric(x[3]),
 					-"resolution"
 				]
 
