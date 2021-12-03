@@ -33,7 +33,7 @@ chaos_tp <- function(
 							length
 						]
 
-		seq(0,chr_length,x[2]) %>%
+		seq(0,chr_length,as.numeric(x[2])) %>%
 		data.table(
 			id = 1:length(.),
 			chr = as.character(x[1]),
