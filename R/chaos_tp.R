@@ -37,6 +37,7 @@ chaos_tp <- function(
 		data.table(
 			id = 1:length(.),
 			chr = as.character(x[1]),
+			resolution = as.character(x[2]),
 			from.coord = ., 
 			to.coord = c(.[-1],chr_length)
 		)
@@ -50,7 +51,10 @@ chaos_tp <- function(
 	core_fun <- function(
 					x
 	){
-		bins <- bin_all[chr == x[2]]
+		bins <- bin_all[
+					chr == x[2] & resolution == as.character(x[3]),
+					-"resolution"
+				]
 
 		counts <- hic_interaction(
 					hic_file = x[1],
