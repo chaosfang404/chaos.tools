@@ -20,6 +20,8 @@ chaos_tp <- function(
 	tad_dt <- expand.grid(
 					hic_file,
 					chr_list,
+					resolution,
+					window.size,
 					stringsAsFactors = F
 				) %>%
 				as.data.table()
@@ -52,7 +54,7 @@ chaos_tp <- function(
 		counts <- hic_interaction(
 					hic_file = x[1],
 					chr_list = x[2],
-					resolution = resolution,
+					resolution = as.numeric(x[3]),
 					norm = norm,
 					inter = "intra"
 				)[
@@ -67,12 +69,17 @@ chaos_tp <- function(
 						list(bins = bins, counts = counts),
 						class = "TopDomData"
 					) %>%
-					TopDom::TopDom(window.size = window.size)
+					TopDom::TopDom(window.size = as.numeric(x[4]))
 
-		sample_name <- base_name(x[1],".hic")
-		result$domain$sample <- sample_name
-		result$binSignal$sample <- sample_name
-		result$bed$sample <- sample_name
+		result$domain$sample <- base_name(x[1],".hic")
+		result$domain$resolution <- as.numeric(x[3])
+		result$domain$window_size <- as.numeric(x[4])
+		result$binSignal$sample <- base_name(x[1],".hic")
+		result$binSignal$resolution <- as.numeric(x[3])
+		result$binSignal$window_size <- as.numeric(x[4])
+		result$bed$sample <- base_name(x[1],".hic")
+		result$bed$resolution <- as.numeric(x[3])
+		result$bed$window_size <- as.numeric(x[4])
 		result
 	}
 
