@@ -51,15 +51,20 @@ chaos_tp <- function(
 	core_fun <- function(
 					x
 	){
+		hic_file_single <- x[1]
+		chr_single <- x[2]
+		resolution_single <- as.numeric(x[3])
+		window.size_single <- as.numeric(x[4])
+
 		bins <- bin_all[
-					chr == x[2] & resolution == as.numeric(x[3]),
+					chr == chr_single & resolution == resolution_single,
 					-"resolution"
 				]
 
 		counts <- hic_interaction(
-					hic_file = x[1],
-					chr_list = x[2],
-					resolution = as.numeric(x[3]),
+					hic_file = hic_file_single,
+					chr_list = chr_single,
+					resolution = resolution_single,
 					norm = norm,
 					inter = "intra"
 				)[
@@ -82,17 +87,17 @@ chaos_tp <- function(
 							list(bins = bins, counts = counts),
 							class = "TopDomData"
 						) %>%
-						TopDom::TopDom(window.size = as.numeric(x[4]))
+						TopDom::TopDom(window.size = window.size_single)
 
-		single_result$domain$sample <- base_name(x[1],".hic")
-		single_result$domain$resolution <- as.numeric(x[3])
-		single_result$domain$window_size <- as.numeric(x[4])
-		single_result$binSignal$sample <- base_name(x[1],".hic")
-		single_result$binSignal$resolution <- as.numeric(x[3])
-		single_result$binSignal$window_size <- as.numeric(x[4])
-		single_result$bed$sample <- base_name(x[1],".hic")
-		single_result$bed$resolution <- as.numeric(x[3])
-		single_result$bed$window_size <- as.numeric(x[4])
+		single_result$domain$sample <- base_name(hic_file_single,".hic")
+		single_result$domain$resolution <- resolution_single
+		single_result$domain$window_size <- window.size_single
+		single_result$binSignal$sample <- base_name(hic_file_single,".hic")
+		single_result$binSignal$resolution <- resolution_single
+		single_result$binSignal$window_size <- window.size_single
+		single_result$bed$sample <- base_name(hic_file_single,".hic")
+		single_result$bed$resolution <- resolution_single
+		single_result$bed$window_size <- window.size_single
 		single_result
 	}
 
