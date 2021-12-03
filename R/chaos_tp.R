@@ -51,22 +51,35 @@ chaos_tp <- function(
 	core_fun <- function(
 					x
 	){
+		hic_file_single <- x[1]
+		chr_list_single <- x[2]
+		resolution_single <- as.numeric(x[3])
+		window.size_single <- as.numeric(x[4])
+
 		bins <- bin_all[
-					chr == x[2] & resolution == as.character(x[3]),
+					chr == chr_list_single & resolution == resolution_single,
 					-"resolution"
 				]
 
 		counts <- hic_interaction(
-					hic_file = x[1],
-					chr_list = x[2],
-					resolution = as.numeric(x[3]),
+					hic_file = hic_file_single,
+					chr_list = chr_list_single,
+					resolution = resolution_single,
 					norm = norm,
 					inter = "intra"
 				)[
 					,.(chr1_bin,chr2_bin,counts)
 				] %>%
-				complete_dt(chr1_bin = bins$from.coord, chr2_bin = bins$from.coord,fill = 0) %>% 
-				dcast(chr1_bin ~ chr2_bin, value.var= "counts",fill = 0) %>%
+				complete_dt(
+					chr1_bin = bins$from.coord, 
+					chr2_bin = bins$from.coord,
+					fill = 0
+				) %>% 
+				dcast(
+					chr1_bin ~ chr2_bin, 
+					value.var= "counts",
+					fill = 0
+				) %>%
 				.[,-1] %>%
 				as.matrix()
 
@@ -74,48 +87,48 @@ chaos_tp <- function(
 						list(bins = bins, counts = counts),
 						class = "TopDomData"
 					) %>%
-					TopDom::TopDom(window.size = as.numeric(x[4]))
+					TopDom::TopDom(window.size = window.size_single)
 
-		result$domain$sample <- base_name(x[1],".hic")
-		result$domain$resolution <- as.numeric(x[3])
-		result$domain$window_size <- as.numeric(x[4])
-		result$binSignal$sample <- base_name(x[1],".hic")
-		result$binSignal$resolution <- as.numeric(x[3])
-		result$binSignal$window_size <- as.numeric(x[4])
-		result$bed$sample <- base_name(x[1],".hic")
-		result$bed$resolution <- as.numeric(x[3])
-		result$bed$window_size <- as.numeric(x[4])
-		result
+		single_result$domain$sample <- base_name(hic_file_single,".hic")
+		single_result$domain$resolution <- resolution_single
+		single_result$domain$window_size <- window.size_single
+		single_result$binSignal$sample <- base_name(hic_file_single,".hic")
+		single_result$binSignal$resolution <- resolution_single
+		single_result$binSignal$window_size <- window.size_single
+		single_result$bed$sample <- base_name(hic_file_single,".hic")
+		single_result$bed$resolution <- resolution_single
+		single_result$bed$window_size <- window.size_single
+		single_result
 	}
 
-	result <- apply(tad_dt,1,core_fun)
+	total_result <- apply(tad_dt,1,core_fun)
 
-	length_dt <- data.table(1:length(result))
+	length_dt <- data.table(1:length(total_result))
 
-	domains <-  apply(
+	all_domains <-  apply(
+						length_dt,
+						1,
+						function(x){total_result[[x]]$domain}
+					) %>% 
+					rbindlist()
+
+	all_binSignals <-  apply(
+							length_dt,
+							1,
+							function(x){total_result[[x]]$binSignal}
+						) %>% 
+						rbindlist()
+
+	all_beds <-  apply(
 					length_dt,
 					1,
-					function(x){result[[x]]$domain}
-				) %>% 
-				rbindlist()
-
-	binSignals <-  apply(
-					length_dt,
-					1,
-					function(x){result[[x]]$binSignal}
-				) %>% 
-				rbindlist()
-
-	beds <-  apply(
-					length_dt,
-					1,
-					function(x){result[[x]]$bed}
+					function(x){total_result[[x]]$bed}
 				) %>% 
 				rbindlist()
 
 	list(
-		domain = domains,
-		binSignals = binSignals,
-		bed = beds
+		domain = all_domains,
+		binSignal = all_binSignals,
+		bed = all_beds
 	)
 }
