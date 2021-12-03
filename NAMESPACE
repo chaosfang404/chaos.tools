@@ -3,6 +3,7 @@ exportPattern("^[[:alpha:]]+")
 export(wcpa)
 export("%>%")
 export(fread)
+export(fwrite)
 
 import(data.table)
 import(magrittr)

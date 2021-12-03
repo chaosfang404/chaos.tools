@@ -18,10 +18,10 @@ chaos_tp <- function(
 	}
 
 	tad_dt <- expand.grid(
-					hic_file,
-					chr_list,
-					resolution,
-					window.size,
+					a = hic_file,
+					b = chr_list,
+					c = resolution,
+					d = window.size,
 					stringsAsFactors = F
 				) %>%
 				as.data.table()
@@ -33,7 +33,7 @@ chaos_tp <- function(
 							length
 						]
 
-		seq(0,chr_length,resolution) %>%
+		seq(0,chr_length,x[2]) %>%
 		data.table(
 			id = 1:length(.),
 			chr = as.character(x[1]),
@@ -42,7 +42,8 @@ chaos_tp <- function(
 		)
 	}
 
-	bin_all <- data.table(chr_list) %>%
+	bin_all <- tad_dt[,.(b,c)] %>% 
+				unique() %>%
 				apply(1,bin_func) %>%
 				rbindlist()
 
