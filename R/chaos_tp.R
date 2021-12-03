@@ -83,11 +83,11 @@ chaos_tp <- function(
 				.[,-1] %>%
 				as.matrix()
 
-		result <- structure(
-						list(bins = bins, counts = counts),
-						class = "TopDomData"
-					) %>%
-					TopDom::TopDom(window.size = window.size_single)
+		single_result <- structure(
+							list(bins = bins, counts = counts),
+							class = "TopDomData"
+						) %>%
+						TopDom::TopDom(window.size = window.size_single)
 
 		single_result$domain$sample <- base_name(hic_file_single,".hic")
 		single_result$domain$resolution <- resolution_single
