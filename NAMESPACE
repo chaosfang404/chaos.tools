@@ -16,4 +16,8 @@ import(stringr)
 import(patchwork)
 import(kableExtra)
 import(ggseqlogo)
+import(edgeR)
+import(rtracklayer)
+import(ggthemes)
+import(ggrepel)
 
