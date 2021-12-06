@@ -3,7 +3,8 @@ chaos_tp <- function(
 				chr_list = NA,
 				resolution = 1e4,
 				norm = "KR",
-				window.size = 20
+				window.size = 20,
+				subsample = 1
 ){
 	chr_info <- as.data.table(
 					strawr::readHicChroms(hic_file[1])
@@ -68,6 +69,8 @@ chaos_tp <- function(
 					norm = norm,
 					inter = "intra"
 				)[
+					sample(.N * subsample)
+				][
 					,.(chr1_bin,chr2_bin,counts)
 				] %>%
 				complete_dt(
