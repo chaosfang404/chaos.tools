@@ -82,7 +82,7 @@ volcano_plot <- function(
 					.data,
 					top_gene_number = 10,
 					fold_change_threshold = 1.5,
-					special.gene == NULL
+					special.gene = NULL
 ){
 	for (i in c("up","down"))
 	{
