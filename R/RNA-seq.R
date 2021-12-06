@@ -1,39 +1,32 @@
-rnaseq1234 <- function(
-				ctl_count_file,
-				ctl_sample = NA,
-				obs_count_file,
-				obs_sample = NA,
+rnaseq123 <- function(
+				featurecount_file,
+				sample = NA,
+				n_ctl = 2,
+				n_obs = 2,
 				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
 				fold_change_threshold = 1.5
 ){
-	sample_name <- function(
-						count_file,
-						sample
-	){
-		if(length(sample) == 1)
+	if(length(sample) == 1)
+	{
+		if(is.na(sample))
 		{
-			if(is.na(sample))
-			{
-				sample <- base_name(count_file)
-			}
+			sample <- base_name(featurecount_file)
 		}
-		sample
 	}
 
-	ctl_sample <- sample_name(ctl_count_file,ctl_sample)
-	obs_sample <- sample_name(obs_count_file,obs_sample)
-
 	x <- readDGE(
-			c(ctl_count_file,obs_count_file),
+			featurecount_file,
 			columns = c(1,7),
 			sep = "\t",
 			skip = 1
 		)
 
-	x$samples$group <- c(
-							rep("control",length(ctl_count_file)),
-							rep("observation",length(obs_count_file))
-						)
+	group <- c(
+				rep("control",n_ctl),
+				rep("observation",n_obs)
+			)
+
+	x$samples$group <- group
 
 	gtf_info <- gtf_file %>%
 				import() %>%
@@ -49,8 +42,8 @@ rnaseq1234 <- function(
 	chrM_genes <- gtf_info[chr == "chrM",.(chr,gene_id,gene_name)] %>%
 					unique()
 
-	keep.exprs <- filterByExpr(x, group=group) 
-	x <- x[keep.exprs, keep.lib.sizes=FALSE] %>%
+	keep.exprs <- filterByExpr(x, group = group) 
+	x <- x[keep.exprs, keep.lib.sizes = FALSE] %>%
 			calcNormFactors(method = "TMM")
 
 	design <- model.matrix(~0+group)
