@@ -1,33 +1,44 @@
-rnaseq123 <- function(
-				featurecount_files,
-				samples,
-				groups,
+rnaseq1234 <- function(
+				ctl_count_file,
+				ctl_sample = NA,
+				obs_count_file,
+				obs_sample = NA,
 				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
-				fold_change_threshold = 1.5,
-				special.gene = NULL
+				fold_change_threshold = 1.5
 ){
-	if(length(samples) == 1)
-	{
-		if(is.na(samples))
+	sample_name <- function(
+						count_file,
+						sample
+	){
+		if(length(sample) == 1)
 		{
-			samples <- base_name(featurecount_files)
+			if(is.na(sample))
+			{
+				sample <- base_name(count_file)
+			}
 		}
+		sample
 	}
 
+	ctl_sample <- sample_name(ctl_count_file,ctl_sample)
+	obs_sample <- sample_name(obs_count_file,obs_sample)
+
 	x <- readDGE(
-			featurecount_files,
+			c(ctl_count_file,obs_count_file),
 			columns = c(1,7),
 			sep = "\t",
 			skip = 1
 		)
 
-	x$samples$group <- group
+	x$samples$group <- c(
+							rep("control",length(ctl_count_file)),
+							rep("observation",length(obs_count_file))
+						)
 
 	gtf_info <- gtf_file %>%
 				import() %>%
 				as.data.table() %>%
-				.[type == "gene"] %>%
-				.[,.(gene_id,gene_name,chr = seqnames,start,end,strand)]
+				.[type == "gene",.(gene_id,gene_name,chr = seqnames,start,end,strand)]
 	## it will take few minutes to load the gtf_file
 	## filter the unneeded rows
 	
@@ -46,7 +57,7 @@ rnaseq123 <- function(
 	colnames(design) <- gsub("group", "", colnames(design))
 
 	contr.matrix <- makeContrasts(
-						observationvscontrol = ovservation-control, 
+						observationvscontrol = observation-control, 
    						levels = colnames(design)
 					)
 
@@ -56,6 +67,7 @@ rnaseq123 <- function(
 	contrasts.fit(contrasts=contr.matrix) %>%
 	eBayes() %>%
 	topTable(n = Inf) %>%
+	as.data.table() %>%
 	.[,log10P := -log10(adj.P.Val)] %>%
 	.[order(-logFC)] %>%
 	setnames(

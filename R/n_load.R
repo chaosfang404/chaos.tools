@@ -8,7 +8,10 @@ n_load <- function(
 		ggplot2,
 		ggsci,
 		ggthemes,
-		stringr
+		stringr,
+		edgeR,
+		rtracklayer,
+		ggrepel
 	)
 
 	setDTthreads(threads = parallel::detectCores())
