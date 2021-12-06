@@ -89,7 +89,7 @@ volcano_plot <- function(
 		assign(
 			paste0(i,".topgene"),
 			.data[Group == i] %>%
-			.[order(-abs(log2FC)] %>%
+			.[order(-abs(log2FC))] %>%
 			head(top_gene_number) %>%
 			.[,gene_name]
 		)
