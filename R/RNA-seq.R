@@ -2,7 +2,6 @@ rnaseq123 <- function(
 				featurecount_file,
 				sample = NA,
 				n_ctl = 2,
-				n_obs = 2,
 				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
 				fold_change_threshold = 1.5
 ){
@@ -21,6 +20,8 @@ rnaseq123 <- function(
 			skip = 1
 		)
 
+	n_obs <- length(sample) - n_ctl
+
 	group <- c(
 				rep("control",n_ctl),
 				rep("observation",n_obs)
@@ -31,7 +32,10 @@ rnaseq123 <- function(
 	gtf_info <- gtf_file %>%
 				import() %>%
 				as.data.table() %>%
-				.[type == "gene",.(gene_id,gene_name,chr = seqnames,start,end,strand)]
+				.[
+					type == "gene",
+					.(gene_id,gene_name,chr = seqnames,start,end,strand)
+				]
 	## it will take few minutes to load the gtf_file
 	## filter the unneeded rows
 	
@@ -39,7 +43,10 @@ rnaseq123 <- function(
 				unique()
 
 	#get the correspondece between gene_id (Ensembl ID) and gene_name
-	chrM_genes <- gtf_info[chr == "chrM",.(chr,gene_id,gene_name)] %>%
+	chrM_genes <- gtf_info[
+						chr == "chrM",
+						.(chr,gene_id,gene_name)
+					] %>%
 					unique()
 
 	keep.exprs <- filterByExpr(x, group = group) 
@@ -55,9 +62,9 @@ rnaseq123 <- function(
 					)
 
 	x %>%
-	voomWithQualityWeights(design, plot=FALSE) %>%
+	voomWithQualityWeights(design, plot = F) %>%
 	lmFit(design) %>%
-	contrasts.fit(contrasts=contr.matrix) %>%
+	contrasts.fit(contrasts = contr.matrix) %>%
 	eBayes() %>%
 	topTable(n = Inf) %>%
 	as.data.table() %>%
