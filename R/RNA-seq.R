@@ -96,18 +96,19 @@ volcano_plot <- function(
 					fold_change_threshold = 1.5,
 					special.gene = NULL
 ){
+	dt <- as.data.table(.data)
+
 	for (i in c("up","down"))
 	{
 		assign(
 			paste0(i,".topgene"),
-			.data[Group == i] %>%
-			.[order(-abs(log2FC))] %>%
+			dt[order(-abs(log2FC))] %>%
 			head(top_gene_number) %>%
 			.[,gene_name]
 		)
 	}
 
-	.data[
+	dt[
 		gene_name %in% c(up.topgene,down.topgene,special.gene),
 		Label := gene_name
 	][
