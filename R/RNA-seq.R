@@ -163,5 +163,5 @@ volcano_plot <- function(
 				scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35"))
 	}
 
-	suppressWarnings(p)
+	p
 }
