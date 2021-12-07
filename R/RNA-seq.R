@@ -1,8 +1,8 @@
 rnaseq123 <- function(
 				featurecount_file,
 				sample = NA,
-				n_ctl = 2,
-				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
+				group,
+				gtf_file = "/work/bio-fangc/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
 				fold_change_threshold = 1.5
 ){
 	if(length(sample) == 1)
@@ -19,13 +19,6 @@ rnaseq123 <- function(
 			sep = "\t",
 			skip = 1
 		)
-
-	n_obs <- length(sample) - n_ctl
-
-	group <- c(
-				rep("control",n_ctl),
-				rep("observation",n_obs)
-			)
 
 	x$samples$group <- group
 
@@ -57,7 +50,7 @@ rnaseq123 <- function(
 	colnames(design) <- gsub("group", "", colnames(design))
 
 	contr.matrix <- makeContrasts(
-						observationvscontrol = observation-control, 
+						obsvsctl = obs-ctl, 
    						levels = colnames(design)
 					)
 
@@ -102,7 +95,11 @@ volcano_plot <- function(
 	{
 		assign(
 			paste0(i,".topgene"),
-			dt[order(-abs(log2FC))] %>%
+			dt[
+				Group == i
+			][
+				order(-abs(log2FC))
+			] %>%
 			head(top_gene_number) %>%
 			.[,gene_name]
 		)
@@ -112,11 +109,18 @@ volcano_plot <- function(
 		gene_name %in% c(up.topgene,down.topgene,special.gene),
 		Label := gene_name
 	][
-		Group2 := Group
-	][
-		Label %in% special.genes, 
-		Group2 := "Special"
-	] %>%
+		,Group2 := Group
+	]
+
+	if(!is.null(special.gene))
+	{
+		dt[
+			Label %in% special.genes, 
+			Group2 := "Special"
+		]
+	}
+	
+	dt %>%
 	ggplot(aes(log2FC,log10P,color = Group2)) + 
 	geom_point(size = 0.8) +		
 	geom_hline(
