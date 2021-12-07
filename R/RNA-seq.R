@@ -120,37 +120,46 @@ volcano_plot <- function(
 		]
 	}
 	
-	dt %>%
-	ggplot(aes(log2FC,log10P,color = Group2)) + 
-	geom_point(size = 0.8) +		
-	geom_hline(
-		yintercept = -log10(0.05),
-		linetype = "dashed"
-	) +
-	geom_vline(
-		xintercept = c(-log2(fold_change_threshold),log2(fold_change_threshold)),
-		linetype = "dashed"
-	) +
-	theme_base() +
-	scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35")) +
-	geom_text_repel(
-		label = dt$Label,
-		max.overlaps = Inf,
-		box.padding = 1
-	) +
-	annotate(
-		geom = "text",
-		x=-5,
-		y=1.1,  
-		label = "p-value = 0.05"
-	) +
-	annotate(
-		geom = "text",
-		x=3.2,
-		y=16,  
-		label = paste0("Fold Change threshold = ",fold_change_threshold)
-	) + 
-	xlab(label = expression(log[2]("Fold Change"))) +
-	ylab(label = expression(-log[10](adj.p-Value))) + 
-	guides(color = "none")
+	p_base <- dt %>%
+				ggplot(aes(log2FC,log10P,color = Group2)) + 
+				geom_point(size = 0.8) +		
+				geom_hline(
+					yintercept = -log10(0.05),
+					linetype = "dashed"
+				) +
+				geom_vline(
+					xintercept = c(-log2(fold_change_threshold),log2(fold_change_threshold)),
+					linetype = "dashed"
+				) +
+				theme_base() +
+				geom_text_repel(
+					label = dt$Label,
+					max.overlaps = Inf,
+					box.padding = 1
+				) +
+				annotate(
+					geom = "text",
+					x=-5,
+					y=1.1,  
+					label = "p-value = 0.05"
+				) +
+				annotate(
+					geom = "text",
+					x=3.2,
+					y=16,  
+					label = paste0("Fold Change threshold = ",fold_change_threshold)
+				) + 
+				xlab(label = expression(log[2]("Fold Change"))) +
+				ylab(label = expression(-log[10](adj.p-Value))) + 
+				guides(color = "none")
+
+	if(!is.null(special.gene))
+	{
+		p  <- p_base + scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35"))
+	}else
+	{
+		p <- p_base + scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35"))
+	}
+
+	p
 }
