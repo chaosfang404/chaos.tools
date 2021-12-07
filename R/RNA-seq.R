@@ -155,10 +155,14 @@ volcano_plot <- function(
 
 	if(!is.null(special.gene))
 	{
-		p  <- p_base + scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35"))
+		p  <- p_base + 
+				scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35")) +
+				suppressWarnings()
 	}else
 	{
-		p <- p_base + scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35"))
+		p <- p_base + 
+				scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35")) +
+				suppressWarnings()
 	}
 
 	p
