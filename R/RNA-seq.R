@@ -134,7 +134,7 @@ volcano_plot <- function(
 	theme_base() +
 	scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35")) +
 	geom_text_repel(
-		label = .$Label,
+		label = dt$Label,
 		max.overlaps = Inf,
 		box.padding = 1
 	) +
