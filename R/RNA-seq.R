@@ -115,7 +115,7 @@ volcano_plot <- function(
 	if(!is.null(special.gene))
 	{
 		dt[
-			Label %in% special.genes, 
+			Label %in% special.gene, 
 			Group2 := "Special"
 		]
 	}
