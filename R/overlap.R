@@ -1,11 +1,8 @@
-overlap <- function(
+overlap2 <- function(
 				x,
 				y
 			)
 {
-	setkey(x,V1,V2,V3)
-	setkey(y,V1,V2,V3)
-
 	overlap_raw <-foverlaps(
 						x,
 						y,
