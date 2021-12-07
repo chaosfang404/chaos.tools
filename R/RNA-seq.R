@@ -151,7 +151,8 @@ volcano_plot <- function(
 				) + 
 				xlab(label = expression(log[2]("Fold Change"))) +
 				ylab(label = expression(-log[10](adj.p-Value))) + 
-				guides(color = "none")
+				guides(color = "none") + 
+				theme(plot.margin=unit(rep(1,4),'lines'))
 
 	if(!is.null(special.gene))
 	{
