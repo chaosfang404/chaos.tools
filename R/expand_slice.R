@@ -2,32 +2,52 @@ seq_dt <- function(
 			start,
 			end,
 			slice_number,
+			slice_size = NA,
 			trim = "none"
 ){
-	tmp1 <- seq(
-				start,
-				end,
-				length.out = slice_number +1
-			)
+	if(is.na(slice_size))
+	{
+		tmp1 <- seq(
+					start,
+					end,
+					length.out = slice_number +1
+				)
+	
+		if(trim == "floor")
+		{
+			tmp2 <- floor(tmp1)
+		}else if(trim == "ceiling")
+		{
+			tmp2 <- ceiling(tmp1)
+		}else if(trim == "round")
+		{
+			tmp2 <- round(tmp1)
+		}else
+		{
+			tmp2 <- tmp1
+		}
+	
+		dt <- data.table(
+					tmp2[1:slice_number],
+					tmp2[2:(slice_number + 1)]
+				)
+	}
+	else
+	{
+		tmp <- seq(start,end,slice_size)
 
-	if(trim == "floor")
-	{
-		tmp2 <- floor(tmp1)
-	}else if(trim == "ceiling")
-	{
-		tmp2 <- ceiling(tmp1)
-	}else if(trim == "round")
-	{
-		tmp2 <- round(tmp1)
-	}else
-	{
-		tmp2 <- tmp1
+		if(max(tmp) < end)
+		{
+			tmp <- c(tmp,end)
+		}
+
+		dt <- data.table(
+					tmp[1:length(tmp) - 1],
+					tmp[2:length(tmp)]
+				)
 	}
 
-	data.table(
-		tmp2[1:slice_number],
-		tmp2[2:(slice_number + 1)]
-	)
+	dt
 }
 
 
@@ -301,9 +321,9 @@ expand_slice <- function(
 		rest <- x[4:length(x)]
 
 		upstream_dt <- seq_dt(
-							start - expand,
-							start,
-							flank_slice_number,
+							start = start - expand,
+							end = start,
+							slice_number = flank_slice_number,
 							trim = trim
 						)[
 							,block := 1:.N
@@ -312,18 +332,18 @@ expand_slice <- function(
 						]
 
 		body_dt <- seq_dt(
-						start,
-						end,
-						body_slice_number,
+						start = start,
+						end = end,
+						slice_number = body_slice_number,
 						trim = trim
 					)[
 						,block := (1:.N) + flank_slice_number
 					]
 
 		downstream_dt <- seq_dt(
-							end,
-							end + expand,
-							flank_slice_number,
+							start = end,
+							end = end + expand,
+							slice_number = flank_slice_number,
 							trim = trim
 						)[
 							,block := (1:.N) + flank_slice_number + body_slice_number
