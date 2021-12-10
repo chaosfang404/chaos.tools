@@ -1,4 +1,4 @@
-overlap2 <- function(
+overlap <- function(
 				x,
 				y
 			)

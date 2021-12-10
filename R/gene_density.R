@@ -10,7 +10,7 @@ gene_density_calc <- function(
 		seq_dt(
 			start = 0,
 			end = chr_length,
-			slice_size = 1e4
+			slice_size = resolution
 		)[
 			,chr := x[1]
 		][
@@ -51,7 +51,8 @@ gene_density_calc <- function(
 		,genome := ref
 	][
 		,annotation := base_name(annotation_file)
-	]
+	] %>%
+	unique()
 }
 
 gene_density <- function(
@@ -61,7 +62,7 @@ gene_density <- function(
 ){
 	gene_density_file <- file.path(
 								.libPaths(),
-								"chaos.tools/extdata/gene_density.txt"
+								"chaos.tools/extdata/gene_density.txt.gz"
 							)
 
 	if(!file.exists(gene_density_file))
@@ -71,7 +72,7 @@ gene_density <- function(
 							annotation_file = annotation_file,
 							resolution = resolution
 						)
-		fwrite(gene_density,gene_density_file,quote = F, sep = "\t", col.names = T)
+		fwrite(gene_density,gene_density_file,quote = F, sep = "\t", col.names = T, compress = "gzip")
 	}else
 	{
 		gene_density <- fread(
@@ -88,7 +89,7 @@ gene_density <- function(
 							annotation_file = annotation_file,
 							resolution = resolution
 						)
-			fwrite(gene_density,gene_density_file,quote = F, sep = "\t", col.names = T,append = T)
+			fwrite(gene_density,gene_density_file,quote = F, sep = "\t",append = T,compress = "gzip")
 		}
 	}
 
