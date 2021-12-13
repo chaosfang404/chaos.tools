@@ -10,7 +10,7 @@ juicer_tool <- function(
 	res <- format(resolution,scientific = F,trim = T)
 
 	result <- paste(
-					"java -jar -Xmx120g",juicer_tool_path, cmd, "-p",norm, hic_file, chr,"BP",res,sep = " "
+					"java -jar",juicer_tool_path, cmd, "-p",norm, hic_file, chr,"BP",res,sep = " "
 				) %>%
 				system(inter = T)
 

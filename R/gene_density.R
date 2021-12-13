@@ -1,6 +1,6 @@
 gene_density_calc <- function(
 							ref = "hg19",
-							annotation_file = "/mnt/d/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
+							annotation_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 							resolution = 1e4
 ){
 	slice <- function(
@@ -57,7 +57,7 @@ gene_density_calc <- function(
 
 gene_density <- function(
 					ref = "hg19",
-					annotation_file = "/mnt/d/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
+					annotation_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 					resolution = 1e4
 ){
 	chaos.tools_data_dir <- "~/.config/chaos.tools"
