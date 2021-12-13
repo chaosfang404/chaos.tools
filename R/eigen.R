@@ -1,9 +1,9 @@
-eigen <- function(
-			hic_file,
-			resolution = 1e6,
-			norm = "KR",
-			juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
-			annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
+juicer_eigen <- function(
+					hic_file,
+					resolution = 1e6,
+					norm = "KR",
+					juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
+					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
 	chr_list <- strawr::readHicChroms(hic_file[1])$name %>% 
 				.[. != "ALL"]
@@ -61,7 +61,7 @@ eigen <- function(
 	.[]
 }
 
-eigen_plot_data <- function(
+juicer_eigen_plot_data <- function(
 						.data
 ){
 	predict_0_all <- function(
@@ -106,10 +106,10 @@ eigen_plot_data <- function(
 }
 
 
-eigen_plot <- function(
-				.data
+juicer_eigen_plot <- function(
+						.data
 ){
-	dt <- eigen_plot_data(.data)	
+	dt <- juicer_eigen_plot_data(.data)	
 
 	res <- unique(dt$resolution)
 	ylim = max(abs(dt$y))+0.01
