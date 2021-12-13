@@ -109,19 +109,17 @@ juicer_eigen_plot_data <- function(
 juicer_eigen_plot <- function(
 						.data
 ){
-	dt <- juicer_eigen_plot_data(.data)	
+	res <- unique(.data$resolution)
+	ylim = max(abs(.data$y))+0.01
 
-	res <- unique(dt$resolution)
-	ylim = max(abs(dt$y))+0.01
-
-	ggplot(dt,aes(x,y)) + 
+	ggplot(.data,aes(x,y)) + 
 	geom_area(
-		data = subset(dt, y <= 0), 
+		data = subset(.data, y <= 0), 
 		fill = scales::hue_pal()(4)[3], 
 		position = position_dodge(width = 0)
 	) + 
 	geom_area(
-		data = subset(dt, y >= 0), 
+		data = subset(.data, y >= 0), 
 		fill = scales::hue_pal()(4)[1],
 		position = position_dodge(width = 0)
 	) + 
