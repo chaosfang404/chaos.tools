@@ -116,25 +116,25 @@ eigen_plot <- function(
 
 	ggplot(dt,aes(x,y)) + 
 	geom_area(
-		data=subset(dt, y<=0), 
-		fill=hue_pal()(4)[3], 
-		position=position_dodge(width = 0)
+		data = subset(dt, y <= 0), 
+		fill = scales::hue_pal()(4)[3], 
+		position = position_dodge(width = 0)
 	) + 
 	geom_area(
-		data=subset(dt, y>=0), 
-		fill=hue_pal()(4)[1],
-		position=position_dodge(width = 0)
+		data = subset(dt, y >= 0), 
+		fill = scales::hue_pal()(4)[1],
+		position = position_dodge(width = 0)
 	) + 
 	labs(
-		x="", 
-		y="Eigenvector"
+		x = "", 
+		y = "Eigenvector"
 	) + 
 	theme(
-		panel.background=element_rect(fill='transparent', color='NA'),
-		panel.grid =element_blank()
+		panel.background = element_rect(fill = "transparent", color = "NA"),
+		panel.grid = element_blank()
 	) + 
 	theme(plot.title = element_text(size = 10, hjust = 0.5)) + 
-	theme(axis.line = element_line(colour='black')) +
+	theme(axis.line = element_line(colour ="black")) +
 	ylim(ylim*(-1),ylim) + 
 	theme(axis.title.y = element_text(size = 5)) +
 #	scale_x_continuous(
