@@ -60,3 +60,86 @@ eigen <- function(
 	.[,resolution := res] %>%
 	.[]
 }
+
+eigen_plot_data <- function(
+						.data
+){
+	predict_0_all <- function(
+						x
+	){
+		chrom <- x[1]
+		res <- as.numeric(x[2])
+	
+		d <- 	.data[
+					chr == chrom & resolution == res,
+					.(y = corrected_eigen)
+				][
+					,x := 1:.N
+				]
+
+		predict_0 <- function(
+						i
+		){
+			f <- lm(x ~ y, d[i:(i+1),])
+			if (f$qr$rank < 2) return(NULL)
+			r <- predict(f, newdata = data.table(y = 0))
+			if(d[i,]$x < r & r < d[i+1,]$x)
+			return(data.table(x = r,y = 0))
+			else return(NULL)
+		}
+		
+		rbind(
+			d,
+			sapply(1:(nrow(d)-1),predict_0) %>% rbindlist()
+		) %>% 
+		.[,chr := chrom] %>%
+		.[,resolution := res]
+	}
+
+	data.table(
+		chr = unique(.data$chr), 
+		resolution = unique(.data$resolution)
+	) %>%
+	complete_dt() %>%
+	apply(1,predict_0_all) %>%
+	rbindlist()
+}
+
+
+eigen_plot <- function(
+				.data
+){
+	dt <- eigen_plot_data(.data)	
+
+	res <- unique(dt$resolution)
+	ylim = max(abs(dt$y))+0.01
+
+	ggplot(dt,aes(x,y)) + 
+	geom_area(
+		data=subset(dt, y<=0), 
+		fill=hue_pal()(4)[3], 
+		position=position_dodge(width = 0)
+	) + 
+	geom_area(
+		data=subset(dt, y>=0), 
+		fill=hue_pal()(4)[1],
+		position=position_dodge(width = 0)
+	) + 
+	labs(
+		x="", 
+		y="Eigenvector"
+	) + 
+	theme(
+		panel.background=element_rect(fill='transparent', color='NA'),
+		panel.grid =element_blank()
+	) + 
+	theme(plot.title = element_text(size = 10, hjust = 0.5)) + 
+	theme(axis.line = element_line(colour='black')) +
+	ylim(ylim*(-1),ylim) + 
+	theme(axis.title.y = element_text(size = 5)) +
+#	scale_x_continuous(
+#		breaks = c(1+len_bin/5*(0:5)),
+#		labels = c(paste0(start+len/5*(0:5),"Mb"))
+#	) +
+	facet_grid(chr ~ resolution,scales = "free")
+}
