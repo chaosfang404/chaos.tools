@@ -5,7 +5,8 @@ eigen_correction <- function(
 						juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
 						annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
-	chr_list <- strawr::readHicChroms(hic_file)$name
+	chr_list <- strawr::readHicChroms(hic_file)$name %>% 
+				.[. != "ALL"]
 
 	eigen_func <- function(
 					x
