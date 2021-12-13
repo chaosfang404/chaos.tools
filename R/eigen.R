@@ -16,7 +16,7 @@ eigen <- function(
 		juicer_tool(
 			cmd = "eigenvector",
 			hic_file = hic_file,
-			chr = x[2],
+			chr = x[1],
 			resolution = res,
 			norm = norm, 
 			juicer_tool_path = juicer_tool_path
