@@ -8,6 +8,8 @@ eigen <- function(
 	chr_list <- strawr::readHicChroms(hic_file)$name %>% 
 				.[. != "ALL"]
 
+	res <- resolution
+
 	eigen_func <- 	function(
 						x
 	){
@@ -15,7 +17,7 @@ eigen <- function(
 			cmd = "eigenvector",
 			hic_file = hic_file,
 			chr = x[1],
-			resolution = resolution,
+			resolution = res,
 			norm = norm, 
 			juicer_tool_path = juicer_tool_path
 		)
@@ -26,7 +28,7 @@ eigen <- function(
 				rbindlist()
 
 	gd <- 	gene_density(
-				resolution = resolution,
+				resolution = res,
 				annotation = annotation
 			)[
 				chr %in% chr_list | chr %in% paste0("chr",chr_list),
@@ -54,6 +56,9 @@ eigen <- function(
 	.[
 		correction < 0,
 		corrected_eigen := eigen * -1
+	] %>%
+	.[
+		,resolution := res
 	] %>%
 	.[]
 }
