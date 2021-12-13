@@ -5,7 +5,7 @@ eigen <- function(
 			juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
 			annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
-	chr_list <- strawr::readHicChroms(hic_file)$name %>% 
+	chr_list <- strawr::readHicChroms(hic_file[1])$name %>% 
 				.[. != "ALL"]
 
 	res <- resolution
@@ -16,7 +16,7 @@ eigen <- function(
 		juicer_tool(
 			cmd = "eigenvector",
 			hic_file = hic_file,
-			chr = x[1],
+			chr = x[2],
 			resolution = res,
 			norm = norm, 
 			juicer_tool_path = juicer_tool_path
@@ -57,8 +57,6 @@ eigen <- function(
 		correction < 0,
 		corrected_eigen := eigen * -1
 	] %>%
-	.[
-		,resolution := res
-	] %>%
+	.[,resolution := res] %>%
 	.[]
 }
