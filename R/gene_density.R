@@ -60,10 +60,14 @@ gene_density <- function(
 					annotation_file = "/mnt/d/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 					resolution = 1e4
 ){
-	gene_density_file <- file.path(
-								.libPaths(),
-								"chaos.tools/extdata/gene_density.txt.gz"
-							)
+	chaos.tools_data_dir <- "~/.config/chaos.tools"
+
+	gene_density_file <- file.path(chaos.tools_data_dir,"gene_density.txt.gz")
+
+	if(!dir.exists(chaos.tools_data_dir))
+	{
+		dir.create(chaos.tools_data_dir)
+	}
 
 	if(!file.exists(gene_density_file))
 	{

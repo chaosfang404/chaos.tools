@@ -29,6 +29,13 @@ chr_size <- function(
 				extra = FALSE,
 				online = FALSE
 ){
+	chaos.tools_data_dir <- "~/.config/chaos.tools"
+
+	if(!dir.exists(chaos.tools_data_dir))
+	{
+		dir.create(chaos.tools_data_dir)
+	}
+
 	local_genome_file <- system.file(
 								"extdata",
 								"common.genome.info.txt",
@@ -36,8 +43,8 @@ chr_size <- function(
 							)
 
 	downloaded_genome_file <- file.path(
-									.libPaths(),
-									"chaos.tools/extdata/downloaded.genome.info.txt"
+									chaos.tools_data_dir,
+									"downloaded.genome.info.txt"
 								)
 
 	if(!file.exists(downloaded_genome_file))

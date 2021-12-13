@@ -1,15 +1,15 @@
-eigen_correction <- function(
-						hic_file,
-						resolution = 1e6,
-						norm = "KR",
-						juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
-						annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
+eigen <- function(
+			hic_file,
+			resolution = 1e6,
+			norm = "KR",
+			juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
+			annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
 	chr_list <- strawr::readHicChroms(hic_file)$name %>% 
 				.[. != "ALL"]
 
-	eigen_func <- function(
-					x
+	eigen_func <- 	function(
+						x
 	){
 		juicer_tool(
 			cmd = "eigenvector",
