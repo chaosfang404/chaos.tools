@@ -111,7 +111,9 @@ juicer_eigen_plot_data <- function(
 
 
 juicer_eigen_plot <- function(
-						.data
+						.data,
+						up_color = "#e64b35",
+						down_color = "#4dbbd5"
 ){
 	dt <- juicer_eigen_plot_data(.data)
 
@@ -121,12 +123,14 @@ juicer_eigen_plot <- function(
 	ggplot(dt,aes(x,y)) + 
 	geom_area(
 		data = subset(dt, y <= 0), 
-		fill = scales::hue_pal()(4)[3], 
+#		fill = scales::hue_pal()(4)[3],
+		fill = down_color,
 		position = position_dodge(width = 0)
 	) + 
 	geom_area(
 		data = subset(dt, y >= 0), 
-		fill = scales::hue_pal()(4)[1],
+#		fill = scales::hue_pal()(4)[1],
+		fill = up_color,
 		position = position_dodge(width = 0)
 	) + 
 	labs(
