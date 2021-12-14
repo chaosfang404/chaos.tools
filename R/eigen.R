@@ -97,14 +97,16 @@ juicer_eigen_plot_data <- function(
 		.[,resolution := res]
 	}
 
+	chr_list <- unique(.data$chr)
+
 	data.table(
-		chr = unique(.data$chr), 
+		chr = chr_list, 
 		resolution = unique(.data$resolution)
 	) %>%
 	complete_dt() %>%
 	apply(1,predict_0_all) %>%
 	rbindlist() %>%
-	.[,chr := factor(chr,stringr::str_sort(chr,numeric = T))]
+	.[,chr := factor(chr_list,stringr::str_sort(chr_list,numeric = T))]
 }
 
 
