@@ -20,14 +20,16 @@ overlap <- function(
 		b2 <- as.numeric(x[col_length_1 + 2])
 	
 	
-		a <- c(a1,a2,b1,b2) %>%
+		c <- c(a1,a2,b1,b2) %>%
 				.[order(.)]
 	
-		overlap_length <- a[3] - a[2]
+		overlap_length <- c[3] - c[2]
 		r1 <- overlap_length/(a2 - a1)
 		r2 <- overlap_length/(b2 - b1)
+
+		overlap_start <- c[2]
 	
-		data.table(r1,r2)
+		data.table(r1,r2,overlap_length,overlap_start = c[2],overlap_end = c[3],full_start = c[1],full_end = c[4])
 	}
 
 	ratio <- apply(overlap_raw,1,overlap_ratio) %>% 
