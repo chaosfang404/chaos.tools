@@ -63,7 +63,7 @@ juicer_eigen <- function(
 }
 
 juicer_eigen_plot_data <- function(
-						.data
+							.data
 ){
 	predict_0_all <- function(
 						x
@@ -106,7 +106,7 @@ juicer_eigen_plot_data <- function(
 	complete_dt() %>%
 	apply(1,predict_0_all) %>%
 	rbindlist() %>%
-	.[,chr := factor(chr_list,stringr::str_sort(chr_list,numeric = T))]
+	.[,chr := factor(chr,stringr::str_sort(chr_list,numeric = T))]
 }
 
 
