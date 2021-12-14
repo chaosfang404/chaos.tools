@@ -97,8 +97,6 @@ juicer_eigen_plot_data <- function(
 		.[,resolution := res]
 	}
 
-	chr_list <- 
-
 	data.table(
 		chr = unique(.data$chr), 
 		resolution = unique(.data$resolution)
