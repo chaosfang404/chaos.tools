@@ -1,6 +1,7 @@
 juicer_eigen <- function(
 					hic_file,
 					resolution = 1e6,
+					chr_list = NA,
 					norm = "KR",
 					juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
 					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
@@ -96,8 +97,10 @@ juicer_eigen_plot_data <- function(
 		.[,resolution := res]
 	}
 
+	chr_list <- unique(.data$chr)
+
 	data.table(
-		chr = unique(.data$chr), 
+		chr = factor(chr_list,stringr::str_sort(chr_list,numeric = T)), 
 		resolution = unique(.data$resolution)
 	) %>%
 	complete_dt() %>%
@@ -109,6 +112,8 @@ juicer_eigen_plot_data <- function(
 juicer_eigen_plot <- function(
 						.data
 ){
+	dt <- juicer_eigen_plot_data(.data)
+
 	res <- unique(.data$resolution)
 	ylim = max(abs(.data$y))+0.01
 
