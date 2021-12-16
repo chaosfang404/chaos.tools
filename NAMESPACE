@@ -20,4 +20,5 @@ import(edgeR)
 import(rtracklayer)
 import(ggthemes)
 import(ggrepel)
-
+import(ggprism)
+import(export)
