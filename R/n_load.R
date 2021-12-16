@@ -11,7 +11,9 @@ n_load <- function(
 		stringr,
 		edgeR,
 		rtracklayer,
-		ggrepel
+		ggrepel,
+		export,
+		ggprism
 	)
 
 	setDTthreads(threads = parallel::detectCores())
