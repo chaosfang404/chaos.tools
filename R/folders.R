@@ -59,3 +59,14 @@ integration_dir <- function(
 ){
 	paste0(data_dir(), "/integration/",integration_name)
 }
+
+ppt <- function(
+			x,
+			file_path = "/mnt/d/synchronized\ files/OneDrive\ -\ 南方科技大学/VCaP_result_plot.pptx"
+){
+	export::graph2ppt(
+		x,
+		file_path,
+		append = T
+	)
+}
