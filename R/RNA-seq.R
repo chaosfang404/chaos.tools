@@ -1,24 +1,20 @@
 rnaseq123 <- function(
-				featurecount_file,
-				sample = NA,
-				group,
+				ctl_featurecount_file,
+				obs_featurecount_file,
 				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
 				fold_change_threshold = 1.5
 ){
-	if(length(sample) == 1)
-	{
-		if(is.na(sample))
-		{
-			sample <- base_name(featurecount_file)
-		}
-	}
-
 	x <- readDGE(
-			featurecount_file,
+			c(ctl_featurecount_file,obs_featurecount_file),
 			columns = c(1,7),
 			sep = "\t",
 			skip = 1
 		)
+
+	group <- c(
+				rep("ctl",length(ctl_featurecount_file)),
+				rep("obs",length(obs_featurecount_file))
+			)
 
 	x$samples$group <- group
 
