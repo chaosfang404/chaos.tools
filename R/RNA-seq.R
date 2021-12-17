@@ -2,7 +2,7 @@ rnaseq123 <- function(
 				featurecount_file,
 				sample = NA,
 				group,
-				gtf_file = "/work/bio-fangc/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
+				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
 				fold_change_threshold = 1.5
 ){
 	if(length(sample) == 1)
