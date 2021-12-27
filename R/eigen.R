@@ -6,9 +6,15 @@ juicer_eigen <- function(
 					juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
 					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
-	chr_list <- strawr::readHicChroms(hic_file[1])$name %>% 
+	if(length(chr_list) == 1)
+	{
+		if(is.na(chr_list))
+		{
+			chr_list <- strawr::readHicChroms(hic_file[1])$name %>% 
 				.[. != "ALL"]
-
+		}
+	}
+	
 	res <- resolution
 
 	eigen_func <- 	function(
@@ -63,7 +69,8 @@ juicer_eigen <- function(
 }
 
 juicer_eigen_plot_data <- function(
-							.data
+							.data,
+							correction = TRUE
 ){
 	predict_0_all <- function(
 						x
@@ -71,12 +78,23 @@ juicer_eigen_plot_data <- function(
 		chrom <- x[1]
 		res <- as.numeric(x[2])
 	
-		d <- 	.data[
+		if(isTRUE(correction))
+		{
+			d <- .data[
 					chr == chrom & resolution == res,
 					.(y = corrected_eigen)
 				][
 					,x := 1:.N
 				]
+		}else
+		{
+			d <- .data[
+					chr == chrom & resolution == res,
+					.(y = eigen)
+				][
+					,x := 1:.N
+				]
+		}
 
 		predict_0 <- function(
 						i
@@ -112,10 +130,14 @@ juicer_eigen_plot_data <- function(
 
 juicer_eigen_plot <- function(
 						.data,
+						correction = TRUE,
 						up_color = "#e64b35",
 						down_color = "#4dbbd5"
 ){
-	dt <- juicer_eigen_plot_data(.data)
+	dt <- juicer_eigen_plot_data(
+				.data,
+				correction = correction
+			)
 
 	res <- unique(dt$resolution)
 	ylim = max(abs(dt$y)) + 0.01
