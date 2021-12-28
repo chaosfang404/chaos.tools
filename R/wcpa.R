@@ -246,9 +246,9 @@ wcpa_compare_plot <- function(
 						axis_size = 10,
 						border_color = "#FFFFFF",
 						scales = "fixed",
-						min = NA,
+						min = 0.8,
 						min_color = "#3c5488",
-						max = NA,
+						max = 1.2,
 						max_color = "#e64b35"
 ){
 	if(is.na(control_name)){control_name <- base_name(control_hic,".hic")}
