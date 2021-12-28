@@ -34,7 +34,7 @@ wcpa_pre <- function(
 		tmp <- data.table(
 					strawr::straw(norm,hic_file,x[1],x[2],"BP",lowest_res)
 				) %>%
-				na.omit() %>%
+				.[is.na(counts),counts := 0] %>%
 				.[,counts] %>%
 				sum()
 
