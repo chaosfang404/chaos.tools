@@ -57,34 +57,43 @@ wcpa <- function(
 			norm = "NONE",
 			chr_list = NA
 ){
-	wcpa_pre(
-		hic_file = hic_file,
-		name = name,
-		norm = norm,
-		chr_list = chr_list
-	)[
-		chr1 != chr2
-	][
-		,
-		.(chr1,chr2,interaction,sample_total = sum(interaction)/2),
-		.(sample,normalization)
-	][
-		,
-		.(chr2,interaction,sample_total,chr1_total = sum(interaction)),
-		.(sample,normalization,chr1)
-	][
-		,
-		.(chr1,interaction,sample_total,chr1_total,chr2_total = sum(interaction)),
-		.(sample,normalization,chr2)
-	][
-		,
-		.(sample,normalization,chr1,chr2,interaction,sample_total,chr1_total,chr2_total)
-	][
-		order(sample,normalization,chr1,chr2)
-	][
+	dt <- 	wcpa_pre(
+				hic_file = hic_file,
+				name = name,
+				norm = norm,
+				chr_list = chr_list
+			)
+
+	chr_total <- 	sapply(
+						unique(dt$chr1),
+						function(x){dt[chr1 == x | chr2 == x,sum(interaction)]}
+					) %>% 
+					as.data.table(keep.rownames = "chr") %>% 
+					.[,.(chr,chr_total = .)]
+
+	merge(
+		dt,
+		chr_total,
+		by.x = "chr1",
+		by.y = "chr"
+	) %>%
+	setnames("chr_total","chr1_total") %>%
+	merge(
+		chr_total,
+		by.x = "chr2",
+		by.y = "chr"
+	) %>%
+	.[
+		,.(sample,normalization,chr1,chr2,interaction,chr1_total,chr2_total = chr_total)
+	] %>%
+	.[
+		,sample_total := sum(interaction)
+	] %>%
+	.[
 		,
 		WCPA := interaction/(((chr1_total/sample_total)*(chr2_total/(sample_total - chr1_total)) + (chr2_total/sample_total)*(chr1_total/(sample_total - chr2_total))) * sample_total/2)
-	][]
+	] %>%
+	.[]
 }
 
 wcpa_matrix <- function(
