@@ -65,6 +65,7 @@ juicer_eigen <- function(
 		corrected_eigen := eigen * -1
 	] %>%
 	.[,resolution := res] %>%
+	.[,sample := base_name(hic_file)] %>%
 	.[]
 }
 
