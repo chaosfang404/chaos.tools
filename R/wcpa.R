@@ -34,7 +34,7 @@ wcpa_pre <- function(
 		tmp <- data.table(
 					strawr::straw(norm,hic_file,x[1],x[2],"BP",lowest_res)
 				) %>%
-				.[is.na(counts),counts := 0] %>%
+				na.omit() %>%
 				.[,counts] %>%
 				sum()
 
@@ -65,7 +65,7 @@ wcpa <- function(
 			)
 
 	chr_total <- 	sapply(
-						unique(dt$chr1),
+						unique(c(dt$chr1,dt$chr2)),
 						function(x){dt[chr1 == x | chr2 == x,sum(interaction)]}
 					) %>% 
 					as.data.table(keep.rownames = "chr") %>% 
