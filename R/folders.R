@@ -62,7 +62,7 @@ integration_dir <- function(
 
 ppt <- function(
 			x,
-			file_path = "/mnt/d/synchronized\ files/OneDrive\ -\ 南方科技大学/VCaP_result_plot.pptx"
+			file_path = "/mnt/d/synchronized\ files/OneDrive\ -\ 南方科技大学/VCaP_result_plot/VCaP_result_plot.pptx"
 ){
 	export::graph2ppt(
 		x,
