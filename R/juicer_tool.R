@@ -49,3 +49,57 @@ juicer_tool <- function(
 		}
 	}
 }
+
+
+pearsons_plot <- function(
+					hic_file,
+					resolution,
+					chr,
+					min = -0.5,
+					max = 0.5,
+					min_color = "#00004a",
+					max_color = "#e64b35"
+){
+	juicer_tool(
+		"pearsons",
+		hic_file,
+		resolution = resolution,
+		chr = chr
+	)[
+		,row := paste0("bin_",1:.N)
+	] %>%
+	melt(
+		"row",
+		variable.name = "col", 
+		value.name = "pearsons",
+		fill = NA
+	) %>%
+	.[
+		,row := factor(.$row, levels = str_sort(unique(.$row), numeric = T, decreasing = T))
+	] %>%
+	.[
+		,col := factor(.$col, levels = str_sort(unique(.$col), numeric = T))
+	] %>%
+	.[
+		pearsons >= max,
+		pearsons := max
+	] %>%
+	.[
+		pearsons <= min,
+		pearsons := min
+	] %>%
+	ggplot(
+		aes(col,row,fill = pearsons)
+	) + 
+	geom_tile() +
+	scale_fill_gradient2(
+		limits = c(min,max),
+		low = min_color,
+		high = max_color
+	) + 
+	theme(
+		axis.text = element_blank(),
+		axis.title = element_blank(),
+		axis.ticks = element_blank(),
+		legend.position = "none"
+	)
