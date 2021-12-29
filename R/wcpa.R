@@ -4,7 +4,6 @@
 ##' only .hic file is accepted.
 ##' @author Chao Fang
 
-
 wcpa_pre <- function(
 				hic_file,
 				name = NA,
