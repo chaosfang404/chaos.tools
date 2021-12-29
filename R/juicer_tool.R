@@ -103,3 +103,4 @@ pearsons_plot <- function(
 		axis.ticks = element_blank(),
 		legend.position = "none"
 	)
+}
