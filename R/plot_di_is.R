@@ -22,14 +22,23 @@ plot_di_is <- function(
 		aes(V2,V4,color = V5)
 	) + 
 	geom_line(size = size) +
-	facet_grid(V6 ~ .,scales = "free") + 
+	facet_grid(
+		V6 ~ .,
+		scales = "free"
+	) + 
 	theme_prism() +
 	theme(
-		legend.position = "none",
+		legend.position = c(0.8,0.9),
 		strip.text.y = element_text(angle = 0)
 	) + 
-	labs(x=NULL, y = NULL) + 
-	scale_y_continuous(guide = "prism_offset") + 
+	labs(
+		title = paste0("Chr",chr," Directional Index & Insulation Score"), 
+		x = NULL,
+		y = NULL
+	) + 
+	scale_y_continuous(
+		guide = "prism_offset"
+	) + 
 	scale_x_continuous(
 		guide = "prism_offset",
 		breaks = seq(start,end,5e5),
