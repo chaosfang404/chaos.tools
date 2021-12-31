@@ -52,8 +52,8 @@ cvd <- function(
 
 plot_cvd <- function(
 				.data,
-				sample,
-				resolution = 5e3,
+				sample = NA,
+				resolution = 1e4,
 				chr = "all",
 				slop_position = c(4,6.8),
 				slop_length = 2,
@@ -61,6 +61,15 @@ plot_cvd <- function(
 				max = 1e7
 ){
 	s <- sample
+
+	if(length(s) == 1)
+	{
+		if(is.na(s))
+		{
+			s <- unique(.data$sample)
+		}
+	}
+
 	r <- resolution
 	c <- chr
 
@@ -90,7 +99,7 @@ plot_cvd <- function(
 
 	dt <- 	.data[
 				sample %in% s & 
-				resolution %in% r & 
+				resolution == r & 
 				chr %in% c &
 				distance %between% c(min,max)
 			]
