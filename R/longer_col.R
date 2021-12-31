@@ -1,4 +1,4 @@
-longer_col = function(
+longer_col <- function(
 				.data,
 				column,
 				sep = "[^[:alnum:]]+"
