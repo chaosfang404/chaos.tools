@@ -3,7 +3,7 @@ chr_omit <- function(
 ){
 	gsub(
 		.data,
-		pattern = "chr",
+		pattern = str_comb(c("c","C"),c("h","H"),c("r","R"),sep = "") %>% paste(collapse = "|"),
 		replacement = ""
 	)
 }
