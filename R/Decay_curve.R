@@ -122,7 +122,7 @@ plot_cvd <- function(
 		scale_y_continuous(
 			limits = c(
 						floor(log10(min(dt$counts))),
-						ceiling(log10(min(dt$counts)))
+						ceiling(log10(max(dt$counts)))
 					),
 			guide = "prism_offset") +
 		labs(
