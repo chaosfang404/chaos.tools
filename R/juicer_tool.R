@@ -303,15 +303,14 @@ eigen_switch <- function(
 					dt <- juicer_eigen(
 						x[2],
 						resolution = resolution
-					)
+					)[
+						,No := 1:.N,
+						.(chr)
+					]
 
 					if(isTRUE(correction))
 					{
-						dt[
-							,.(chr,corrected_eigen)
-						][
-							,No := 1:.N,.(chr)
-						] %>%
+						dt[,.(chr,corrected_eigen)] %>%
 						setnames(
 							old = "corrected_eigen",
 							new = x[1]
@@ -319,11 +318,7 @@ eigen_switch <- function(
 						setkey()
 					}else
 					{
-						dt[
-							,.(chr,eigen)
-						][
-							,No := 1:.N,.(chr)
-						] %>%
+						dt[,.(chr,eigen)] %>%
 						setnames(
 							old = "eigen",
 							new = x[1]
