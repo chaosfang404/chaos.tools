@@ -74,7 +74,9 @@ gene_density_calc <- function(
 		is.na(gene_name),
 		gene_number := 0
 	][
-		,.(chr,start = i.start,end = i.end,gene_number,pos = position,res = resolution,genome = ref, annotation = base_name(annotation_file))
+		,.(chr,start = i.start,end = i.end,gene_number)
+	][
+		,`:=`(pos = position,res = resolution,genome = ref, annotation = base_name(annotation_file))
 	] %>% unique()
 }
 
