@@ -289,3 +289,80 @@ juicer_eigen_plot <- function(
 #	) +
 	facet_grid(chr ~ resolution,scales = "free")
 }
+
+eigen_switch <- function(
+					ctl = "DMSO_EtOH.hic",
+					obs = "DMSO_DHT.hic",
+					resolution = 25e4,
+					correction = TRUE
+){
+	e <-	c(ctl,obs) %>%
+			as.data.table() %>%
+			apply(
+				1,
+				read_eigen
+				function(x){
+						dt <- juicer_eigen(
+							x,
+							resolution = resolution
+						)
+
+						if(isTRUE(correction))
+						{
+							dt2 <- dt[,.(chr,corrected_eigen)]
+						}else
+						{
+							dt2 <- dt[,.(chr,eigen)]
+						}
+
+						dt2[
+							,No := 1:.N,.(chr)
+						] %>%
+						setnames(
+							old = "corrected_eigen",
+							new = base_name(x)
+						) %>%
+						setkey()
+					}
+			)
+
+	m <- merge(
+			e[[1]],
+			e[[2]]
+		)[
+			DMSO_EtOH > 0 & DMSO_DHT > 0, status := "comserved_A"
+		][
+			DMSO_EtOH < 0 & DMSO_DHT < 0, status := "conserved_B"
+		][
+			DMSO_EtOH > 0 & DMSO_DHT < 0, status := "A_to_B"
+		][
+			DMSO_EtOH < 0 & DMSO_DHT > 0, status := "B_to_A"
+		]
+
+	c <-	chr_size() %>%
+			apply(
+				1,
+				function(x){
+					seq_dt(
+						0,
+						as.numeric(x[2]),
+						slice_size = 250000
+					)[
+						,chr := x[1]
+					][
+						,No := 1:.N,
+						.(chr)
+					][
+	                    V1 := V1 + 1
+	                ] %>%
+					setnames(
+						old = c("V1","V2"),
+						new = c("start","end")
+					)
+				}
+			) %>%
+			rbindlist() %>%
+			setkey()
+
+	merge(m, c)[,.(chr,start,end,No,ctl,obs,status)]
+}
