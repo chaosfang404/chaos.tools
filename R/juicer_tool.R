@@ -296,47 +296,54 @@ eigen_switch <- function(
 					resolution = 25e4,
 					correction = TRUE
 ){
-	e <-	c(ctl,obs) %>%
-			as.data.table() %>%
+	e <-	data.table(c("ctl","obs"),c(ctl,obs)) %>%
 			apply(
 				1,
-				read_eigen
 				function(x){
-						dt <- juicer_eigen(
-							x,
-							resolution = resolution
-						)
+					dt <- juicer_eigen(
+						x[2],
+						resolution = resolution
+					)
 
-						if(isTRUE(correction))
-						{
-							dt2 <- dt[,.(chr,corrected_eigen)]
-						}else
-						{
-							dt2 <- dt[,.(chr,eigen)]
-						}
-
-						dt2[
+					if(isTRUE(correction))
+					{
+						dt[
+							,.(chr,corrected_eigen)
+						][
 							,No := 1:.N,.(chr)
 						] %>%
 						setnames(
 							old = "corrected_eigen",
-							new = base_name(x)
+							new = x[1]
+						) %>%
+						setkey()
+					}else
+					{
+						dt[
+							,.(chr,eigen)
+						][
+							,No := 1:.N,.(chr)
+						] %>%
+						setnames(
+							old = "eigen",
+							new = x[1]
 						) %>%
 						setkey()
 					}
+				}
 			)
 
 	m <- merge(
 			e[[1]],
 			e[[2]]
 		)[
-			DMSO_EtOH > 0 & DMSO_DHT > 0, status := "comserved_A"
+			ctl > 0 & obs > 0, status := "comserved_A"
 		][
-			DMSO_EtOH < 0 & DMSO_DHT < 0, status := "conserved_B"
+			ctl < 0 & obs < 0, status := "conserved_B"
 		][
-			DMSO_EtOH > 0 & DMSO_DHT < 0, status := "A_to_B"
+			ctl > 0 & obs < 0, status := "A_to_B"
 		][
-			DMSO_EtOH < 0 & DMSO_DHT > 0, status := "B_to_A"
+			ctl < 0 & obs > 0, status := "B_to_A"
 		]
 
 	c <-	chr_size() %>%
