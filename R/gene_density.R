@@ -38,7 +38,7 @@ gene_density_calc <- function(
 						][
 							strand == "-", `:=`(x = end - 1, y = end)
 						][
-							,.(chr,start = x, end = y, gene_name)
+							,.(chr,start = x, end = y, gene_name, position = "tss")
 						]
 	} else if(position == "tes")
 	{
@@ -47,7 +47,7 @@ gene_density_calc <- function(
 						][
 							strand == "-", `:=`(x = start, y = start + 1)
 						][
-							,.(chr,start = x, end = y, gene_name)
+							,.(chr,start = x, end = y, gene_name, position = "tes")
 						]
 	} else if(position == "mid")
 	{
@@ -56,11 +56,11 @@ gene_density_calc <- function(
 						][
 							,y := x + 1
 						][
-							,.(chr,start = x, end = y,gene_name)
+							,.(chr,start = x, end = y,gene_name, position = "mid")
 						]
 	} else if(position == "all")
 	{
-		gene_info <-	gene_info_raw[,.(chr,start, end,gene_name)]
+		gene_info <-	gene_info_raw[,.(chr,start, end,gene_name, position = "all")]
 	}
 
 
@@ -90,7 +90,8 @@ gene_density_calc <- function(
 gene_density <- function(
 					ref = "hg19",
 					annotation_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
-					resolution = 1e4
+					resolution = 1e4,
+					position = "tss"
 ){
 	chaos.tools_data_dir <- "~/.config/chaos.tools"
 
@@ -106,7 +107,8 @@ gene_density <- function(
 		gene_density <- gene_density_calc(
 							ref = ref,
 							annotation_file = annotation_file,
-							resolution = resolution
+							resolution = resolution,
+							position = position
 						)
 		fwrite(gene_density,gene_density_file,quote = F, sep = "\t", col.names = T, compress = "gzip")
 	}else
