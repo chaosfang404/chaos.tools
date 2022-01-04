@@ -1,7 +1,8 @@
 gene_density_calc <- function(
 							ref = "hg19",
 							annotation_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
-							resolution = 1e4
+							resolution = 1e4,
+							position = "tss"
 ){
 	slice <- function(
 				x
@@ -23,15 +24,46 @@ gene_density_calc <- function(
 				rbindlist() %>%
 				setkey()
 
-	gene_info <- as.data.table(
-					import(annotation_file)
-				)[
-					type == "gene",
-					.(chr = seqnames, start, end, gene_name)
-				][
-					,chr := as.character(chr)
-				] %>%
-				setkey(chr,start,end)
+	gene_info_raw <-	as.data.table(
+							import(annotation_file)
+						)[
+							type == "gene",
+							.(chr = as.character(seqnames), start, end, gene_name,strand)
+						]
+
+	if(position == "tss")
+	{
+		gene_info <-	gene_info_raw[
+							strand == "+", `:=`(x = start, y = start + 1)
+						][
+							strand == "-", `:=`(x = end - 1, y = end)
+						][
+							,.(chr,start = x, end = y, gene_name)
+						]
+	} else if(position == "tes")
+	{
+		gene_info <-	gene_info_raw[
+							strand == "+", `:=`(x = end - 1, y = end)
+						][
+							strand == "-", `:=`(x = start, y = start + 1)
+						][
+							,.(chr,start = x, end = y, gene_name)
+						]
+	} else if(position == "mid")
+	{
+		gene_info <-	gene_info_raw[
+							,x := ceiling((start + end)/2)
+						][
+							,y := x + 1
+						][
+							,.(chr,start = x, end = y,gene_name)
+						]
+	} else if(position == "all")
+	{
+		gene_info <-	gene_info_raw[,.(chr,start, end,gene_name)]
+	}
+
+
 
 	foverlaps(
 		chr_info,
