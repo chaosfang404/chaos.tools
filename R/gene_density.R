@@ -14,7 +14,7 @@ gene_density_calc <- function(
 		)[
 			,chr := x[1]
 		][
-			,.(chr,start = V1,end = V2)
+			,.(chr,start = V1 + 1,end = V2)
 		]
 	}
 
