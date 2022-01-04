@@ -310,7 +310,7 @@ eigen_switch <- function(
 
 					if(isTRUE(correction))
 					{
-						dt[,.(chr,corrected_eigen)] %>%
+						dt[,.(chr,No,corrected_eigen)] %>%
 						setnames(
 							old = "corrected_eigen",
 							new = x[1]
@@ -318,7 +318,7 @@ eigen_switch <- function(
 						setkey()
 					}else
 					{
-						dt[,.(chr,eigen)] %>%
+						dt[,.(chr,No,eigen)] %>%
 						setnames(
 							old = "eigen",
 							new = x[1]
