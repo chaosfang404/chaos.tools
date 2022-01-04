@@ -7,10 +7,9 @@ gene_density_calc <- function(
 	slice <- function(
 				x
 	){
-		chr_length <- as.numeric(x[2])
 		seq_dt(
 			start = 0,
-			end = chr_length,
+			end = as.numeric(x[2]),
 			slice_size = resolution
 		)[
 			,chr := x[1]
@@ -64,27 +63,19 @@ gene_density_calc <- function(
 	}
 
 
-
 	foverlaps(
 		chr_info,
-		gene_info
+		setkey(gene_info,chr,start,end)
 	)[
 		!is.na(gene_name),
 		gene_number := .N,
 		.(chr,i.start,i.end)
 	][
-		,.(chr,start = i.start,end = i.end,gene_number)
-	][
-		is.na(gene_number),
+		is.na(gene_name),
 		gene_number := 0
 	][
-		,res := resolution
-	][
-		,genome := ref
-	][
-		,annotation := base_name(annotation_file)
-	] %>%
-	unique()
+		,.(chr,start = i.start,end = i.end,gene_number,pos = position,res = resolution,genome = ref, annotation = base_name(annotation_file))
+	] %>% unique()
 }
 
 gene_density <- function(
@@ -93,6 +84,8 @@ gene_density <- function(
 					resolution = 1e4,
 					position = "tss"
 ){
+	po <- position
+
 	chaos.tools_data_dir <- "~/.config/chaos.tools"
 
 	gene_density_file <- file.path(chaos.tools_data_dir,"gene_density.txt.gz")
@@ -118,14 +111,16 @@ gene_density <- function(
 						)[
 							genome == ref &
 							res == resolution &
-							annotation == base_name(annotation_file)
+							annotation == base_name(annotation_file) &
+							pos == position
 						]
 		if(nrow(gene_density) == 0)
 		{
 			gene_density <- gene_density_calc(
 							ref = ref,
 							annotation_file = annotation_file,
-							resolution = resolution
+							resolution = resolution,
+							position = position
 						)
 			fwrite(gene_density,gene_density_file,quote = F, sep = "\t",append = T,compress = "gzip")
 		}
