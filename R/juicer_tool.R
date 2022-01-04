@@ -348,15 +348,15 @@ eigen_switch <- function(
 					seq_dt(
 						0,
 						as.numeric(x[2]),
-						slice_size = 250000
+						slice_size = resolution
 					)[
 						,chr := x[1]
 					][
 						,No := 1:.N,
 						.(chr)
 					][
-	                    V1 := V1 + 1
-	                ] %>%
+						,V1 := V1 + 1
+					] %>%
 					setnames(
 						old = c("V1","V2"),
 						new = c("start","end")
