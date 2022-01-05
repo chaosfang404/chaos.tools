@@ -332,7 +332,7 @@ eigen_switch <- function(
 			e[[1]],
 			e[[2]]
 		)[
-			ctl > 0 & obs > 0, status := "comserved_A"
+			ctl > 0 & obs > 0, status := "conserved_A"
 		][
 			ctl < 0 & obs < 0, status := "conserved_B"
 		][
