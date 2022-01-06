@@ -238,9 +238,8 @@ distribution_plot <- function(
 	scale_x_continuous(
 		breaks = c(
 					1,
-					flank_slice_number, 
-					flank_slice_number + 
-					body_slice_number, 
+					flank_slice_number + 1, 
+					flank_slice_number + body_slice_number, 
 					flank_slice_number * 2 + body_slice_number
 		),
 		labels = c(
@@ -256,9 +255,9 @@ distribution_plot <- function(
 		y = lab_y
 	) +
 	theme(
-        legend.title = element_blank(),
-        legend.background = element_blank(),
-        legend.key = element_blank(),
+		legend.title = element_blank(),
+		legend.background = element_blank(),
+		legend.key = element_blank(),
 		legend.position = legend_position
 	)
 }
