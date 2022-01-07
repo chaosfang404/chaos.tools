@@ -362,7 +362,7 @@ gene_on_boarder <-	function(
 				theme(legend.title = element_blank()) +
 				facet_grid(reference ~ regulation)
 
-		p <- p1 + p2
+		p <- p1 / p2
 		p
 
 	} else
