@@ -261,3 +261,80 @@ distribution_plot <- function(
 		legend.position = legend_position
 	)
 }
+
+
+## .data should be the overlap data from distribution function
+## such as dt$overlap
+
+gene_on_boarder <-	function(
+						.data,
+						block_expand = 10,
+						borders = c(26,75),
+						gene_ID_column = "align_V4",
+						regulation_column = "align_V6",
+						plot = TRUE
+){
+	dt <-	.data %>%
+			as.data.table() %>%
+			setnames(
+				old = c(regulation_column,gene_ID_column),
+				new = c("regulation","gene_ID")
+			)
+
+	calc_gene_number <-	function(
+							x
+	){
+		t <- as.numeric(x[1])
+	
+		n <- dt[
+				block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t)) &
+				regulation == x[2],
+				gene_ID
+			] %>%
+			unique() %>%
+			length()
+	
+		data.table(block = x[1],regulation = x[2],number = n)
+	}
+
+
+	tmp <- expand.grid(
+				n = (0:block_expand),
+				type = unique(dt$regulation),
+				stringsAsFactors = F
+			) %>%
+			as.data.table() %>%
+			apply(1,calc_gene_number) %>%
+			rbindlist()
+
+	if(isTRUE(plot))
+	{
+		tmp %>%
+		ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
+		geom_line() +
+		theme_prism() +
+		scale_color_npg() +
+		geom_point() +
+		geom_text(
+			aes(label = number),
+			hjust= -0.2,
+			vjust = 1,
+			show.legend = F
+		) +
+		scale_y_continuous(guide = "prism_offset") +
+		scale_x_continuous(guide = "prism_offset") +
+		theme(legend.position = "bottom") +
+		labs(
+			title = "genes on TAD border region",
+			x = "blocks that expand from border", 
+			y = "log2(gene number on border region)"
+		)
+	} else
+	{
+		tmp %>%
+		dcast(
+			regulation ~ block,
+			value.var = "number"
+		)
+	}
+}
