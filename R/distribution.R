@@ -188,11 +188,11 @@ distribution <- function(
 		align_keep_col <- paste0("align_V",align_keep)
 	}
 
-	overlap <-foverlaps(
-				align_info,
-				ref_info,
-				nomatch = NULL
-			)
+	overlap <-	foverlaps(
+					align_info,
+					ref_info,
+					nomatch = NULL
+				)
 
 	left_col <- c("block","reference","expand",ref_keep_col,"align","exp",align_keep_col)
 
