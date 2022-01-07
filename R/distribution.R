@@ -272,14 +272,23 @@ gene_on_boarder <-	function(
 						borders = c(26,75),
 						gene_ID_column = "align_V4",
 						regulation_column = "align_V6",
+						reference_column = "reference",
 						plot = TRUE
 ){
 	dt <-	.data %>%
 			as.data.table() %>%
 			setnames(
-				old = c(regulation_column,gene_ID_column),
-				new = c("regulation","gene_ID")
+				old = c(regulation_column,gene_ID_column,reference_column),
+				new = c("regulation","gene_ID","reference")
 			)
+
+	m <-	expand.grid(
+				(0:block_expand),
+				unique(dt$regulation),
+				unique(dt$reference),
+				stringsAsFactors = F
+			) %>%
+			as.data.table()
 
 	calc_gene_number <-	function(
 							x
@@ -288,53 +297,76 @@ gene_on_boarder <-	function(
 	
 		n <- dt[
 				block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t)) &
-				regulation == x[2],
+				regulation == x[2] &
+				reference %in% x[3],
 				gene_ID
 			] %>%
 			unique() %>%
 			length()
 	
-		data.table(block = x[1],regulation = x[2],number = n)
+		data.table(block = x[1],regulation = x[2],reference = x[3],number = n)
 	}
 
+	tmp <-	apply(m,1,calc_gene_number) %>%
+			rbindlist()	
 
-	tmp <- expand.grid(
-				n = (0:block_expand),
-				type = unique(dt$regulation),
-				stringsAsFactors = F
-			) %>%
-			as.data.table() %>%
-			apply(1,calc_gene_number) %>%
-			rbindlist()
+	calc_diff <-	function(
+						x
+	){
+		tmp2 <- tmp[regulation == x[2] & reference == x[3]]
+		tmp2[
+			,diff := number - c(0,tmp2$number[1:(nrow(tmp2)-1)])
+		][
+			,.(reference,regulation, block,number,diff)
+		]
+	}
+
+	tmp2 <-	apply(m,1,calc_diff) %>%
+			rbindlist
+
 
 	if(isTRUE(plot))
 	{
-		tmp %>%
-		ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
-		geom_line() +
-		theme_prism() +
-		scale_color_npg() +
-		geom_point() +
-		geom_text(
-			aes(label = number),
-			hjust= -0.2,
-			vjust = 1,
-			show.legend = F
-		) +
-		scale_y_continuous(guide = "prism_offset") +
-		scale_x_continuous(guide = "prism_offset") +
-		theme(legend.position = "bottom") +
-		labs(
-			title = "genes on TAD border region",
-			x = "blocks that expand from border", 
-			y = "log2(gene number on border region)"
-		)
+		p1 <-	tmp %>%
+				ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
+				geom_line() +
+				theme_prism() +
+				scale_color_npg() +
+				geom_point() +
+				geom_text(
+					aes(label = number),
+					hjust= -0.2,
+					vjust = 1,
+					show.legend = F
+				) +
+				scale_y_continuous(guide = "prism_offset") +
+				scale_x_continuous(guide = "prism_offset") +
+				theme(legend.position = "bottom") +
+				labs(
+					title = "genes on TAD border region",
+					x = "blocks that expand from border", 
+					y = "log2(gene number on border region)"
+				) +
+				facet_grid( ~ reference)
+
+		p2 <-	tmp2 %>%
+				ggplot(aes("x",diff,fill = as.factor(block))) +
+				geom_bar(stat = "identity",position = "fill") +
+				coord_polar(theta = "y",direction = -1) +
+				scale_fill_manual(
+					values = colorRampPalette(
+								RColorBrewer::brewer.pal(9, "Set1")
+							)(length(unique(tmp2$block)))
+				) +
+				theme_void() + 
+				theme(legend.title = element_blank()) +
+				facet_grid(reference ~ regulation)
+
+		p <- p1 + p2
+		p
+
 	} else
 	{
-		tmp %>%
-		dcast(
-			regulation ~ block,
-			value.var = "number"
-		)
+		tmp2
 	}
 }
