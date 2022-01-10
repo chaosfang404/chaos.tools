@@ -244,8 +244,8 @@ distribution_plot <- function(
 		),
 		labels = c(
 					paste0(expand/-1000, "k"),
-					"start",
-					"end",
+					start,
+					end,
 					paste0(expand/1000, "k")
 		),
 		expand = c(0, 0)
@@ -273,7 +273,7 @@ gene_on_boarder <-	function(
 						gene_ID_column = "align_V4",
 						regulation_column = "align_V6",
 						reference_column = "reference",
-						plot = TRUE
+						plot = "number"
 ){
 	dt <-	.data %>%
 			as.data.table() %>%
@@ -304,7 +304,7 @@ gene_on_boarder <-	function(
 			unique() %>%
 			length()
 	
-		data.table(block = x[1],regulation = x[2],reference = x[3],number = n)
+		data.table(block = t,regulation = x[2],reference = x[3],number = n)
 	}
 
 	tmp <-	apply(m,1,calc_gene_number) %>%
@@ -313,7 +313,7 @@ gene_on_boarder <-	function(
 	calc_diff <-	function(
 						x
 	){
-		tmp2 <- tmp[regulation == x[2] & reference == x[3]]
+		tmp2 <- tmp[regulation == x[1] & reference == x[2]]
 		tmp2[
 			,diff := number - c(0,tmp2$number[1:(nrow(tmp2)-1)])
 		][
@@ -321,11 +321,15 @@ gene_on_boarder <-	function(
 		]
 	}
 
-	tmp2 <-	apply(m,1,calc_diff) %>%
+	tmp2 <-	m[,.(Var2,Var3)] %>%
+			unique() %>%
+			apply(1,calc_diff) %>%
 			rbindlist
 
-
-	if(isTRUE(plot))
+	if(plot == "none")
+	{
+		tmp2
+	}else if(plot != "none")
 	{
 		p1 <-	tmp %>%
 				ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
@@ -359,14 +363,22 @@ gene_on_boarder <-	function(
 							)(length(unique(tmp2$block)))
 				) +
 				theme_void() + 
-				theme(legend.title = element_blank()) +
+				theme(
+					legend.title = element_blank(),
+					legend.position = "bottom",
+					panel.grid.major = element_blank(),
+					panel.grid.minor = element_blank()
+				) +
 				facet_grid(reference ~ regulation)
-
-		p <- p1 / p2
-		p
-
-	} else
-	{
-		tmp2
+		if(plot == "number")
+		{
+			p1
+		} else if(plot == "diff")
+		{
+			p2
+		} else if(plot == "both")
+		{
+			p1 / p2
+		}
 	}
 }
