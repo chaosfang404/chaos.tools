@@ -164,3 +164,59 @@ volcano_plot <- function(
 
 	p
 }
+
+
+
+sub_volcano_plot <-	function(
+						id = NA,
+						name = NA,
+						ref_data = rna_seq_result,
+						plot = TRUE
+){
+	ref_stat <- ref_data[,.N,.(Group)]
+	total_down <- ref_stat[Group == "down",N]
+	total_up <- ref_stat[Group == "up",N]
+
+	if(length(id) == 1)
+	{
+		if(is.na(id))
+		{
+			id <- ref_data$gene_id
+		}
+	}
+
+	if(length(name) == 1)
+	{
+		if(is.na(name))
+		{
+			name <- ref_data$gene_name
+		}
+	}
+
+	dt <- ref_data[gene_id %in% id & gene_name %in% name]
+
+	dt_stat <- dt[,.N,.(Group)]
+
+	up <-	dt_stat[Group == "up",N]
+
+	down <-	dt_stat[Group == "down",N]
+
+	label_down	<-	paste0("N = ",down," / ",total_down,"\n",round(down/total_up * 100,2),"%")
+	label_up	<-	paste0("N = ",up," / ",total_up,"\n",round(up/total_up * 100,2),"%")
+
+	if(isTRUE(plot))
+	{
+		volcano_plot(
+			dt,
+			top_gene_number = 0
+		) + 
+		labs(title = "gene(TSS±3k) located at the loop anchor") +
+		theme(plot.title = element_text(hjust = 0.5)) +
+		annotate("text",x = -4, y = 12, label = label_down) + 
+		annotate("text",x = 4, y = 12, label = label_up)
+	} else
+	{
+		dt
+	}
+}
+

@@ -70,3 +70,13 @@ ppt <- function(
 		append = T
 	)
 }
+
+
+pdf2 <- function(
+			file_path,
+			height,
+			width
+){
+	result_dir <- "/mnt/d/synchronized\ files/OneDrive\ -\ 南方科技大学/VCaP_result_plot"
+	pdf(file.path(result_dir,file_path),height = height,width = width)
+}
