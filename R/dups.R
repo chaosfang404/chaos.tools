@@ -10,14 +10,14 @@ dups <- function(
 		dt[duplicated(dt)]
 	}else
 	{
+		setnames(
+			dt,
+			old = col,
+			new = "i_hope_you_will_not_find_out"
+		)
+
 		if(isTRUE(all))
 		{
-			setnames(
-				dt,
-				old = col,
-				new = "i_hope_you_will_not_find_out"
-			)
-
 			dup_list <- dt[
 							duplicated(i_hope_you_will_not_find_out),
 							i_hope_you_will_not_find_out
@@ -28,27 +28,15 @@ dups <- function(
 					][
 						order(i_hope_you_will_not_find_out)
 					]
-
-			setnames(
-				dt2,
-				old = "i_hope_you_will_not_find_out", 
-				new = col
-			)[]
 		}else
 		{
-			setnames(
-				dt,
-				old = col,
-				new = "i_hope_you_will_not_find_out"
-			)
-
 			dt2 <- dt[duplicated(i_hope_you_will_not_find_out)]
-
-			setnames(
-				dt2,
-				old = "i_hope_you_will_not_find_out",
-				new = col
-			)[]
 		}
+
+		setnames(
+			dt2,
+			old = "i_hope_you_will_not_find_out", 
+			new = col
+		)[]
 	}
 }

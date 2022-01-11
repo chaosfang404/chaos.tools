@@ -2,7 +2,8 @@ rnaseq123 <- function(
 				ctl_featurecount_file,
 				obs_featurecount_file,
 				gtf_file = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gtf.gz",
-				fold_change_threshold = 1.5
+				fold_change = 1.5,
+				p_value = 0.05
 ){
 	x <- readDGE(
 			c(ctl_featurecount_file,obs_featurecount_file),
@@ -65,11 +66,11 @@ rnaseq123 <- function(
 	) %>%
 	.[,Group := "not_sig"] %>%
 	.[
-		adj.P.Val < 0.05 & log2FC > log2(fold_change_threshold), 
+		adj.P.Val < p_value & log2FC > log2(fold_change), 
 		Group := "up"
 	] %>%
 	.[
-		adj.P.Val < 0.05 & log2FC < -log2(fold_change_threshold), 
+		adj.P.Val < p_value & log2FC < -log2(fold_change), 
 		Group := "down"
 	]  %>%
 	.[
@@ -82,7 +83,8 @@ rnaseq123 <- function(
 volcano_plot <- function(
 					.data,
 					top_gene_number = 10,
-					fold_change_threshold = 1.5,
+					fold_change = 1.5,
+					p_value = 0.05,
 					special.gene = NULL
 ){
 	dt <- as.data.table(.data)
@@ -124,7 +126,7 @@ volcano_plot <- function(
 					linetype = "dashed"
 				) +
 				geom_vline(
-					xintercept = c(-log2(fold_change_threshold),log2(fold_change_threshold)),
+					xintercept = c(-log2(fold_change),log2(fold_change)),
 					linetype = "dashed"
 				) +
 				theme_base() +
@@ -137,13 +139,13 @@ volcano_plot <- function(
 					geom = "text",
 					x=-5,
 					y=1.1,  
-					label = "p-value = 0.05"
+					label = paste0("p-value = ",p_value)
 				) +
 				annotate(
 					geom = "text",
 					x=3.2,
 					y=16,  
-					label = paste0("Fold Change threshold = ",fold_change_threshold)
+					label = paste0("Fold Change threshold = ",fold_change)
 				) + 
 				xlab(label = expression(log[2]("Fold Change"))) +
 				ylab(label = expression(-log[10](adj.p-Value))) + 
