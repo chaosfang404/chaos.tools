@@ -137,14 +137,17 @@ volcano_plot <- function(
 				) +
 				annotate(
 					geom = "text",
-					x=-5,
-					y=1.1,  
+					x=min(dt$log2FC),
+					y=-log10(0.05),
+					hjust = 0,
+					vjust = 1,
 					label = paste0("p-value = ",p_value)
 				) +
 				annotate(
 					geom = "text",
-					x=3.2,
-					y=16,  
+					x=log2(fold_change) + 0.1,
+					y=max(dt$log10P) + 1,
+					hjust = 0,
 					label = paste0("Fold Change threshold = ",fold_change)
 				) + 
 				xlab(label = expression(log[2]("Fold Change"))) +
@@ -166,16 +169,32 @@ volcano_plot <- function(
 }
 
 
-
 sub_volcano_plot <-	function(
 						id = NA,
 						name = NA,
+						fold_change = NA,
+						p_value = NA,
 						ref_data = rna_seq_result,
-						plot = TRUE
+						plot = TRUE,
+						label_position = c(-4,12,4,12)
 ){
 	ref_stat <- ref_data[,.N,.(Group)]
 	total_down <- ref_stat[Group == "down",N]
 	total_up <- ref_stat[Group == "up",N]
+
+	if(is.na(fold_change))
+	{
+		dt <- ref_data
+	}else
+	{
+		dt <- ref_data[log2FC > log2(fold_change) | log2FC < -log2(fold_change)]
+	}
+
+	if(!is.na(p_value))
+	{
+		dt <- ref_data[adj.P.Val < p_value]
+	}
+
 
 	if(length(id) == 1)
 	{
@@ -193,7 +212,7 @@ sub_volcano_plot <-	function(
 		}
 	}
 
-	dt <- ref_data[gene_id %in% id & gene_name %in% name]
+	dt <-	dt[gene_id %in% id & gene_name %in% name]
 
 	dt_stat <- dt[,.N,.(Group)]
 
@@ -210,13 +229,11 @@ sub_volcano_plot <-	function(
 			dt,
 			top_gene_number = 0
 		) + 
-		labs(title = "gene(TSS±3k) located at the loop anchor") +
 		theme(plot.title = element_text(hjust = 0.5)) +
-		annotate("text",x = -4, y = 12, label = label_down) + 
-		annotate("text",x = 4, y = 12, label = label_up)
+		annotate("text",x = label_position[1], y = label_position[2], label = label_down) + 
+		annotate("text",x = label_position[3], y = label_position[4], label = label_up)
 	} else
 	{
 		dt
 	}
 }
-
