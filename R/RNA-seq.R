@@ -39,8 +39,10 @@ rnaseq123 <- function(
 					] %>%
 					unique()
 
-	keep.exprs <- filterByExpr(x, group = group) 
-	x <- x[keep.exprs, keep.lib.sizes = FALSE] %>%
+	x <-	x[
+				filterByExpr(x, group = group), 
+				keep.lib.sizes = F
+			] %>%
 			calcNormFactors(method = "TMM")
 
 	design <- model.matrix(~0+group)
@@ -48,35 +50,56 @@ rnaseq123 <- function(
 
 	contr.matrix <- makeContrasts(
 						obsvsctl = obs-ctl, 
-   						levels = colnames(design)
+						levels = colnames(design)
 					)
 
-	x %>%
-	voomWithQualityWeights(design, plot = F) %>%
-	lmFit(design) %>%
-	contrasts.fit(contrasts = contr.matrix) %>%
-	eBayes() %>%
-	topTable(n = Inf) %>%
-	as.data.table() %>%
-	.[,log10P := -log10(adj.P.Val)] %>%
-	.[order(-logFC)] %>%
-	setnames(
-		new = "log2FC",
-		old = "logFC"
-	) %>%
-	.[,Group := "not_sig"] %>%
-	.[
-		adj.P.Val < p_value & log2FC > log2(fold_change), 
-		Group := "up"
-	] %>%
-	.[
-		adj.P.Val < p_value & log2FC < -log2(fold_change), 
-		Group := "down"
-	]  %>%
-	.[
-		! gene_id %in% chrM_genes$gene_id
-	]
+	result <- NULL
 
+	result$DE <-	x %>%
+					voomWithQualityWeights(design, plot = F) %>%
+					lmFit(design) %>%
+					contrasts.fit(contrasts = contr.matrix) %>%
+					eBayes() %>%
+					topTable(n = Inf) %>%
+					as.data.table() %>%
+					.[order(-logFC)] %>%
+					.[
+						,`:=`(
+							log10P = -log10(adj.P.Val),
+							regulation = fcase(
+								adj.P.Val < p_value & logFC > log2(fold_change), "up",
+								adj.P.Val < p_value & logFC < -log2(fold_change), "down",
+								default = "not_sig"
+							)	
+						)
+					] %>%
+					.[! gene_id %in% chrM_genes$gene_id] %>%
+					setnames(
+						old = "logFC",
+						new = "log2FC"	
+					) %>%
+					setkey(gene_id,gene_name)
+
+	result$gene <-	gtf_info %>%
+					setkey(
+						gene_id,
+						gene_name
+					) %>%
+					.[
+						result$DE
+					] %>%
+					.[
+						,.(gene_id,gene_name,chr,start,end,strand,regulation)
+					]
+
+	result$tss <-	result$gene[
+						,TSS_start := fifelse(strand == "+",start,end - 1)
+					][
+						,TSS_end := TSS_start + 1
+					][
+						,.(gene_id,gene_name,chr,start = TSS_start,end = TSS_end,strand,regulation)
+					]
+	result
 }
 
 
@@ -87,14 +110,22 @@ volcano_plot <- function(
 					p_value = 0.05,
 					special.gene = NULL
 ){
-	dt <- as.data.table(.data)
+	dt <-	.data %>%
+			as.data.table() %>%
+			.[
+				,regulation := fcase(
+					adj.P.Val < p_value & log2FC > log2(fold_change), "up",
+					adj.P.Val < p_value & log2FC < -log2(fold_change), "down",
+					default = "not_sig"	
+				)
+			]
 
 	for (i in c("up","down"))
 	{
 		assign(
 			paste0(i,".topgene"),
 			dt[
-				Group == i
+				regulation == i
 			][
 				order(-abs(log2FC))
 			] %>%
@@ -107,7 +138,7 @@ volcano_plot <- function(
 		gene_name %in% c(up.topgene,down.topgene,special.gene),
 		Label := gene_name
 	][
-		,Group2 := Group
+		,Group2 := regulation
 	]
 
 	if(!is.null(special.gene))
@@ -157,15 +188,13 @@ volcano_plot <- function(
 
 	if(!is.null(special.gene))
 	{
-		p  <- p_base + 
-				scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35")) 
+		p_base + 
+		scale_color_manual(values = c("#3C5488","#BBBBBB","#00a087","#E64B35")) 
 	}else
 	{
-		p <- p_base + 
-				scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35"))
+		p_base + 
+		scale_color_manual(values = c("#3C5488","#BBBBBB","#E64B35"))
 	}
-
-	p
 }
 
 
@@ -174,13 +203,16 @@ sub_volcano_plot <-	function(
 						name = NA,
 						fold_change = NA,
 						p_value = NA,
-						ref_data = rna_seq_result,
+						ref_data = rna_seq_result$DE,
 						plot = TRUE,
 						label_position = c(-4,12,4,12)
 ){
-	ref_stat <- ref_data[,.N,.(Group)]
-	total_down <- ref_stat[Group == "down",N]
-	total_up <- ref_stat[Group == "up",N]
+	total_stat <-	sapply(
+						c("up","down"),
+						function(x){
+							ref_data[,.N,.(regulation)][regulation == x,N]
+						}
+					)
 
 	if(is.na(fold_change))
 	{
@@ -192,7 +224,7 @@ sub_volcano_plot <-	function(
 
 	if(!is.na(p_value))
 	{
-		dt <- ref_data[adj.P.Val < p_value]
+		dt <- dt[adj.P.Val < p_value]
 	}
 
 
@@ -214,14 +246,15 @@ sub_volcano_plot <-	function(
 
 	dt <-	dt[gene_id %in% id & gene_name %in% name]
 
-	dt_stat <- dt[,.N,.(Group)]
+	dt_stat <-	sapply(
+					c("up","down"),
+					function(x){
+						dt[,.N,.(regulation)][regulation == x,N]
+					}
+				)
 
-	up <-	dt_stat[Group == "up",N]
-
-	down <-	dt_stat[Group == "down",N]
-
-	label_down	<-	paste0("N = ",down," / ",total_down,"\n",round(down/total_up * 100,2),"%")
-	label_up	<-	paste0("N = ",up," / ",total_up,"\n",round(up/total_up * 100,2),"%")
+	label_up	<-	paste0("N = ",dt_stat[1]," / ",total_stat[1],"\n",round(dt_stat[1]/total_stat[1] * 100,2),"%")
+	label_down	<-	paste0("N = ",dt_stat[2]," / ",total_stat[2],"\n",round(dt_stat[2]/total_stat[2] * 100,2),"%")
 
 	if(isTRUE(plot))
 	{

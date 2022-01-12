@@ -263,17 +263,18 @@ distribution_plot <- function(
 }
 
 
-## .data should be the overlap data from distribution function
+## the .data imported into location should be the overlap data from distribution function
 ## such as dt$overlap
 
-gene_on_boarder <-	function(
-						.data,
-						block_expand = 10,
-						borders = c(26,75),
-						gene_ID_column = "align_V4",
-						regulation_column = "align_V6",
-						reference_column = "reference",
-						plot = "number"
+location <-	function(
+				.data,
+				block_expand = 3,
+				type = "border",
+				borders = c(26,30),
+				gene_ID_column = "align_V4",
+				regulation_column = "align_V6",
+				reference_column = "reference",
+				plot = "number"
 ){
 	dt <-	.data %>%
 			as.data.table() %>%
@@ -290,22 +291,59 @@ gene_on_boarder <-	function(
 			) %>%
 			as.data.table()
 
+# it's slower using the following code
+#
+#	calc_gene_number <-	function(
+#							x
+#	){
+#		t <- as.numeric(x[1])
+#
+#		if(type == "border")
+#		{
+#			dt_tmp <- dt[block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t))]
+#		} else if(type == "body")
+#		{
+#			dt_tmp <- dt[block %in% (borders[1] - t) : (borders[1] + t)]
+#		}
+#
+#		 n <-	dt_tmp[
+#		 			regulation == x[2] & reference %in% x[3],
+#					gene_ID
+#				] %>%
+#				unique() %>%
+#				length()
+#		data.table(block = t,regulation = x[2],reference = x[3],number = n)
+#	}
+
 	calc_gene_number <-	function(
 							x
 	){
 		t <- as.numeric(x[1])
-	
-		n <- dt[
-				block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t)) &
-				regulation == x[2] &
-				reference %in% x[3],
-				gene_ID
-			] %>%
-			unique() %>%
-			length()
-	
+
+		if(type == "border")
+		{
+			n <-	dt[
+						block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t)) &
+						regulation == x[2] &
+						reference %in% x[3],
+						gene_ID
+					] %>%
+					unique() %>%
+					length()
+		} else if(type == "body")
+		{
+			n <-	dt[
+						block %in% (borders[1] - t) : (borders[1] + t) &
+						regulation == x[2] &
+						reference %in% x[3],
+						gene_ID
+					] %>%
+					unique() %>%
+					length()
+		}
 		data.table(block = t,regulation = x[2],reference = x[3],number = n)
 	}
+
 
 	tmp <-	apply(m,1,calc_gene_number) %>%
 			rbindlist()	
@@ -317,68 +355,59 @@ gene_on_boarder <-	function(
 		tmp2[
 			,diff := number - c(0,tmp2$number[1:(nrow(tmp2)-1)])
 		][
-			,.(reference,regulation, block,number,diff)
+			,.(reference, regulation, block, number, diff)
 		]
 	}
 
 	tmp2 <-	m[,.(Var2,Var3)] %>%
 			unique() %>%
 			apply(1,calc_diff) %>%
-			rbindlist
+			rbindlist()
 
 	if(plot == "none")
 	{
 		tmp2
-	}else if(plot != "none")
+	}else if(plot == "number")
 	{
-		p1 <-	tmp %>%
-				ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
-				geom_line() +
-				theme_prism() +
-				scale_color_npg() +
-				geom_point() +
-				geom_text(
-					aes(label = number),
-					hjust= -0.2,
-					vjust = 1,
-					show.legend = F
-				) +
-				scale_y_continuous(guide = "prism_offset") +
-				scale_x_continuous(guide = "prism_offset") +
-				theme(legend.position = "bottom") +
-				labs(
-					title = "genes on TAD border region",
-					x = "blocks that expand from border", 
-					y = "log2(gene number on border region)"
-				) +
-				facet_grid( ~ reference)
-
-		p2 <-	tmp2 %>%
-				ggplot(aes("x",diff,fill = as.factor(block))) +
-				geom_bar(stat = "identity",position = "fill") +
-				coord_polar(theta = "y",direction = -1) +
-				scale_fill_manual(
-					values = colorRampPalette(
-								RColorBrewer::brewer.pal(9, "Set1")
-							)(length(unique(tmp2$block)))
-				) +
-				theme_void() + 
-				theme(
-					legend.title = element_blank(),
-					legend.position = "bottom",
-					panel.grid.major = element_blank(),
-					panel.grid.minor = element_blank()
-				) +
-				facet_grid(reference ~ regulation)
-		if(plot == "number")
-		{
-			p1
-		} else if(plot == "diff")
-		{
-			p2
-		} else if(plot == "both")
-		{
-			p1 / p2
-		}
+		tmp %>%
+		ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
+		geom_line() +
+		theme_prism() +
+		scale_color_npg() +
+		geom_point() +
+		geom_text(
+			aes(label = number),
+			hjust= -0.2,
+			vjust = 1,
+			show.legend = F
+		) +
+		scale_y_continuous(guide = "prism_offset") +
+		scale_x_continuous(guide = "prism_offset") +
+		theme(legend.position = "bottom") +
+		labs(
+			title = "genes on TAD border region",
+			x = "blocks that expand from border", 
+			y = "log2(gene number on border region)"
+		) +
+		facet_grid( ~ reference)
+	} else if(plot == "diff")
+	{
+		tmp2 %>%
+		ggplot(aes("x",diff,fill = as.factor(block))) +
+		geom_bar(stat = "identity",position = "fill") +
+		coord_polar(theta = "y",direction = -1) +
+		scale_fill_manual(
+			values = colorRampPalette(
+						RColorBrewer::brewer.pal(9, "Set1")
+					)(length(unique(tmp2$block)))
+		) +
+		theme_void() + 
+		theme(
+			legend.title = element_blank(),
+			legend.position = "bottom",
+			panel.grid.major = element_blank(),
+			panel.grid.minor = element_blank()
+		) +
+		facet_grid(reference ~ regulation)
 	}
 }
