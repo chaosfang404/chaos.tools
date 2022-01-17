@@ -268,109 +268,90 @@ distribution_plot <- function(
 
 location <-	function(
 				.data,
-				block_expand = 3,
+				block_expand = 10,
 				type = "border",
-				borders = c(26,30),
-				gene_ID_column = "align_V4",
-				regulation_column = "align_V6",
-				reference_column = "reference",
+				align_id = "align_V5",
+				align_group = NA,
+				ref_id = "ref_V4",
+				ref_group = NA,
+				ref_borders = c(26,75),
 				plot = "number"
 ){
-	dt <-	.data %>%
+	dt <-	.data[exp == "real"] %>%
 			as.data.table() %>%
 			setnames(
-				old = c(regulation_column,gene_ID_column,reference_column),
-				new = c("regulation","gene_ID","reference")
+				old = c(align_id,ref_id),
+				new = c("align_id","ref_id")
 			)
 
-	m <-	expand.grid(
-				(0:block_expand),
-				unique(dt$regulation),
-				unique(dt$reference),
-				stringsAsFactors = F
-			) %>%
-			as.data.table()
+	if(is.na(align_group))
+	{
+		align_group <- "align_group"
+		dt[,align_group := "align"]
+	}
 
-# it's slower using the following code
-#
-#	calc_gene_number <-	function(
-#							x
-#	){
-#		t <- as.numeric(x[1])
-#
-#		if(type == "border")
-#		{
-#			dt_tmp <- dt[block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t))]
-#		} else if(type == "body")
-#		{
-#			dt_tmp <- dt[block %in% (borders[1] - t) : (borders[1] + t)]
-#		}
-#
-#		 n <-	dt_tmp[
-#		 			regulation == x[2] & reference %in% x[3],
-#					gene_ID
-#				] %>%
-#				unique() %>%
-#				length()
-#		data.table(block = t,regulation = x[2],reference = x[3],number = n)
-#	}
+	if(is.na(ref_group))
+	{
+		ref_group <- "ref_group"
+		dt[,ref_group := "ref"]
+	}
+
+	setnames(
+		dt,
+		old = c(ref_group,align_group),
+		new = c("ref_group","align_group")
+	)
+
+	l <- ref_borders[1]
+	r <- ref_borders[2]
 
 	calc_gene_number <-	function(
 							x
 	){
-		t <- as.numeric(x[1])
+		b <- as.numeric(x)
 
 		if(type == "border")
 		{
-			n <-	dt[
-						block %in% c((borders[1] - t):(borders[1] + t),(borders[2] - t):(borders[2] + t)) &
-						regulation == x[2] &
-						reference %in% x[3],
-						gene_ID
-					] %>%
-					unique() %>%
-					length()
+			sub_blocks <-	c(
+								(l - b):(l + b),
+								(r - b):(r + b)
+							)
 		} else if(type == "body")
 		{
-			n <-	dt[
-						block %in% (borders[1] - t) : (borders[1] + t) &
-						regulation == x[2] &
-						reference %in% x[3],
-						gene_ID
-					] %>%
-					unique() %>%
-					length()
+			sub_blocks <- (l - b):(r + b)
 		}
-		data.table(block = t,regulation = x[2],reference = x[3],number = n)
-	}
 
-
-	tmp <-	apply(m,1,calc_gene_number) %>%
-			rbindlist()	
-
-	calc_diff <-	function(
-						x
-	){
-		tmp2 <- tmp[regulation == x[1] & reference == x[2]]
-		tmp2[
-			,diff := number - c(0,tmp2$number[1:(nrow(tmp2)-1)])
-		][
-			,.(reference, regulation, block, number, diff)
+		dt[
+			block %in% sub_blocks,
+			.(ref_group,align_group,align_id)
+		] %>%
+		unique() %>%
+		.[
+			,.N,
+			.(ref_group,align_group)
+		] %>%
+		.[
+			,block := b
 		]
 	}
 
-	tmp2 <-	m[,.(Var2,Var3)] %>%
-			unique() %>%
-			apply(1,calc_diff) %>%
-			rbindlist()
+	count_result <-	0:block_expand %>%
+					lapply(calc_gene_number) %>%
+					rbindlist() %>%
+					setnames("N","number") %>%
+					.[
+						,diff := number - c(0,number[1:(.N -1)]),
+						.(ref_group,align_group)
+					] %>%
+					.[]
 
 	if(plot == "none")
 	{
-		tmp2
+		count_result
 	}else if(plot == "number")
 	{
-		tmp %>%
-		ggplot(aes(as.numeric(block),log2(number),color = regulation)) +
+		count_result %>%
+		ggplot(aes(as.numeric(block),log2(number),color = align_group)) +
 		geom_line() +
 		theme_prism() +
 		scale_color_npg() +
@@ -381,25 +362,31 @@ location <-	function(
 			vjust = 1,
 			show.legend = F
 		) +
-		scale_y_continuous(guide = "prism_offset") +
-		scale_x_continuous(guide = "prism_offset") +
+		scale_y_continuous(
+			guide = "prism_offset"
+		) +
+		scale_x_continuous(
+			guide = "prism_offset",
+			breaks = seq(0,10,length.out = 6),
+			labels = seq(0,10,length.out = 6)
+		) +
 		theme(legend.position = "bottom") +
 		labs(
 			title = "genes on TAD border region",
 			x = "blocks that expand from border", 
 			y = "log2(gene number on border region)"
 		) +
-		facet_grid( ~ reference)
+		facet_grid(ref_group ~ .)
 	} else if(plot == "diff")
 	{
-		tmp2 %>%
+		count_result %>%
 		ggplot(aes("x",diff,fill = as.factor(block))) +
 		geom_bar(stat = "identity",position = "fill") +
 		coord_polar(theta = "y",direction = -1) +
 		scale_fill_manual(
 			values = colorRampPalette(
 						RColorBrewer::brewer.pal(9, "Set1")
-					)(length(unique(tmp2$block)))
+					)(length(unique(count_result$block)))
 		) +
 		theme_void() + 
 		theme(
@@ -408,6 +395,6 @@ location <-	function(
 			panel.grid.major = element_blank(),
 			panel.grid.minor = element_blank()
 		) +
-		facet_grid(reference ~ regulation)
+		facet_grid(ref_group ~ align_group)
 	}
 }
