@@ -1,3 +1,30 @@
+reform <-	function(
+				.data,
+				c = "V1",
+				s = "V2",
+				e = "V3",
+				p = "V4",
+				ref = FALSE
+){
+	if(isFALSE(ref))
+	{
+		p_name <- "peak"
+	}else
+	{
+		p_name <- "anchor"
+	}
+
+	.data %>%
+	as.data.table() %>%
+	setnames(
+		c(c,s,e,p),
+		c("chr","start","end",p_name)
+	) %>%
+	.[,`:=`("chr",chr_omit(chr))] %>%
+	setkey(chr,start,end) %>%
+	.[]
+}
+
 anchor_overlap <-	function(
 						d0 = anchor,
 						d1 = tss,
