@@ -259,7 +259,8 @@ anchor_overlap_stat <-	function(
 anchor_overlap_stat_plot <-	function(
 								.data,
 								order = "acquired",
-								remove = "stable"
+								remove = "stable",
+								decreasing = FALSE
 ){
 	all_loop_type <- c("acquired","strengthened","stable","weakened","lost")
 
@@ -269,10 +270,13 @@ anchor_overlap_stat_plot <-	function(
 		fill = 0
 	) %>%
 	.[loop_type != remove] %>%
-	.[!status %in% status[str_detect(status,"AR_0h")]] %>%
 	.[,p := N/sum(N),.(status)] %>%
-	.[,status := factor(status,.[loop_type == order][order(p),status])] %>%
-	.[,loop_type := factor(loop_type,all_loop_type[!all_loop_type %in% remove])] %>%
+	.[
+		,`:=`(
+			status = factor(status,.[loop_type == order][order(p,decreasing = decreasing),status]),
+			loop_type = factor(loop_type,all_loop_type[!all_loop_type %in% remove])
+		)
+	] %>%
 	ggplot(aes(status,N,fill = loop_type)) + 
 	geom_bar(stat = "identity",position = "fill") + 
 	theme_bw() + 
