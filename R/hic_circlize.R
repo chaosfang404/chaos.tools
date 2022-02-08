@@ -2,6 +2,7 @@ hic_circlize <-	function(
 					hic_file = "/mnt/d/work/Hi-C/hic_files_hg19/DMSO_DHT.hic",
 					genome = "hg19",
 					resolution = 1e4,
+					norm = "KR",
 					chr_pair = c(12,16,9,22),
 					chr_color = c("#4dbbd5", "#f39b7f", "#00a087", "#e64b35"),
 					limit = 1000
@@ -18,7 +19,8 @@ hic_circlize <-	function(
 						hic_file = hic_file,
 						c(x[1],x[2]),
 						inter = "inter",
-						resolution = resolution
+						resolution = resolution,
+						norm = norm
 					) %>%
 					.[order(-counts)] %>%
 					head(limit)
