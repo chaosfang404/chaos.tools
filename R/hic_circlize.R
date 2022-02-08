@@ -4,9 +4,17 @@ hic_circlize <-	function(
 					resolution = 1e4,
 					norm = "KR",
 					chr_pair = c(12,16,9,22),
-					chr_color = c("#4dbbd5", "#f39b7f", "#00a087", "#e64b35"),
+					chr_color = NA,
 					limit = 1000
 ){
+	cpl <- length(chr_pair)
+
+	if(length(chr_color) != cpl)
+	{
+		chr_color <- colorRampPalette(chaos_color())(cpl)
+	}
+
+
 	chr_dt <-	matrix(chr_pair, ncol = 2, byrow = T)
 
 	dt <-	apply(
@@ -26,24 +34,20 @@ hic_circlize <-	function(
 					head(limit)
 				}
 			) %>% 
-			rbindlist() %>% 
-			.[, No := paste0("interaction_",1:.N)]
+			rbindlist()
 
-	bed_1 <- dt[
-				,.(chr = paste0("chr",chr1),start = chr1_bin,counts)
-			][
-				,end := start + resolution
-			][
-				,.(chr,start,end,counts)
-			]
-
-	bed_2 <- dt[
-				,.(chr = paste0("chr",chr2),start = chr2_bin,counts)
-			][
-				,end := start + resolution
-			][
-				,.(chr,start,end,counts)
-			]
+	bed <-	lapply(
+				c(1,2),
+				function(x)
+				{
+					col <- c(paste0("chr",x),paste0("chr",x,"_bin"),"counts")
+					dt[,..col] %>%
+					setnames(c("chr","start","counts")) %>%
+					.[,chr := paste0("chr",chr)] %>%
+					.[,end := start + resolution] %>%
+					.[,.(chr,start,end,counts)]
+				}
+			)
 
 	circlize::circos.initializeWithIdeogram(
 		chromosome.index = paste0("chr",c(chr_dt[,1],chr_dt[,2])),
@@ -53,13 +57,14 @@ hic_circlize <-	function(
 	circlize::circos.track(
 		ylim = c(0, 1), 
 		bg.col = chr_color, 
-		bg.border = NA, track.height = 0.05
+		bg.border = NA, 
+		track.height = 0.05
 	)
 
 	circlize::circos.genomicLink(
-		bed_1, 
-		bed_2, 
-		col = sample(1:4, nrow(bed_1),replace = T),
+		bed[[1]], 
+		bed[[2]], 
+		col = sample(1:cpl, nrow(bed[[1]]),replace = T),
 		border = NA
 	)
 }
