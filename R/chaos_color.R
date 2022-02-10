@@ -1,15 +1,15 @@
 chaos_color <-	function(
 ){
 	c(
-		"Cinnabar" = "#E64B35",
-		"Shakespeare" = "#4DBBD5",
-		"PersianGreen" = "#00A087",
-		"Chambray" = "#3C5488",
-		"Apricot" = "#F39B7F",
-		"WildBlueYonder" = "#8491B4",
-		"MonteCarlo" = "#91D1C2",
-		"Monza" = "#DC0000",
-		"RomanCoffee" = "#7E6148",
-		"Sandrift" = "#B09C85"
+		"#E64B35"	## "Cinnabar"
+		"#4DBBD5",	## "Shakespeare"
+		"#00A087",	## "PersianGreen"
+		"#3C5488",	## "Chambray"
+		"#F39B7F",	## "Apricot"
+		"#8491B4",	## "WildBlueYonder"
+		"#91D1C2",	## "MonteCarlo"
+		"#DC0000",	## "Monza"
+		"#7E6148",	## "RomanCoffee"
+		"#B09C85"	## "Sandrift"
 	)
 }
