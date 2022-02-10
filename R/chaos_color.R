@@ -13,3 +13,19 @@ chaos_color <-	function(
 		"#B09C85"	## "Sandrift"
 	)
 }
+
+scale_fill_chao <-	function(
+						n
+){
+	scale_fill_manual(
+		values = colorRampPalette(chaos_color())(n)
+	)
+}
+
+scale_color_chao <-	function(
+						n
+){
+	scale_color_manual(
+		values = colorRampPalette(chaos_color())(n)
+	)
+}
