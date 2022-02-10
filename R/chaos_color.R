@@ -1,7 +1,7 @@
 chaos_color <-	function(
 ){
 	c(
-		"#E64B35"	## "Cinnabar"
+		"#E64B35",	## "Cinnabar"
 		"#4DBBD5",	## "Shakespeare"
 		"#00A087",	## "PersianGreen"
 		"#3C5488",	## "Chambray"
