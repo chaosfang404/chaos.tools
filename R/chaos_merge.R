@@ -8,19 +8,22 @@ chaos_merge <-	function(
 	dt_file <- paste0(tmp_str,".chaos_merge.tmp")
 	fwrite(.data, dt_file, sep = "\t", col.names = F)
 
-	paste0(
-		"cat ",
-		dt_file,
-		" | sort -k1,1 -k2,2n | bedtools merge -c ",
-		c,
-		" -o ",
-		o,
-		" > ",
-		tmp_str
-	) %>%
-	system(intern = F)
+	dt <-	paste0(
+				"cat ",
+				dt_file,
+				" | sort -k1,1 -k2,2n | bedtools merge -c ",
+				c,
+				" -o ",
+				o
+			) %>%
+			system(intern = T) %>%
+			as.data.table() %>%
+			separate_col(".",sep = "\t") %>%
+			setnames(paste0("V",1:ncol(.)))
 
-	dt <- fread(tmp_str)
-	unlink(c(dt_file,tmp_str))
+	unlink(dt_file)
 	dt
 }
+
+## It would be faster when the output of bedtools were writen to files,
+## however it would generate too much small files
