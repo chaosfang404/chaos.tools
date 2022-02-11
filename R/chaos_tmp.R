@@ -1,6 +1,7 @@
 chaos_tmp <-	function(
 					n = 15,
 					type = "default",
+					sep = "",
 					replace = TRUE,
 					date = TRUE
 ){
@@ -38,6 +39,6 @@ chaos_tmp <-	function(
 	}
 
 	sample(x = source, size = n, replace = replace) %>%
-	paste(collapse = "") %>%
+	paste(collapse = sep) %>%
 	paste0(d)
 }
