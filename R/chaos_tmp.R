@@ -11,33 +11,30 @@ chaos_tmp <-	function(
 	{
 		d <- NULL
 	}
-	
+
+	ln <- c(LETTERS,letters,0:9)
+	greak <- c("α","β","γ","δ","ε","ζ","η","θ","ι","κ","λ","μ","ν","ξ","ο","π","ρ","σ","ς","τ","υ","φ","χ","ψ","ω")
+	symbol <- c("·","~","！","@","#","$","%","^","&","*","(",")","_","-","+","=","|",",",".","/","<",">","?",";","'",":","[","]","{","}")
+
 	if(type == "default")
 	{
-		source <- c(LETTERS,letters,0:9)
+		source <- ln
 	}
-	else if(type == "number" | type == "n")
+	else if(type %in% c("number", "n"))
 	{
 		source <- 0:9
-	}else if(type == "character" | type == "c")
+	}else if(type %in% c("character", "c"))
 	{
 		source <- c(LETTERS,letters)
-	}else
+	}else if(type %in% c("greak_mixed", "g"))
 	{
-		greak <- c("α","β","γ","δ","ε","ζ","η","θ","ι","κ","λ","μ","ν","ξ","ο","π","ρ","σ","ς","τ","υ","φ","χ","ψ","ω")
-		symbol <- c("·","~","！","@","#","$","%","^","&","*","(",")","_","-","+","=","|",",",".","/","<",">","?",";","'",":","[","]","{","}")
-
-		if(type == "greak_mixed" | type == "g")
-		{
-			source <- c(LETTERS,letters,0:9,greak)
-		}else if(type == "symbol_mixed" | type == "s")
-		{
-			source <- c(LETTERS,letters,0:9,symbol)
-		}else if(type == "mixed" | type == "m")
-		{
-			source <- c(LETTERS,letters,0:9,greak,symbol)
-		}
-		
+		source <- c(ln,greak)
+	}else if(type %in% c("symbol_mixed", "s"))
+	{
+		source <- c(ln,symbol)
+	}else if(type %in% c("mixed", "m"))
+	{
+		source <- c(ln,greak,symbol)
 	}
 
 	sample(x = source, size = n, replace = replace) %>%
