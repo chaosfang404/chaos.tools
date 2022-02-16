@@ -1,16 +1,14 @@
 percent <- function(
 				.data,
 				column,
-				ext = 4
+				ext = 2,
+				group = NULL
 ){
-	data.table(
-		.data
-	)[
-		,.N,
-		column
+	.data[
+		,.N, column
 	][
-		,p := round(N/sum(N),ext)
+		,p := N/sum(N), group
 	][
-		,P := paste0(p*100,"%")
+		,P := paste0(round(100*p,ext),"%")
 	][]
 }
