@@ -67,15 +67,17 @@ separate_col <- function(
 
 	if(isTRUE(remove))
 	{
-		cbind(
-			.data[,(column) := NULL],
-			renamed_split_columns)
+		dt <-	cbind(
+					.data[,(column) := NULL],
+					renamed_split_columns
+				)
 	} else
 	{
-		cbind(
-			.data,
-			renamed_split_columns
-		)
+		dt <-	cbind(
+					.data,
+					renamed_split_columns
+				)
 	}
-	
+
+	dt	
 }
