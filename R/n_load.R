@@ -18,3 +18,17 @@ n_load <- function(
 
 	setDTthreads(threads = parallel::detectCores())
 }
+
+
+clin_load <- function(
+){
+	pacman::p_load(
+		clinfun,
+		missForest,
+		vcdExtra,
+		survminer,
+		survival
+	)
+
+	setDTthreads(threads = parallel::detectCores())
+}
