@@ -1,6 +1,8 @@
 chr_list_dt <- function(
 					hic_file = NA,
 					chr_list = NA,
+					extra = FALSE,
+					mit = FALSE,
 					inter = "half"
 ){
 	chr_list <- chr_list %>% 
@@ -11,32 +13,29 @@ chr_list_dt <- function(
 	{
 		if(!is.na(chr_list))
 		{
-			chr_list %>% 
-			rep(2) %>% 
-			combn(2) %>% 
-			t() %>% 
-			as.data.table()
+			inter <- "intra"
 		}else
 		{
-			as.data.table(
-				strawr::readHicChroms(hic_file)
-			)[
-				name != "ALL",
-				name
-			] %>%
-			as.character() %>%
-			dt_comb(
-				rep = 2,
-				inter = inter
-			)
+			chr_list <- hic_file %>%
+						strawr::readHicChroms() %>%
+						.$name %>%
+						.[!. %in% c("ALL","All")]
 
+			if(isFALSE(extra))
+			{
+				chr_list <- chr_list[!str_detect(chr_list,"_")]
+			}
+
+			if(isFALSE(mit))
+			{
+				chr_list <- chr_list[!str_detect(chr_list,"M")]
+			}
 		}
-	}else
-	{
-		dt_comb(
-			chr_list,
-			rep = 2,
-			inter = inter
-		)
 	}
+
+	dt_comb(
+		chr_list,
+		rep = 2,
+		inter = inter
+	)
 }
