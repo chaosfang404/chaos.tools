@@ -17,7 +17,7 @@ hic_interaction <- function(
 				][
 					,chr2 := chr2
 				][
-					,normalization := norm
+					,normalization := toupper(norm)
 				][
 					is.na(counts),
 					counts := 0
