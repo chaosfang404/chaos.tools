@@ -7,9 +7,10 @@ chr_list_dt <- function(
 ){
 	chr_list <- chr_list %>% 
 				unique() %>% 
-				as.character()
+				as.character() %>%
+				.[! . %in% c(NA,NaN)]
 
-	if(length(chr_list) == 1)
+	if(length(chr_list) == 1 | length(chr_list) == 0)
 	{
 		if(!is.na(chr_list))
 		{
