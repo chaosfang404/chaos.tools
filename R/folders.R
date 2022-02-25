@@ -43,7 +43,7 @@ data_dir <- function(
 	{
 		if(grepl(Sys.info()[2],pattern = "WSL"))
 		{
-			file.path("/mnt/d/work")
+			file.path("/mnt/d/synchronized files/OneDrive - 南方科技大学/work")
 		}else
 		{
 			scratch()
