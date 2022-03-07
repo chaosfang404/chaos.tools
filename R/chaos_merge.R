@@ -1,9 +1,14 @@
 chaos_merge <-	function(
 					.data,
-					bedtools_path = "/usr/sbin/bedtools",
+					bedtools_path = NA,
 					c = 4,
 					o = "collapse"
 ){
+	if(is.na(bedtools_path))
+	{
+		bedtools_path <- system("which bedtools",intern = T)
+	}
+
 	tmp_str <- chaos_tmp()
 	dt_file <- paste0(tmp_str,".chaos_merge.tmp")
 	fwrite(.data, dt_file, sep = "\t", col.names = F)
@@ -11,7 +16,9 @@ chaos_merge <-	function(
 	dt <-	paste0(
 				"cat ",
 				dt_file,
-				" | sort -k1,1 -k2,2n | bedtools merge -c ",
+				" | sort -k1,1 -k2,2n | ",
+				bedtools_path,
+				" merge -c ",
 				c,
 				" -o ",
 				o
