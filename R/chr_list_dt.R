@@ -5,16 +5,17 @@ chr_list_dt <- function(
 					mit = FALSE,
 					inter = "half"
 ){
-	hic_file_chr <-	hic_file %>%
-					strawr::readHicChroms() %>%
-					.$name %>%
-					.[!. %in% c("ALL","All")]
+	hic_chr <-	hic_file %>%
+				strawr::readHicChroms() %>%
+				.$name %>%
+				.[!grepl("all",.,ignore.case = T)]
 
 	chr_list <- chr_list %>% 
 				unique() %>% 
 				as.character() %>%
 				.[! . %in% c(NA,NaN)] %>%
-				gsub("chr","",.)
+				gsub("chr", "", ., ignore.case = T) %>%
+				.[! . %in% ""]
 
 	if(length(chr_list) == 0)
 	{
@@ -28,27 +29,27 @@ chr_list_dt <- function(
 			inter <- "intra"
 		}else
 		{
-			chr_list <- hic_file_chr
+			chr_list <- hic_chr
 
 			if(isFALSE(extra))
 			{
-				chr_list <- chr_list[!str_detect(chr_list,"_")]
+				chr_list <- chr_list %>% .[!grepl("_",.)]
 			}
 
 			if(isFALSE(mit))
 			{
-				chr_list <- chr_list[!str_detect(chr_list,"M")]
+				chr_list <- chr_list %>% .[!grepl("M",.)]
 			}
 		}
 	}else
 	{
-		hic_chr_symbol <-	hic_file_chr %>%
-							sample(1) %>%
-							str_detect("chr")
+		random_chr <- sample(hic_chr,1)
 
-		if(isTRUE(hic_chr_symbol))
+		if(grepl("chr", random_chr, ignore.case = T))
 		{
-			chr_list <- paste0("chr",chr_list)
+			chr_list <- random_chr |> 
+						substr(1,3) |>
+						paste0(chr_list)
 		}
 	}
 
