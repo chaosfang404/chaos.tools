@@ -4,7 +4,7 @@ juicer_tool <- function(
 					chr,
 					resolution = 1e6,
 					norm = "KR",
-					juicer_tool_path = "~/local/juicer_chaos/common/juicer_tools_2.14.0.jar",
+					juicer_tool_path = "~/local/juicer_chaos/common/feature_tools.jar",
 					matrix_type = 1
 ){
 	res <- format(resolution,scientific = F,trim = T)
