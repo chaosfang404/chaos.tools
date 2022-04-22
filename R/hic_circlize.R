@@ -3,7 +3,7 @@ hic_circlize <-	function(
 					genome = "hg19",
 					resolution = 1e4,
 					norm = "KR",
-					chr_pair = c(12,16,9,22),
+					chr_pair = c(12,16,19,22,15,22,13,17),
 					chr_color = NA,
 					limit = 1000
 ){
@@ -50,7 +50,10 @@ hic_circlize <-	function(
 			)
 
 	circlize::circos.initializeWithIdeogram(
-		chromosome.index = paste0("chr",c(chr_dt[,1],chr_dt[,2])),
+		chromosome.index =	chr_dt %>%
+							as.character() %>%
+							paste0("chr",.) %>%
+							unique(),
 		species = genome
 	)
 
