@@ -7,6 +7,9 @@ juicer_tool <- function(
 					juicer_tool_path = "~/local/juicer_chaos/common/feature_tools.jar",
 					matrix_type = 1
 ){
+
+	chr <- chr_list(chr)
+
 	res <- format(resolution,scientific = F,trim = T)
 
 	result <- paste(
