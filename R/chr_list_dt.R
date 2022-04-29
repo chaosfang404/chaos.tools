@@ -1,4 +1,4 @@
-chr_list_dt <- function(
+chr_list_dt2 <- function(
 					hic_file = NA,
 					chr_list = NA,
 					extra = FALSE,
@@ -9,6 +9,17 @@ chr_list_dt <- function(
 				strawr::readHicChroms() %>%
 				.$name %>%
 				.[!grepl("all",.,ignore.case = T)]
+
+	random_chr <- sample(hic_chr,1)
+
+	if(grepl("chr", random_chr, ignore.case = T))
+	{
+		hic_chr_prefix <-	random_chr |> substr(1,3)
+	}else
+	{
+		hic_chr_prefix <-	""
+	}
+
 
 	chr_list <- chr_list %>% 
 				unique() %>% 
@@ -27,6 +38,7 @@ chr_list_dt <- function(
 		if(!is.na(chr_list))
 		{
 			inter <- "intra"
+			chr_list <- paste0(hic_chr_prefix,chr_list)
 		}else
 		{
 			chr_list <- hic_chr
@@ -43,14 +55,7 @@ chr_list_dt <- function(
 		}
 	}else
 	{
-		random_chr <- sample(hic_chr,1)
-
-		if(grepl("chr", random_chr, ignore.case = T))
-		{
-			chr_list <- random_chr |> 
-						substr(1,3) |>
-						paste0(chr_list)
-		}
+		chr_list <- paste0(hic_chr_prefix,chr_list)
 	}
 
 	dt_comb(
