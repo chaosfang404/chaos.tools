@@ -9,7 +9,7 @@ chr_list <- function(
 				.$name %>%
 				.[!grepl("all",.,ignore.case = T)]
 
-	random_chr <- sample(hic_chr,1)
+	random_chr <- hic_chr |> sample(1)
 
 	if(grepl("chr", random_chr, ignore.case = T))
 	{
