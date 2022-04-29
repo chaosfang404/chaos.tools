@@ -1,4 +1,4 @@
-chr_list_dt2 <- function(
+chr_list_dt <- function(
 					hic_file = NA,
 					chr_list = NA,
 					extra = FALSE,

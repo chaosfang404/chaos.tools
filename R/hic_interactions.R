@@ -1,4 +1,4 @@
-hic_interaction2 <- function(
+hic_interaction <- function(
 						hic_file,
 						chr_list = NA,
 						norm = "KR",
