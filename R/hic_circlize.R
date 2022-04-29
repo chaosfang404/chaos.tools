@@ -6,7 +6,7 @@ hic_circlize <-	function(
 					chr_pair = c(12,16,19,22,15,22,13,17),
 					chr_color = NA,
 					limit = 1000,
-					cex = NA,
+					cex = NA
 ){
 	if(is.na(cex)){cex <- 1}
 
