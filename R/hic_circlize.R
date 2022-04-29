@@ -5,8 +5,11 @@ hic_circlize <-	function(
 					norm = "KR",
 					chr_pair = c(12,16,19,22,15,22,13,17),
 					chr_color = NA,
-					limit = 1000
+					limit = 1000,
+					cex = NA,
 ){
+	if(is.na(cex)){cex <- 1}
+
 	cpl <- length(chr_pair)
 
 	if(length(chr_color) != cpl)
@@ -54,7 +57,9 @@ hic_circlize <-	function(
 							as.character() %>%
 							paste0("chr",.) %>%
 							unique(),
-		species = genome
+		species = genome,
+		axis.labels.cex= 0.4*par("cex"),
+		abels.cex = 1*par("cex"),
 	)
 
 	circlize::circos.track(

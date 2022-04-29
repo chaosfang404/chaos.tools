@@ -21,7 +21,7 @@ hic_interaction <- function(
 				][
 					is.na(counts),
 					counts := 0
-				] %>%
+				] |>
 				setnames(
 					old = c("x","y"),
 					new = c("chr1_bin","chr2_bin")
@@ -32,8 +32,8 @@ hic_interaction <- function(
 		hic_file = hic_file,
 		chr_list = chr_list,
 		inter = inter
-	) %>%
-	apply(1,tmp) %>%
+	) |>
+	apply(1,tmp) |>
 	rbindlist()
 
 }
