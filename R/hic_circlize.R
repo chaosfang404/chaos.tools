@@ -1,4 +1,4 @@
-hic_circlize2 <-	function(
+hic_circlize <-	function(
 					hic_file = "/mnt/d/work/Hi-C/hic_files_hg19/DMSO_DHT.hic",
 					genome = "hg19",
 					resolution = 1e4,
@@ -20,7 +20,7 @@ hic_circlize2 <-	function(
 	if(length(chr_color) != cpl)
 	{
 
-		chr_color <- color = colorRampPalette(chaos_color())(cpl)
+		chr_color <- colorRampPalette(chaos_color())(cpl)
 	}
 	
 	color_dt <- 	data.table(
