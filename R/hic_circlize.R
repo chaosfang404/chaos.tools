@@ -7,10 +7,9 @@ hic_circlize <-	function(
 					chr_color = NA,
 					no_link_color = NA,
 					limit = 1000,
-					cex = NA
+					axis.labels.cex = 0.5,
+					labels.cex = 1 
 ){
-	if(is.na(cex)){cex <- 1}
-
 	chr_dt <- chr_pair |> matrix(ncol = 2, byrow = T)
 
 	uniq_chr <- chr_dt |> as.character() |> unique()
@@ -63,8 +62,8 @@ hic_circlize <-	function(
 	circlize::circos.initializeWithIdeogram(
 		chromosome.index = paste0("chr",uniq_chr),
 		species = genome,
-		axis.labels.cex= 0.4*par("cex"),
-		labels.cex = 1*par("cex"),
+		axis.labels.cex= axis.labels.cex,
+		labels.cex = labels.cex,
 	)
 
 	circlize::circos.track(
@@ -78,6 +77,67 @@ hic_circlize <-	function(
 		bed[[1]], 
 		bed[[2]], 
 		col = rep(color_dt[!chr %in% no_link_color,color],each = limit),
+		border = NA
+	)
+}
+
+
+hic_circlize2 <-	function(
+					matrix,
+					genome = "hg19",
+					chr_color = NA,
+					no_link_color = NA,
+					axis.labels.cex = 0.5,
+					labels.cex = 1
+){
+	chr_dt <- matrix[,.(chr1,chr2)] |> unique()
+
+	uniq_chr <- chr_dt |> as.character() |> unique()
+
+	cpl <- uniq_chr |> length()
+
+	if(length(chr_color) != cpl)
+	{
+
+		chr_color <- colorRampPalette(chaos_color())(cpl)
+	}
+	
+	color_dt <- 	data.table(
+						chr = uniq_chr,
+						color = chr_color
+					)
+
+	bed <-	lapply(
+				c(1,2),
+				function(x)
+				{
+					col <- c(paste0("chr",x),paste0("chr",x,"_bin"),"counts")
+					matrix[,..col] %>%
+					setnames(c("chr","start","counts")) %>%
+					.[,chr := paste0("chr",chr)] %>%
+					.[,end := start + resolution] %>%
+					.[,.(chr,start,end,counts)]
+				}
+			)
+
+	circlize::circos.initializeWithIdeogram(
+		chromosome.index = paste0("chr",uniq_chr),
+		species = genome,
+		axis.labels.cex= axis.labels.cex,
+		labels.cex = labels.cex,
+	)
+
+	circlize::circos.track(
+		ylim = c(0, 1),
+		bg.col = color_dt$color, 
+		bg.border = NA, 
+		track.height = 0.05
+	)
+
+	circlize::circos.genomicLink(
+		bed[[1]], 
+		bed[[2]], 
+		col = rep(color_dt[!chr %in% no_link_color,color],each = nrow(bed[[1]])),
 		border = NA
 	)
 }
