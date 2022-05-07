@@ -1,62 +1,72 @@
 juicer_tool <- function(
 					cmd = "eigenvector",
 					hic_file,
-					chr,
+					chr = NA,
 					resolution = 1e6,
 					norm = "KR",
 					juicer_tool_path = "~/local/juicer_chaos/common/feature_tools.jar",
-					matrix_type = 1
+					matrix_type = 2
 ){
-
-	chr <- chr_list(chr)
-
-	res <- format(resolution,scientific = F,trim = T)
-
-	result <- paste(
-					"java -jar",juicer_tool_path, cmd, "-p",toupper(norm), hic_file, chr,"BP",res,sep = " "
-				) %>%
-				system(inter = T)
+	chr <-	chr_list(
+				hic_file = hic_file,
+				chr_list = chr
+			)
 
 	if(cmd == "eigenvector")
 	{
-		as.data.table(
-			result
-		)[
-			,.(eigen = result)
-		][
-			eigen == "NaN",
-			eigen := 0
-		][
-			,eigen := as.numeric(eigen)
-		][]
+		paste(
+			"java -jar",juicer_tool_path, cmd, "-p",toupper(norm), hic_file, chr,"BP",resolution,sep = " "
+		) %>%
+		system(inter = T) %>%
+		.[!grepl("warn",.,ignore.case = T)] %>%
+		as.numeric() %>%
+		as.data.table() %>%
+		setnafill(fill = 0) %>%
+		setnames("eigen") %>%
+		.[]
 
 	}else if(cmd == "pearsons")
 	{
-		matrix <- as.data.table(result[-1]) %>% 
-					separate_col("V1",sep = " ") %>%
-					apply(1,as.numeric) %>% 
+		matrix <-	paste(
+						"java -jar",juicer_tool_path, cmd, "-p",toupper(norm), hic_file, chr,"BP",resolution,sep = " "
+					) %>%
+					system(inter = T) %>%
+					.[!grepl("warn",.,ignore.case = T)] %>%
+					.[!grepl("reading",.,ignore.case = T)] %>%
+					strsplit(" ") %>% 
+					sapply(as.numeric) %>%
 					as.data.table() %>%
+					setnafill(fill = 0) %>%
 					setnames(paste0("bin_",1:ncol(.)))
-
-		matrix[matrix == "NaN"] <- 0
 
 		if(matrix_type == 1)
 		{
 			matrix
 		}else if(matrix_type == 2)
 		{
-			matrix[
-				,x := paste0("bin_",1:.N)
-			] %>%
-			melt("x", paste0("bin_",1:nrow(.)),variable.name = "y", value.name = "pearsons")
+			x <- matrix |> colnames() |> factor()
+			matrix[,x := x] %>%
+			melt(
+				"x", 
+				variable.name = "y", 
+				value.name = "pearsons"
+			) %>%
+			.[,x := factor(x,levels = levels(y))] %>%
+			.[]
 		}
+	}else if(cmd == "validate")
+	{
+		paste(
+			"java -jar",juicer_tool_path, cmd, hic_file,sep = " "
+		) %>%
+		system(inter = F)
 	}
 }
 
 
 pearsons_plot <- function(
 					hic_file,
-					resolution,
+					resolution = 25e4,
 					chr,
 					min = -0.5,
 					max = 0.5,
@@ -65,35 +75,18 @@ pearsons_plot <- function(
 					smooth = TRUE
 ){
 	p_base <-	juicer_tool(
-					"pearsons",
-					hic_file,
+					cmd = "pearsons",
+					hic_file = hic_file,
 					resolution = resolution,
-					chr = chr
+					chr = chr,
+					matrix_type = 2
 				)[
-					,row := paste0("bin_",1:.N)
-				] %>%
-				melt(
-					"row",
-					variable.name = "col", 
-					value.name = "pearsons",
-					fill = NA
-				) %>%
-				.[
-					,row := factor(.$row, levels = str_sort(unique(.$row), numeric = T, decreasing = T))
-				] %>%
-				.[
-					,col := factor(.$col, levels = str_sort(unique(.$col), numeric = T))
-				] %>%
-				.[
-					pearsons >= max,
-					pearsons := max
-				] %>%
-				.[
-					pearsons <= min,
-					pearsons := min
+					pearsons >= max, pearsons := max
+				][
+					pearsons <= min, pearsons := min
 				] %>%
 				ggplot(
-					aes(col,row,fill = pearsons)
+					aes(x,y,fill = pearsons)
 				) + 
 				scale_fill_gradient2(
 					limits = c(min,max),
@@ -108,13 +101,11 @@ pearsons_plot <- function(
 				)
 	if(isFALSE(smooth))
 	{
-		p <- p_base + geom_tile()
+		p_base + geom_tile()
 	}else
 	{
-		p <- p_base + geom_raster()
+		p_base + geom_raster()
 	}	
-
-	p
 }
 
 juicer_eigen <- function(
@@ -122,20 +113,15 @@ juicer_eigen <- function(
 					resolution = 1e6,
 					chr_list = NA,
 					norm = "KR",
-					juicer_tool_path = "~/local/juicer/common/juicer_tools.jar",
+					ref = "hg19",
+					juicer_tool_path = "~/local/juicer_chaos/common/feature_tools.jar",
 					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz"
 ){
-	if(length(chr_list) == 1)
-	{
-		if(is.na(chr_list))
-		{
-			chr_list <- strawr::readHicChroms(hic_file[1])$name %>% 
-				.[. != "ALL"]
-		}
-	}
+	chr_list <- chr_list(
+					hic_file = hic_file,
+					chr_list = chr_list
+				)
 	
-	res <- resolution
-
 	eigen_func <- 	function(
 						x
 	){
@@ -143,25 +129,26 @@ juicer_eigen <- function(
 			cmd = "eigenvector",
 			hic_file = hic_file,
 			chr = x[1],
-			resolution = res,
+			resolution = resolution,
 			norm = norm, 
 			juicer_tool_path = juicer_tool_path
 		)
 	}
 
-	eigen <- 	data.table(chr_list) %>%
-				apply(1, eigen_func) %>% 
+	eigen <- 	chr_list |>
+				lapply(eigen_func) |>
 				rbindlist()
 
 	gd <- 	gene_density(
-				resolution = res,
+				ref = ref,
+				resolution = resolution,
 				annotation = annotation
 			)[
-				chr %in% chr_list | chr %in% paste0("chr",chr_list),
+				chr %in% c(chr_list, paste0("chr",chr_list)),
 				.(chr,start,end,gene_number)
 			]
 
-	a <- cbind(gd,eigen)
+	a <- cbind(eigen,gd)
 
 	pos_bin <- a[eigen > 0,.N,.(chr)][,.(chr,pos_bin = N)] %>% setkey()
 	neg_bin <- a[eigen < 0,.N,.(chr)][,.(chr,neg_bin = N)] %>% setkey()
@@ -176,14 +163,9 @@ juicer_eigen <- function(
 	] %>%
 	merge(a) %>%
 	.[
-		correction > 0,
-		corrected_eigen := eigen
+		,corrected_eigen := fifelse(correction > 0, eigen, eigen * -1)
 	] %>%
-	.[
-		correction < 0,
-		corrected_eigen := eigen * -1
-	] %>%
-	.[,resolution := res] %>%
+	.[,resolution := resolution] %>%
 	.[]
 }
 

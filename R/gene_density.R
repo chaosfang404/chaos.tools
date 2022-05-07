@@ -119,11 +119,11 @@ gene_density <- function(
 		if(nrow(gene_density) == 0)
 		{
 			gene_density <- gene_density_calc(
-							ref = ref,
-							annotation_file = annotation_file,
-							resolution = resolution,
-							position = position
-						)
+								ref = ref,
+								annotation_file = annotation_file,
+								resolution = resolution,
+								position = position
+							)
 			fwrite(gene_density,gene_density_file,quote = F, sep = "\t",append = T,compress = "gzip")
 		}
 	}
