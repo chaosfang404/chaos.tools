@@ -81,14 +81,14 @@ hic_circlize <-	function(
 	)
 }
 
-
+## hic_circlize2 uses data directly from hic_interaction
 hic_circlize2 <-	function(
-					matrix,
-					genome = "hg19",
-					chr_color = NA,
-					no_link_color = NA,
-					axis.labels.cex = 0.5,
-					labels.cex = 1
+						matrix,
+						genome = "hg19",
+						chr_color = NA,
+						no_link_color = NA,
+						axis.labels.cex = 0.5,
+						labels.cex = 1
 ){
 	chr_dt <- matrix[,.(chr1,chr2)] |> unique()
 
