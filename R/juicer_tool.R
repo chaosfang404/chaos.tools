@@ -275,7 +275,7 @@ juicer_eigen_plot <- function(
 	facet_grid(chr ~ resolution,scales = "free")
 }
 
-eigen_switch <- function(
+eigen_switch2 <- function(
 					ctl = "DMSO_EtOH.hic",
 					obs = "DMSO_DHT.hic",
 					chr_list = NA,
@@ -285,6 +285,11 @@ eigen_switch <- function(
 					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 					correction = TRUE
 ){
+#	chr_list <-	chr_list(
+#					hic_file = ctl,
+#					chr_list = chr_list
+#				)
+
 	e <-	data.table(
 				c("ctl","obs"),
 				c(ctl,obs)
@@ -328,20 +333,17 @@ eigen_switch <- function(
 				e[[1]],
 				e[[2]]
 			)[
-				ctl > 0 & obs > 0, status := "conserved_A"
-			][
-				ctl < 0 & obs < 0, status := "conserved_B"
-			][
-				ctl > 0 & obs < 0, status := "A_to_B"
-			][
-				ctl < 0 & obs > 0, status := "B_to_A"
+				,status :=	fcase(
+								ctl > 0 & obs > 0, "conserved_A",
+								ctl < 0 & obs < 0, "conserved_B",
+								ctl > 0 & obs < 0, "A_to_B",
+								ctl < 0 & obs > 0, "B_to_A"
+							)
 			]
 
 	c <-	chr_size(
 				ref = ref
-			)[
-				chr %in% c(chr_list,paste0("chr",chr_list))
-			] |>
+			) |>
 			apply(
 				1,
 				function(x){
