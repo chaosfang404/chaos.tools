@@ -285,7 +285,10 @@ eigen_switch <- function(
 					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 					correction = TRUE
 ){
-	e <-	data.table(c("ctl","obs"),c(ctl,obs)) %>%
+	e <-	data.table(
+				c("ctl","obs"),
+				c(ctl,obs)
+			) %>%
 			apply(
 				1,
 				function(x){
@@ -335,7 +338,7 @@ eigen_switch <- function(
 			]
 
 	c <-	chr_size(
-				genome = ref
+				ref = ref
 			)[
 				chr %in% c(chr_list,paste0("chr",chr_list))
 			] %>%
