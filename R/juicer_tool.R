@@ -278,20 +278,28 @@ juicer_eigen_plot <- function(
 eigen_switch <- function(
 					ctl = "DMSO_EtOH.hic",
 					obs = "DMSO_DHT.hic",
+					chr_list = NA,
 					resolution = 25e4,
+					ref = "hg19",
+					juicer_tool_path = "~/local/juicer_chaos/common/feature_tools.jar",
+					annotation = "~/Data/Reference/hg19/annotation/gencode.v38lift37.annotation.gff3.gz",
 					correction = TRUE
 ){
 	e <-	data.table(c("ctl","obs"),c(ctl,obs)) %>%
 			apply(
 				1,
 				function(x){
-					dt <- juicer_eigen(
-						x[2],
-						resolution = resolution
-					)[
-						,No := 1:.N,
-						.(chr)
-					]
+					dt <-	juicer_eigen(
+								hic_file = x[2],
+								ref = ref,
+								chr_list = chr_list,
+								resolution = resolution,
+								juicer_tool_path = juicer_tool_path,
+								annotation = annotation
+							)[
+								,No := 1:.N,
+								.(chr)
+							]
 
 					if(isTRUE(correction))
 					{
@@ -313,21 +321,25 @@ eigen_switch <- function(
 				}
 			)
 
-	m <- merge(
-			e[[1]],
-			e[[2]]
-		)[
-			ctl > 0 & obs > 0, status := "conserved_A"
-		][
-			ctl < 0 & obs < 0, status := "conserved_B"
-		][
-			ctl > 0 & obs < 0, status := "A_to_B"
-		][
-			ctl < 0 & obs > 0, status := "B_to_A"
-		]
+	m <-	merge(
+				e[[1]],
+				e[[2]]
+			)[
+				ctl > 0 & obs > 0, status := "conserved_A"
+			][
+				ctl < 0 & obs < 0, status := "conserved_B"
+			][
+				ctl > 0 & obs < 0, status := "A_to_B"
+			][
+				ctl < 0 & obs > 0, status := "B_to_A"
+			]
 
-	c <-	chr_size() %>%
-			apply(
+	c <-	chr_size(
+				genome = ref
+			)[
+				chr %in% c(chr_list,paste0("chr",chr_list))
+			] %>%
+			sapply(
 				1,
 				function(x){
 					seq_dt(
