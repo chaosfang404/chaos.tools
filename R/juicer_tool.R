@@ -275,7 +275,7 @@ juicer_eigen_plot <- function(
 	facet_grid(chr ~ resolution,scales = "free")
 }
 
-eigen_switch2 <- function(
+eigen_switch <- function(
 					ctl = "DMSO_EtOH.hic",
 					obs = "DMSO_DHT.hic",
 					chr_list = NA,
