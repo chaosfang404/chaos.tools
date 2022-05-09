@@ -110,7 +110,7 @@ pearsons_plot <- function(
 
 juicer_eigen <- function(
 					hic_file,
-					resolution = 1e6,
+					resolution = 25e4,
 					chr_list = NA,
 					norm = "KR",
 					ref = "hg19",
@@ -275,7 +275,7 @@ juicer_eigen_plot <- function(
 	facet_grid(chr ~ resolution,scales = "free")
 }
 
-eigen_switch <- function(
+eigen_switch2 <- function(
 					ctl = "DMSO_EtOH.hic",
 					obs = "DMSO_DHT.hic",
 					chr_list = NA,
@@ -288,7 +288,7 @@ eigen_switch <- function(
 	e <-	data.table(
 				c("ctl","obs"),
 				c(ctl,obs)
-			) %>%
+			) |>
 			apply(
 				1,
 				function(x){
@@ -306,19 +306,19 @@ eigen_switch <- function(
 
 					if(isTRUE(correction))
 					{
-						dt[,.(chr,No,corrected_eigen)] %>%
+						dt[,.(chr,No,corrected_eigen)] |>
 						setnames(
 							old = "corrected_eigen",
 							new = x[1]
-						) %>%
+						) |>
 						setkey()
 					}else
 					{
-						dt[,.(chr,No,eigen)] %>%
+						dt[,.(chr,No,eigen)] |>
 						setnames(
 							old = "eigen",
 							new = x[1]
-						) %>%
+						) |>
 						setkey()
 					}
 				}
@@ -341,8 +341,8 @@ eigen_switch <- function(
 				ref = ref
 			)[
 				chr %in% c(chr_list,paste0("chr",chr_list))
-			] %>%
-			sapply(
+			] |>
+			apply(
 				1,
 				function(x){
 					seq_dt(
@@ -362,8 +362,8 @@ eigen_switch <- function(
 						new = c("start","end")
 					)
 				}
-			) %>%
-			rbindlist() %>%
+			) |>
+			rbindlist() |>
 			setkey()
 
 	merge(m, c)[,.(chr,start,end,No,ctl,obs,status)]
