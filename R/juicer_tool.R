@@ -275,7 +275,7 @@ juicer_eigen_plot <- function(
 	facet_grid(chr ~ resolution,scales = "free")
 }
 
-eigen_switch2 <- function(
+eigen_switch <- function(
 					ctl = "DMSO_EtOH.hic",
 					obs = "DMSO_DHT.hic",
 					chr_list = NA,
@@ -333,12 +333,13 @@ eigen_switch2 <- function(
 				e[[1]],
 				e[[2]]
 			)[
-				,status :=	fcase(
-								ctl > 0 & obs > 0, "conserved_A",
-								ctl < 0 & obs < 0, "conserved_B",
-								ctl > 0 & obs < 0, "A_to_B",
-								ctl < 0 & obs > 0, "B_to_A"
-							)
+				ctl > 0 & obs > 0, status := "conserved_A"
+			][
+				ctl < 0 & obs < 0, status := "conserved_B"
+			][
+				ctl > 0 & obs < 0, status := "A_to_B"
+			][
+				ctl < 0 & obs > 0, status := "B_to_A"
 			]
 
 	c <-	chr_size(
