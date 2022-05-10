@@ -377,14 +377,23 @@ eigen_switch_plot <-	function(
 							threashold = 0.05,
 							legend.position = "bottom",
 							type = "bar",
-							width = NULL
+							width = NULL,
+							chr_order = NA
 ){
+	if(length(chr_order) == 1)
+	{
+		if(is.na(chr_order))
+		{
+			chr_order <- .data$chr |> unique() |> str_sort(numeric = T)
+		}
+	}
+
 	dt <-	na.omit(
 				.data
 			)[
 				,status := factor(status,levels = c("conserved_A","conserved_B","A_to_B","B_to_A"))
 			][
-				,chr := factor(chr,levels = paste0("chr",c(1:22,"X","Y")))
+				,chr := factor(chr,levels = chr_order)
 			]
 
 	breaks <- c(seq(0,1,0.25),threashold) |> sort()
@@ -422,7 +431,8 @@ eigen_switch_plot <-	function(
 				scale_y_continuous(
 					breaks = breaks,
 					labels = paste0(breaks*100,"%"),
-					guide = "prism_offset"
+					guide = "prism_offset",
+					expand = c(0,0.01)
 				)
 	}else if(type == "pie")
 	{
