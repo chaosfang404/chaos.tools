@@ -371,3 +371,99 @@ eigen_switch <- function(
 
 	merge(m, c)[,.(chr,start,end,No,ctl,obs,status)]
 }
+
+eigen_switch_plot <-	function(
+							.data,
+							threashold = 0.05,
+							legend.position = "bottom",
+							type = "bar"
+){
+	dt <-	na.omit(
+				.data
+			)[
+				,status := factor(status,levels = c("conserved_A","conserved_B","A_to_B","B_to_A"))
+			][
+				,chr := factor(chr,levels = paste0("chr",c(1:22,"X","Y")))
+			]
+
+	breaks <- c(seq(0,1,0.25),threashold) |> sort()
+
+	dt_r <- percent(dt,"status")
+
+	if(type == "bar")
+	{
+		p <-	dt |> 
+				ggplot(aes(chr,fill = status)) +
+				geom_bar(
+					stat = "count",
+					width = width,
+					position = "fill"
+				) + 
+				theme_prism() +
+				theme(
+					legend.position = legend.position,
+					axis.title.x = element_blank(),
+					axis.text.x = element_text(angle = 270)
+				) +
+				scale_fill_npg(
+					name = NULL,
+					labels = c(
+								paste0("conserved A\n(average ",dt_r[status == "conserved_A",P] |> unique(),")"),
+								paste0("conserved B\n(average ",dt_r[status == "conserved_B",P] |> unique(),")"),
+								paste0("A to B\n(average ",dt_r[status == "A_to_B",P] |> unique(),")"),
+								paste0("B to A\n(average ",dt_r[status == "B_to_A",P] |> unique(),")")
+							)
+				) +
+				labs(y = "ratio") +
+				scale_x_discrete(
+					guide = guide_prism_bracket()
+				) +
+				scale_y_continuous(
+					breaks = breaks,
+					labels = paste0(breaks*100,"%"),
+					guide = "prism_offset"
+				)
+	}else if(type == "pie")
+	{
+		p <-	dt |> 
+				ggplot(aes("x",fill = status)) +
+				geom_bar(
+					stat = "count",
+					width = width,
+					position = "fill"
+				) + 
+				coord_polar(theta = "y") + 
+				theme(
+					legend.position = legend.position,
+					axis.title = element_blank(),
+					axis.text = element_blank(),
+					axis.ticks = element_blank(),
+					panel.grid = element_blank(),
+					panel.background = element_blank(),
+					panel.border = element_blank(),
+					axis.line = element_blank()
+
+				) +
+				scale_fill_npg(
+					name = NULL,
+					labels = c(
+								paste0("conserved A\n(average ",dt_r[status == "conserved_A",P] |> unique(),")"),
+								paste0("conserved B\n(average ",dt_r[status == "conserved_B",P] |> unique(),")"),
+								paste0("A to B\n(average ",dt_r[status == "A_to_B",P] |> unique(),")"),
+								paste0("B to A\n(average ",dt_r[status == "B_to_A",P] |> unique(),")")
+							)
+				)
+	}
+
+	if(!is.na(threashold))
+	{
+		p +
+		geom_hline(
+			yintercept = threashold,
+			linetype = 2
+		)
+	}else
+	{
+		p
+	}
+}
