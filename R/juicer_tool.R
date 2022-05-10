@@ -376,7 +376,8 @@ eigen_switch_plot <-	function(
 							.data,
 							threashold = 0.05,
 							legend.position = "bottom",
-							type = "bar"
+							type = "bar",
+							width = NULL
 ){
 	dt <-	na.omit(
 				.data
