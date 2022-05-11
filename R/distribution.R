@@ -46,15 +46,22 @@ distribution <- function(
 		}
 	}
 
-	ref_dt <- data.table(
-						rep(reference,each = length(expand)),
-						rep(reference_name,each = length(expand)),
-						rep(expand,each = length(reference))
-					)
+#	ref_dt <- data.table(
+#						rep(reference,each = length(expand)),
+#						rep(reference_name,each = length(expand)),
+#						rep(expand,each = length(reference))
+#					)
 
-	align_dt <- data.table(
-						align,
-						align_name) 
+	ref_dt <-	data.table(
+					reference,
+					reference_name,
+					expand
+				)
+
+	align_dt <-	data.table(
+					align,
+					align_name
+				) 
 
 	ref_expand_slice <- function(
 							x
@@ -79,8 +86,8 @@ distribution <- function(
 
 	ref_essential_col <- c("chr","start","end","block","reference","expand")
 
-	ref_rest_col <- colnames(ref_info) %>% 
-							.[! . %in% ref_essential_col]
+	ref_rest_col <-	colnames(ref_info) %>% 
+					.[! . %in% ref_essential_col]
 
 	ref_rest_col_new <- paste0("ref_",ref_rest_col)
 
@@ -94,8 +101,13 @@ distribution <- function(
 
 	read_align <- function(x)
 	{
-		fread(
-			x[1]
+		tmp <- fread(x[1])
+		
+		n_col <- ncol(tmp)
+
+		setnames(
+			tmp,
+			paste0("V",1:n_col)
 		)[
 			,V1 := chr_omit(V1)
 		][
@@ -220,13 +232,160 @@ distribution <- function(
 }
 
 
+
+## distribution2() is simplified distribution()
+## the input pair_dt should contain group,ref,ref_file,align,align_file
+
+distribution2 <- function(
+					pair_dt,
+					expand = 1e5,
+					flank_slice_number = 25,
+					body_size = NA,
+					body_slice_number = 50,
+					trim = "ceiling",
+					direction_col_number = NA,
+					random_times = 3,
+					genome = "hg19"
+){
+	if(!is.na(body_size))
+	{
+		body_slice_number <- body_size * flank_slice_number / expand
+	}
+
+	align_dt <- pair_dt[,.(group,align,align_file)] |> unique()
+
+	ref_dt <- pair_dt[,.(group,ref,ref_file)] |> unique()
+
+	ref_info <-	ref_dt |>
+				apply(
+					1,
+					function(
+							x
+					){
+						setnames(
+							fread(x[3])[,1:3],
+							c("chr","start","end")
+						)[
+							,group := x[1]
+						][
+							,ref := x[2]
+						][
+							,domain := paste0(x[2],".",1:.N)
+						] |>
+						expand_slice(
+							expand = expand,
+							flank_slice_number = flank_slice_number,
+							body_slice_number = body_slice_number,
+							direction_col_number = direction_col_number,
+							trim = trim
+						)
+					}
+				) |>
+				rbindlist() |>
+				setkey(chr,start,end)
+
+	align_real <-	align_dt |>
+					apply(
+						1,
+						function(x)
+						{
+							setnames(
+								fread(x[3])[,1:3],
+								c("chr","start","end")
+							)[
+								,chr := chr_omit(chr)
+							][	
+								,group := x[1]
+							][
+								,align := x[2]
+							][
+								,peak := paste0(x[2],".",1:.N)
+							][
+								,exp := "real"
+							]
+						}
+					) %>%
+					rbindlist() 
+
+	if(random_times > 0)
+	{
+		align_random <- lapply(
+							1:random_times,
+							function(x)
+							{
+								shuffle(
+									align_real,
+									ref = genome
+								)[
+									,exp := paste0("random_",x)
+								]
+							}
+						) %>%
+						rbindlist()
+
+		random_col <- paste0("random_",1:random_times)
+	}else
+	{
+		align_random <- NULL
+		random_col <- NULL
+	}
+
+
+
+	align_info <-	rbind(
+						align_real,
+						align_random
+					) |>
+					setkey(chr,start,end)
+
+	overlap <-	apply(
+					pair_dt,
+					1,
+					function(x)
+					{
+						foverlaps(
+							align_info[group == x[1] & align == x[4]],
+							ref_info[group == x[1] & ref == x[2]],
+							nomatch = NULL
+						)
+					}
+				) %>%
+				rbindlist()
+
+	distribution <-	overlap[,.N,.(block,group,ref,align,exp)] |> 
+					dcast(
+						group + ref + align + block ~ exp,
+						fill = 0,
+						value.var = "N"
+					)
+
+	if(random_times > 0)
+	{
+		mean_random <- apply(distribution[,..random_col],1,mean)
+	}else
+	{
+		mean_random <- 0
+	}
+
+	distribution[
+		,mean_random := mean_random
+	][
+		,relative := real - mean_random
+	]
+
+	list(
+		overlap = overlap,
+		distribution = distribution
+	)
+}
+
 distribution_plot <- function(
 						.data,
 						start = "start",
 						end = "end",
 						flank_slice_number = 25,
 						body_slice_number = 50,
-						expand = 10000,
+						expand = 1e5,
 						lab_x = "",
 						lab_y = "relative Peak count",
 						legend_position = c(0.9,0.9)
