@@ -252,6 +252,8 @@ distribution2 <- function(
 		body_slice_number <- body_size * flank_slice_number / expand
 	}
 
+	pair_dt <- pair_dt[,.(group,align,align_file,ref,ref_file)]
+
 	align_dt <- pair_dt[,.(group,align,align_file)] |> unique()
 
 	ref_dt <- pair_dt[,.(group,ref,ref_file)] |> unique()
@@ -344,8 +346,8 @@ distribution2 <- function(
 					function(x)
 					{
 						foverlaps(
-							align_info[group == x[1] & align == x[4]],
-							ref_info[group == x[1] & ref == x[2]],
+							align_info[group == x[1] & align == x[2]],
+							ref_info[group == x[1] & ref == x[4]],
 							nomatch = NULL
 						)
 					}
