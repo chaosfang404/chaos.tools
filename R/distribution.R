@@ -424,138 +424,80 @@ distribution_plot <- function(
 }
 
 
+
 ## the .data imported into location should be the overlap data from distribution function
-## such as dt$overlap
+## such as dt$distribution
 
 location <-	function(
 				.data,
-				block_expand = 10,
+				block_expand = 5,
 				type = "border",
-				align_id = "align_V5",
-				align_group = NA,
-				ref_id = "ref_V4",
-				ref_group = NA,
-				ref_borders = c(26,75),
-				plot = "number"
+				flank_slice_number = 25,
+				body_slice_number = 50,
+				plot = FALSE
 ){
-	dt <-	.data[exp == "real"] %>%
-			as.data.table() %>%
-			setnames(
-				old = c(align_id,ref_id),
-				new = c("align_id","ref_id")
-			)
+	start_position <- flank_slice_number +1
+	end_position <- flank_slice_number + body_slice_number
 
-	if(is.na(align_group))
-	{
-		align_group <- "align_group"
-		dt[,align_group := "align"]
-	}
-
-	if(is.na(ref_group))
-	{
-		ref_group <- "ref_group"
-		dt[,ref_group := "ref"]
-	}
-
-	setnames(
-		dt,
-		old = c(ref_group,align_group),
-		new = c("ref_group","align_group")
-	)
-
-	l <- ref_borders[1]
-	r <- ref_borders[2]
-
-	calc_gene_number <-	function(
-							x
-	){
-		b <- as.numeric(x)
-
-		if(type == "border")
-		{
-			sub_blocks <-	c(
-								(l - b):(l + b),
-								(r - b):(r + b)
+	result <-	0:block_expand |>
+				lapply(
+					function(x)
+					{
+						if(type == "border")
+						{
+							expand_blocks <-	c(
+													(start_position - x):(start_position + x),
+													(end_position - x):(end_position + x)
+												)
+						} else if(type == "body")
+						{
+							expand_blocks <-	c(start_position - x):(end_position + x)
+						}
+			
+						.data[
+							block %in% expand_blocks,
+							`:=`(
+									relative_sum = sum(relative),
+									mean_random_sum = sum(mean_random),
+									real_sum = sum(real),
+									block_expand = x
+								),
+							.(group,ref,align)
+						][
+							,.(
+								group,
+								ref,
+								align,
+								relative = as.numeric(relative_sum),
+								random = as.numeric(mean_random_sum),
+								real = as.numeric(real_sum),
+								block_expand = as.numeric(block_expand)
 							)
-		} else if(type == "body")
-		{
-			sub_blocks <- (l - b):(r + b)
-		}
+						]
+					}
+				) |>
+				rbindlist() |>
+				na.omit() |>
+				unique()
 
-		dt[
-			block %in% sub_blocks,
-			.(ref_group,align_group,align_id)
-		] %>%
-		unique() %>%
-		.[
-			,.N,
-			.(ref_group,align_group)
-		] %>%
-		.[
-			,block := b
-		]
-	}
-
-	count_result <-	0:block_expand %>%
-					lapply(calc_gene_number) %>%
-					rbindlist() %>%
-					setnames("N","number") %>%
-					.[
-						,diff := number - c(0,number[1:(.N -1)]),
-						.(ref_group,align_group)
-					] %>%
-					.[]
-
-	if(plot == "none")
+	if(isFALSE(plot))
 	{
-		count_result
-	}else if(plot == "number")
+		result
+	}else if(isTRUE(plot))
 	{
-		count_result %>%
-		ggplot(aes(as.numeric(block),log2(number),color = align_group)) +
-		geom_line() +
-		theme_prism() +
-		scale_color_npg() +
-		geom_point() +
-		geom_text(
-			aes(label = number),
-			hjust= -0.2,
-			vjust = 1,
-			show.legend = F
-		) +
-		scale_y_continuous(
-			guide = "prism_offset"
-		) +
+		result |>
+		melt(
+			c("group","ref","align","block_expand"),
+			variable.name = "type",
+			value.name = "number"
+		) |>
+		ggplot(aes(block_expand,log10(number),color = type)) + 
+		geom_point() + 
+		geom_line() + 
+		facet_grid(group ~ align) + 
 		scale_x_continuous(
-			guide = "prism_offset",
-			breaks = seq(0,10,length.out = 6),
-			labels = seq(0,10,length.out = 6)
-		) +
-		theme(legend.position = "bottom") +
-		labs(
-			title = "genes on TAD border region",
-			x = "blocks that expand from border", 
-			y = "log2(gene number on border region)"
-		) +
-		facet_grid(ref_group ~ .)
-	} else if(plot == "diff")
-	{
-		count_result %>%
-		ggplot(aes("x",diff,fill = as.factor(block))) +
-		geom_bar(stat = "identity",position = "fill") +
-		coord_polar(theta = "y",direction = -1) +
-		scale_fill_manual(
-			values = colorRampPalette(
-						RColorBrewer::brewer.pal(9, "Set1")
-					)(length(unique(count_result$block)))
-		) +
-		theme_void() + 
-		theme(
-			legend.title = element_blank(),
-			legend.position = "bottom",
-			panel.grid.major = element_blank(),
-			panel.grid.minor = element_blank()
-		) +
-		facet_grid(ref_group ~ align_group)
+			breaks = 0:block_expand,
+			labels = 0:block_expand
+		)
 	}
 }
