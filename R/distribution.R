@@ -436,7 +436,9 @@ location <-	function(
 				body_slice_number = 50,
 				plot = FALSE
 ){
-	start_position <- flank_slice_number +1
+	dt <- as.data.table(.data)
+
+	start_position <- flank_slice_number + 1
 	end_position <- flank_slice_number + body_slice_number
 
 	result <-	0:block_expand |>
@@ -454,7 +456,7 @@ location <-	function(
 							expand_blocks <-	c(start_position - x):(end_position + x)
 						}
 			
-						.data[
+						dt[
 							block %in% expand_blocks,
 							`:=`(
 									relative_sum = sum(relative),
