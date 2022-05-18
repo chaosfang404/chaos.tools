@@ -430,76 +430,60 @@ distribution_plot <- function(
 
 location <-	function(
 				.data,
-				block_expand = 5,
+				expand = 5,
 				type = "border",
 				flank_slice_number = 25,
-				body_slice_number = 50,
-				plot = FALSE
+				body_slice_number = 50
 ){
-	dt <- as.data.table(.data)
-
-	start_position <- flank_slice_number + 1
-	end_position <- flank_slice_number + body_slice_number
-
-	result <-	0:block_expand |>
-				lapply(
-					function(x)
-					{
-						if(type == "border")
-						{
-							expand_blocks <-	c(
-													(start_position - x):(start_position + x),
-													(end_position - x):(end_position + x)
-												)
-						} else if(type == "body")
-						{
-							expand_blocks <-	c(start_position - x):(end_position + x)
-						}
-			
-						dt[
-							block %in% expand_blocks,
-							`:=`(
-									relative_sum = sum(relative),
-									mean_random_sum = sum(mean_random),
-									real_sum = sum(real),
-									block_expand = x
-								),
-							.(group,ref,align)
-						][
-							,.(
-								group,
-								ref,
-								align,
-								relative = as.numeric(relative_sum),
-								random = as.numeric(mean_random_sum),
-								real = as.numeric(real_sum),
-								block_expand = as.numeric(block_expand)
+	if(type == "border")
+	{
+		expand_blocks <-	c(
+								(flank_slice_number +1 - expand):(flank_slice_number + 1 + expand),
+								(flank_slice_number + body_slice_number - expand):(flank_slice_number + body_slice_number + expand)
 							)
-						]
-					}
-				) |>
-				rbindlist() |>
-				na.omit() |>
-				unique()
-
-	if(isFALSE(plot))
+	} else if(type == "body")
 	{
-		result
-	}else if(isTRUE(plot))
-	{
-		result |>
-		melt(
-			c("group","ref","align","block_expand"),
-			variable.name = "type",
-			value.name = "number"
-		) |>
-		ggplot(aes(block_expand,log10(number),color = type)) + 
-		geom_point() + 
-		geom_line() + 
-		facet_grid(group ~ align) + 
-		scale_x_continuous(
-			breaks = 0:block_expand,
-			labels = 0:block_expand
-		)
+		expand_blocks <-	c(flank_slice_number + 1 - expand):(flank_slice_number + body_slice_number + expand)
 	}
+			
+	.data[
+		block %in% expand_blocks,
+		.(
+			relative = sum(relative),
+			random = sum(mean_random),
+			real = sum(real)
+		),
+		.(group,ref,align)
+	][
+		,block_expand := expand
+	][]
+}
+
+location_plot <-	function(
+						.data,
+						log = TRUE
+){
+	dt <-	.data |>
+			melt(
+				c("group","ref","align","block_expand"),
+				variable.name = "type",
+				value.name = "number"
+			)
+
+	if(isTRUE(log))
+	{
+		p_base <- ggplot(dt,aes(block_expand,log10(number),color = type))
+	}else
+	{
+		p_base <- ggplot(dt,aes(block_expand,number,color = type))
+	}
+
+	p_base +
+	geom_point() + 
+	geom_line() + 
+	facet_grid(group ~ align) + 
+	scale_x_continuous(
+		breaks = unique(.data$block_expand),
+		labels = unique(.data$block_expand)
+	)
 }
