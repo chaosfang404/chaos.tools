@@ -434,8 +434,7 @@ location <-	function(
 				single = TRUE,
 				type = "border",
 				flank_slice_number = 25,
-				body_slice_number = 50,
-				plot = FLASE
+				body_slice_number = 50
 ){
 	core_func <-	function(
 						x = expand
