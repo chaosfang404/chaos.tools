@@ -502,6 +502,5 @@ location_plot <-	function(
 	scale_x_continuous(
 		breaks = unique(.data$block_expand),
 		labels = unique(.data$block_expand)
-	) |>
-	suppressWarnings()
+	)
 }
