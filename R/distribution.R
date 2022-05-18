@@ -431,32 +431,50 @@ distribution_plot <- function(
 location <-	function(
 				.data,
 				expand = 5,
+				single = TRUE,
 				type = "border",
 				flank_slice_number = 25,
-				body_slice_number = 50
+				body_slice_number = 50,
+				plot = FLASE
 ){
-	if(type == "border")
-	{
-		expand_blocks <-	c(
-								(flank_slice_number +1 - expand):(flank_slice_number + 1 + expand),
-								(flank_slice_number + body_slice_number - expand):(flank_slice_number + body_slice_number + expand)
-							)
-	} else if(type == "body")
-	{
-		expand_blocks <-	c(flank_slice_number + 1 - expand):(flank_slice_number + body_slice_number + expand)
+	core_func <-	function(
+						x = expand
+	){
+		if(type == "border")
+		{
+			expand_blocks <-	c(
+									(flank_slice_number +1 - x):(flank_slice_number + 1 + x),
+									(flank_slice_number + body_slice_number - x):(flank_slice_number + body_slice_number + x)
+								)
+		} else if(type == "body")
+		{
+			expand_blocks <-	c(flank_slice_number + 1 - x):(flank_slice_number + body_slice_number + x)
+		}
+
+		.data[
+			block %in% expand_blocks,
+			.(
+				relative = sum(relative),
+				random = sum(mean_random),
+				real = sum(real)
+			),
+			.(group,ref,align)
+		][
+			,block_expand := x
+		][]
 	}
-			
-	.data[
-		block %in% expand_blocks,
-		.(
-			relative = sum(relative),
-			random = sum(mean_random),
-			real = sum(real)
-		),
-		.(group,ref,align)
-	][
-		,block_expand := expand
-	][]
+
+	if(isFALSE(single))
+	{
+		lapply(
+			0:expand,
+			core_func
+		) |>
+		rbindlist()
+	}else
+	{
+		core_func()
+	}
 }
 
 location_plot <-	function(
@@ -485,5 +503,6 @@ location_plot <-	function(
 	scale_x_continuous(
 		breaks = unique(.data$block_expand),
 		labels = unique(.data$block_expand)
-	)
+	) |>
+	suppressWarnings()
 }
