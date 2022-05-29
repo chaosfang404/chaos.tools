@@ -14,7 +14,9 @@ n_load <- function(
 		ggrepel,
 		export,
 		ggprism,
-		strawr
+		strawr,
+		shiny,
+		DT
 	)
 
 	setDTthreads(threads = parallel::detectCores())
