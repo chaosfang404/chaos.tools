@@ -28,7 +28,8 @@ chaos_merge <-	function(
 			separate_col(".",sep = "\t") %>%
 			setnames(paste0("V",1:ncol(.))) %>%
 			.[,V2 := as.numeric(V2)] %>%
-			.[,V3 := as.numeric(V3)]
+			.[,V3 := as.numeric(V3)] %>%
+			.[]
 
 	unlink(dt_file)
 	dt
