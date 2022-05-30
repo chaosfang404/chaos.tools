@@ -11,7 +11,7 @@ chaos_merge <-	function(
 
 	tmp_str <- chaos_tmp()
 	dt_file <- paste0(tmp_str,".chaos_merge.tmp")
-	fwrite(.data, dt_file, sep = "\t", col.names = F)
+	fwrite(.data, dt_file, sep = "\t", col.names = F, scipen = 10)
 
 	dt <-	paste0(
 				"cat ",
