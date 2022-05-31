@@ -153,7 +153,7 @@ volcano_plot <- function(
 				ggplot(aes(log2FC,log10P,color = Group2)) + 
 				geom_point(size = 0.8) +		
 				geom_hline(
-					yintercept = -log10(0.05),
+					yintercept = -log10(p_value),
 					linetype = "dashed"
 				) +
 				geom_vline(
